@@ -84,7 +84,7 @@ dependencies {
     //lottie
     implementation(libs.lottie)
 
-    //ra
+    //
     implementation(libs.coil.compose)
 
     //pagination
