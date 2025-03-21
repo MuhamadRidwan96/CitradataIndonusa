@@ -3,7 +3,7 @@ package com.example.domain.model
 import com.google.gson.annotations.SerializedName
 
 data class FilterDataModel(
-    @SerializedName("start_date")
+
     val startDate: String,
     @SerializedName("end_date")
     val endDate: String,

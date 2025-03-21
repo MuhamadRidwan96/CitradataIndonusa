@@ -1,11 +1,11 @@
 package com.example.data.remote
 
-import com.example.data.response.DataResponse
-import com.example.data.response.LoginResponse
-import com.example.data.response.ProjectDetailResponse
-import com.example.data.response.ProvinceResponse
-import com.example.data.response.RegenciesResponse
-import com.example.data.response.RegisterResponse
+import com.example.domain.response.DataResponse
+import com.example.domain.response.LoginResponse
+import com.example.domain.response.ProjectDetailResponse
+import com.example.domain.response.ProvinceResponse
+import com.example.domain.response.RegenciesResponse
+import com.example.domain.response.RegisterResponse
 import com.example.domain.model.CityModel
 import com.example.domain.model.FilterDataModel
 import com.example.domain.model.LoginModel
@@ -15,14 +15,13 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
-import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface ApiService {
 
-    @Headers("Content-Type: application/json")
-    @POST("/CitraDataIndonusa/apl/api/v1/getToken")
+
+    @POST("/getToken")
     suspend fun login(@Body login: LoginModel): Response<LoginResponse>
 
     @POST("/CitraDataIndonusa/apl/api/v1/register")
@@ -34,7 +33,7 @@ interface ApiService {
         @Header("Limit") limit: Int,
         @Body search: Map<String, String>
     ): Response<DataResponse>
-
+    
     @POST("/CitraDataIndonusa/apl/api/v1/home")
     suspend fun getData(
         @Header("Page") page: Int,
@@ -42,7 +41,7 @@ interface ApiService {
     ): Response<DataResponse>
 
     @GET("/CitraDataIndonusa/apl/api/v1/project/detail/{idProject}")
-    suspend fun getDetailProject(
+    suspend fun getDetailData(
         @Path("idProject") idProject: String
     ): Response<ProjectDetailResponse>
 
@@ -50,10 +49,8 @@ interface ApiService {
     suspend fun filterData(
         @Header("Page") page: Int,
         @Header("Limit") limit: Int,
-        @Body request: FilterDataModel
-    ): DataResponse {
-        return this.filterData(page, limit, request)
-    }
+        @Body filter: FilterDataModel
+    ): Response<DataResponse>
 
     @POST("/CitraDataIndonusa/apl/api/master/province")
     suspend fun getProvince(
@@ -61,13 +58,13 @@ interface ApiService {
         @Header("Page") page: Int,
         @Header("Limit") limit: Int,
         @Body search: ProvinceModel
-    ): ProvinceResponse
+    ): Response<ProvinceResponse>
 
     @POST("/CitraDataIndonusa/apl/api/master/city")
     suspend fun getCity(
         @Header("Page") page: Int,
         @Header("Limit") limit: Int,
         @Body search: CityModel
-    ): RegenciesResponse
+    ): Response<RegenciesResponse>
 
 }

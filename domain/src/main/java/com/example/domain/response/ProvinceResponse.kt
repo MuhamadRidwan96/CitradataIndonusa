@@ -1,8 +1,8 @@
-package com.example.data.response
+package com.example.domain.response
 
 import com.google.gson.annotations.SerializedName
 
-data class RegenciesResponse(
+data class ProvinceResponse(
 
     @SerializedName("success")
     val success : Boolean,
@@ -11,14 +11,14 @@ data class RegenciesResponse(
     @SerializedName("message")
     val message:String,
     @SerializedName("data")
-    val data:List<DataRegencies>
+    val data:List<DataProvince>
+
 )
 
-data class DataRegencies (
-    @SerializedName("idCity")
-    val idCity:String,
+data class DataProvince(
     @SerializedName("idProvince")
-    val idProvince:String?,
-    @SerializedName("cityName")
-    val cityName:String
+    val idProvince:String,
+    @SerializedName("province")
+    val province:String
+
 )
