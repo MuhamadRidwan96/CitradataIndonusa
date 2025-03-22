@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -45,6 +46,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     implementation (libs.converter.gson)
+
+    implementation(libs.hilt.android)
+    ksp (libs.hilt.android.compiler)
 
 
 }
