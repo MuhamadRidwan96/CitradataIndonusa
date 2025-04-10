@@ -31,6 +31,12 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures{
+        aidl = false
+        buildConfig = false
+        renderScript = false
+        shaders = false
+    }
 }
 
 dependencies {

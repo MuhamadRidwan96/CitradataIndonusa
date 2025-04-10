@@ -3,7 +3,9 @@
   <component name="SonarLintProjectSettings">
     <option name="moduleMapping">
       <map>
+        <entry key="CitradataIndonusa.core-navigation" value="CitradataIndonusa.core-utils" />
         <entry key="CitradataIndonusa.domain" value="CitradataIndonusa.mylibrary" />
+        <entry key="CitradataIndonusa.feature-authentication" value="CitradataIndonusa.feature-login" />
       </map>
     </option>
   </component>

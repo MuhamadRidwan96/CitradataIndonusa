@@ -5,8 +5,9 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
 
-class AuthInterceptor(private val userPreferenceImpl: UserPreferencesImpl) : Interceptor {
+class AuthInterceptor @Inject constructor(private val userPreferenceImpl: UserPreferencesImpl) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val token = runBlocking {
            userPreferenceImpl.getSession().firstOrNull()?.token

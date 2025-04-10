@@ -21,7 +21,7 @@ import retrofit2.http.Path
 interface ApiService {
 
 
-    @POST("/getToken")
+    @POST("/CitraDataIndonusa/apl/api/v1/getToken")
     suspend fun login(@Body login: LoginModel): Response<LoginResponse>
 
     @POST("/CitraDataIndonusa/apl/api/v1/register")

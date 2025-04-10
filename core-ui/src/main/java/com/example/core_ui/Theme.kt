@@ -1,4 +1,4 @@
-package com.example.citradatarecode.ui.theme
+package com.example.core_ui
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -9,13 +9,6 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.example.core_ui.Pink40
-import com.example.core_ui.Pink80
-import com.example.core_ui.Purple40
-import com.example.core_ui.Purple80
-import com.example.core_ui.PurpleGrey40
-import com.example.core_ui.PurpleGrey80
-import com.example.core_ui.Typography
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -40,7 +33,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun CitraDataReCodeTheme(
+fun CitraDataIndonusaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
