@@ -1,4 +1,4 @@
-package com.example.feature_authentication.presentation.screen
+package com.example.feature_authentication.presentation.screen.signup
 
 import androidx.lifecycle.ViewModel
 import com.example.feature_authentication.state.SignUpFormState

@@ -1,4 +1,4 @@
-package com.example.feature_authentication.presentation.screen
+package com.example.feature_authentication.presentation.screen.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -58,11 +58,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core_ui.CitraDataIndonusaTheme
-import com.example.navigation.LocalAppNavigator
+import com.example.domain.response.AuthResponse
 import com.example.feature_authentication.presentation.AuthViewModel
 import com.example.feature_authentication.state.UiState
 import com.example.feature_authentication.theme.Shapes
 import com.example.feature_login.R
+import com.example.navigation.LocalAppNavigator
 
 
 @Composable
@@ -71,9 +72,11 @@ fun ScreenLogin(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val loginResult by viewModel.loginResult.collectAsStateWithLifecycle()
+    val authState by viewModel.authState.collectAsStateWithLifecycle()
 
     val snackBarHostState = remember { SnackbarHostState() }
     val navigator = LocalAppNavigator.current
+
 
     // 🔥 Handling success dan error dalam satu LaunchedEffect
     LaunchedEffect(loginResult) {
@@ -86,8 +89,12 @@ fun ScreenLogin(
                 val errorMessage = (loginResult as? UiState.Error)?.message ?: "Terjadi kesalahan"
                 snackBarHostState.showSnackbar(errorMessage)
             }
-
             else -> Unit
+        }
+    }
+    LaunchedEffect(authState){
+        if (authState is AuthResponse.Success){
+            navigator.navigateToHome()
         }
     }
 
@@ -98,8 +105,7 @@ fun ScreenLogin(
             modifier = Modifier
                 .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
-                .padding(paddingValues)
-            ,
+                .padding(paddingValues),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -124,14 +130,20 @@ fun ScreenLogin(
 
             ButtonSection(
                 isLoading = uiState.isLoading,
-                onLoginClick = { viewModel.login() }
+                onLoginClick = {
+                   viewModel.login()
+                },
+                onGoogleClick = {
+                    viewModel.signWithGoogle()
+
+                }
             )
         }
     }
 }
 
 @Composable
-fun ButtonSection(isLoading: Boolean, onLoginClick: () -> Unit) {
+fun ButtonSection(isLoading: Boolean, onLoginClick: () -> Unit, onGoogleClick:()-> Unit) {
 
     Column(
         modifier = Modifier.padding(16.dp),
@@ -168,7 +180,7 @@ fun ButtonSection(isLoading: Boolean, onLoginClick: () -> Unit) {
                 color = Color.Gray
             )
         }
-        GoogleLoginButton()
+        GoogleLoginButton(onClick = onGoogleClick)
         SignUpSection()
     }
 }
@@ -199,12 +211,12 @@ fun PrimaryButton(text: String, onClick: () -> Unit, isLoading: Boolean) {
 }
 
 @Composable
-fun GoogleLoginButton() {
+fun GoogleLoginButton(onClick: () -> Unit) {
     OutlinedButton(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
-        onClick = { }
+        onClick = onClick
     ) {
         Image(
             painter = painterResource(id = R.drawable.google),
@@ -231,13 +243,13 @@ fun SignUpSection() {
     ) {
         Text(
             text = stringResource(id = R.string.dont_have_account),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyMedium
         )
         TextButton(onClick = { navigator.navigateToSignUp() }) {
             Text(
                 text = stringResource(id = R.string.sign_up),
                 color = Color.Blue, textDecoration = TextDecoration.Underline,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
@@ -263,7 +275,8 @@ fun LayoutSection(
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier
                 .paddingFromBaseline(top = 16.dp)
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 16.dp),
+            fontWeight = FontWeight.Bold
         )
         Text(
             text = stringResource(R.string.sign),
@@ -354,7 +367,7 @@ fun AuthTextField(
 
 @Preview(showBackground = true)
 @Composable
-fun Preview1(){
+fun Preview1() {
     CitraDataIndonusaTheme {
         ScreenLogin()
     }

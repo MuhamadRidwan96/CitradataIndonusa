@@ -1,4 +1,4 @@
-package com.example.feature_authentication.presentation.screen
+package com.example.feature_authentication.presentation.screen.signup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,7 +46,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.feature_authentication.presentation.AuthViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.feature_authentication.state.SignUpFormState
 import com.example.feature_authentication.theme.Shapes
 import com.example.feature_login.R
@@ -53,9 +54,9 @@ import com.example.feature_login.R
 
 @Composable
 fun SignUpScreen(
-viewmodel:AuthViewModel = hiltViewModel()
+viewmodel: SignUpViewModel = hiltViewModel()
 ) {
-
+    val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             MyTopAppBar()
@@ -69,14 +70,14 @@ viewmodel:AuthViewModel = hiltViewModel()
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 FieldSection(
-                    state = state,
-                    onUsernameChange = onUsernameChange,
-                    onEmailChange = onEmailChange,
-                    onPasswordChange = onPasswordChange
+                    state = uiState,
+                    onUsernameChange = { },
+                    onEmailChange = {  },
+                    onPasswordChange = { }
                 )
                 ButtonSection(
-                    onSignUpClick = onSignUpClick,
-                    onSignInClick = onSignInClick
+                    onSignUpClick = { },
+                    onSignInClick = { }
                 )
             }
         }
@@ -144,7 +145,9 @@ fun FieldSection(
         Text(
             text = stringResource(R.string.sign_ups),
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
+            color = Color.Gray,
+            modifier = Modifier
+                .padding(bottom = 50.dp)
         )
 
         SignUpTextField(
@@ -226,14 +229,14 @@ fun ButtonSection(
         ) {
             Text(
                 text = stringResource(id = R.string.have_account),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyMedium
             )
             TextButton(onClick = onSignInClick ) {
                 Text(
                     text = stringResource(id = R.string.sign_in),
                     color = Color.Blue,
                     textDecoration = TextDecoration.Underline,
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
