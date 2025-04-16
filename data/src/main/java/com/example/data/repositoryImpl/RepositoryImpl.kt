@@ -1,11 +1,13 @@
 package com.example.data.repositoryImpl
 
-import com.example.data.remote.ApiHelper
+import com.example.data.remote.google.GoogleAuthManager
+import com.example.data.remote.api.ApiHelper
 import com.example.data.utils.Constant
 import com.example.data.utils.ErrorHandle
 import com.example.domain.model.LoginModel
 import com.example.domain.model.RegisterModel
-import com.example.domain.repository.Repository
+import com.example.domain.repository.AuthRepository
+import com.example.domain.response.AuthResponse
 import com.example.domain.response.LoginResponse
 import com.example.domain.response.RegisterResponse
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +16,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) : Repository {
+class RepositoryImpl @Inject constructor(
+    private val apiHelper: ApiHelper,
+    private val googleAuthManager: GoogleAuthManager
+    ) : AuthRepository {
     override fun login(requestLogin: LoginModel): Flow<Result<LoginResponse>> = flow {
 
         try {
@@ -58,5 +63,10 @@ class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) : Rep
             }
             emit(Result.failure(Exception(errorMessage)))
         }
+    }
+
+    override fun signWithGoogle(
+    ): Flow<AuthResponse> {
+        return googleAuthManager.signWithGoogle()
     }
 }

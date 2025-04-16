@@ -1,15 +1,18 @@
 package com.example.feature_authentication.presentation
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.utils.Constant
+import com.example.domain.response.AuthResponse
 import com.example.domain.response.LoginResponse
-import com.example.domain.usecase.CheckLoginUseCase
-import com.example.domain.usecase.LoginUseCase
-import com.example.domain.usecase.LogoutUseCase
+import com.example.domain.usecase.authentication.CheckLoginUseCase
+import com.example.domain.usecase.authentication.GoogleSignInUseCase
+import com.example.domain.usecase.authentication.LoginUseCase
 import com.example.feature_authentication.state.LoginUiState
 import com.example.feature_authentication.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +27,7 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val checkLoginUseCase: CheckLoginUseCase,
-
+    private val googleSignInUseCase: GoogleSignInUseCase
 ) : ViewModel() {
 
     private val _loginResult = MutableStateFlow<UiState<LoginResponse>>(UiState.Idle)
@@ -36,8 +39,16 @@ class AuthViewModel @Inject constructor(
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
+    private val _authState = MutableStateFlow<AuthResponse?>(null)
+    val authState: StateFlow<AuthResponse?> = _authState
+
     fun onChangeUsername(newUsername: String) {
-        _uiState.update { it.copy(username = newUsername, isUserNameWrong = newUsername.isBlank()) }
+        _uiState.update {
+            it.copy(
+                email = newUsername,
+                isEmailWrong = !isValidateEmail(newUsername)
+            )
+        }
     }
 
     fun onChangePassword(newPassword: String) {
@@ -49,11 +60,12 @@ class AuthViewModel @Inject constructor(
 
         viewModelScope.launch {
             setLoading(true)
-            loginUseCase(uiState.value.username, uiState.value.password)
+            loginUseCase(uiState.value.email, uiState.value.password)
                 .handleLoginResult()
                 .collectLatest { result ->
                     _loginResult.value = result
                     if (result is UiState.Success) {
+                        delay(3000)
                         _isLoggedIn.value = true
                     }
                     setLoading(false)
@@ -61,15 +73,22 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    private fun isValidateEmail(email: String): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
     private fun validateInput(): Boolean {
         val state = _uiState.value
-        val isValid = state.username.isNotBlank() && state.password.isNotBlank()
+        val isEmailValid = isValidateEmail(state.email)
+        val isPasswordValid = state.password.isNotBlank()
+
+        val isValid = isEmailValid && isPasswordValid
 
         if (!isValid) {
             _uiState.update {
                 it.copy(
-                    isUserNameWrong = state.username.isBlank(),
-                    isPassWordWrong = state.password.isBlank(),
+                    isEmailWrong = !isEmailValid,
+                    isPassWordWrong = !isPasswordValid,
                     errorMessage = Constant.TEXT_FIELD_MESSAGE
                 )
             }
@@ -90,11 +109,18 @@ class AuthViewModel @Inject constructor(
         emit(UiState.Error(exception.localizedMessage ?: "Something went wrong"))
     }
 
-
-
-    fun checkLogin(){
+    fun checkLogin() {
         viewModelScope.launch {
             _isLoggedIn.value = checkLoginUseCase()
+        }
+    }
+
+    fun signWithGoogle(){
+        viewModelScope.launch {
+            googleSignInUseCase().collect{
+                delay(3000)
+                _authState.value = it
+            }
         }
     }
 }

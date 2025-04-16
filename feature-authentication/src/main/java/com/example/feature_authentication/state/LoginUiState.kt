@@ -1,9 +1,9 @@
 package com.example.feature_authentication.state
 
 data class LoginUiState(
-    val username: String = "",
+    val email: String = "",
     val password: String = "",
-    val isUserNameWrong: Boolean = false,
+    val isEmailWrong: Boolean = false,
     val isPassWordWrong: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null

@@ -15,10 +15,11 @@ import com.example.navigation.LocalAppNavigator
 import com.example.navigation.MainNavigation
 import com.example.navigation.Routes
 import com.example.core_ui.CitraDataIndonusaTheme
-import com.example.feature_authentication.presentation.screen.ScreenLogin
-import com.example.feature_authentication.presentation.screen.SignUpScreen
+import com.example.feature_authentication.presentation.screen.login.ScreenLogin
+import com.example.feature_authentication.presentation.screen.signup.SignUpScreen
 import com.example.feature_authentication.presentation.screen.SplashScreen
 import com.example.feature_home.ScreenHome
+import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,6 +27,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        FirebaseApp.initializeApp(this)
         setContent {
             CitraDataIndonusaTheme {
                 Surface(
@@ -53,7 +55,6 @@ class MainActivity : ComponentActivity() {
                                 screenHome = { ScreenHome() },
                                 screenLogin = { ScreenLogin() },
                                 screenSignUp = { SignUpScreen() }
-
                             )
                         }
                     }

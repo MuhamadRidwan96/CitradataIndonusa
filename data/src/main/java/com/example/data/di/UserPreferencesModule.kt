@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.data.remote.google.GoogleAuthManager
 import com.example.data.preferencesImpl.UserPreferencesImpl
 import com.example.domain.preferences.UserPreferences
 import dagger.Module
@@ -14,7 +15,6 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_prefs")
-
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -31,4 +31,8 @@ object UserPreferencesModule {
     fun provideDataStore(@ApplicationContext context: Context):DataStore<Preferences>{
         return context.dataStore
     }
+
+    @Provides
+    @Singleton
+    fun provideGoogleAuthManager(@ApplicationContext context: Context): GoogleAuthManager = GoogleAuthManager(context)
 }
