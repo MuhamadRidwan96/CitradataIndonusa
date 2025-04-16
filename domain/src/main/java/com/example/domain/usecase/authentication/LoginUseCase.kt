@@ -1,10 +1,9 @@
 package com.example.domain.usecase
 
-import android.util.Log
 import com.example.domain.model.LoginModel
 import com.example.domain.model.UserModel
 import com.example.domain.preferences.UserPreferences
-import com.example.domain.repository.Repository
+import com.example.domain.repository.AuthRepository
 import com.example.domain.response.LoginResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -14,11 +13,11 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
-    private val repository: Repository,
+    private val repository: AuthRepository,
     private val userPreferences: UserPreferences
 ) {
-    operator fun invoke(username: String, password: String): Flow<Result<LoginResponse>> =
-        repository.login(LoginModel(username, password))
+    operator fun invoke(email: String, password: String): Flow<Result<LoginResponse>> =
+        repository.login(LoginModel(email, password))
             .onEach { result ->
                 if (result.isSuccess) {
                     val loginResponse = result.getOrNull()

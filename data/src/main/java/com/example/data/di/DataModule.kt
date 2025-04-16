@@ -1,10 +1,12 @@
 package com.example.data.di
 
-import com.example.data.remote.ApiHelper
-import com.example.data.remote.ApiHelperImpl
-import com.example.data.remote.ApiService
+import com.example.data.GoogleAuthManager
+import com.example.data.remote.api.ApiHelper
+import com.example.data.remote.api.ApiHelperImpl
+import com.example.data.remote.api.ApiService
+import com.example.data.remote.firebase.FireStoreService
 import com.example.data.repositoryImpl.RepositoryImpl
-import com.example.domain.repository.Repository
+import com.example.domain.repository.AuthRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,13 +19,17 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideApiHelperImpl(apiService: ApiService):ApiHelper{
+    fun provideApiHelperImpl(apiService: ApiService): ApiHelper {
         return ApiHelperImpl(apiService)
     }
 
     @Provides
     @Singleton
-    fun provideRepository(apiHelper:ApiHelper):Repository{
-        return RepositoryImpl(apiHelper)
+    fun provideRepository(
+        apiHelper: ApiHelper,
+        googleAuthManager: GoogleAuthManager,
+        firestoreService: FireStoreService
+    ): AuthRepository {
+        return RepositoryImpl(apiHelper, googleAuthManager, firestoreService)
     }
 }

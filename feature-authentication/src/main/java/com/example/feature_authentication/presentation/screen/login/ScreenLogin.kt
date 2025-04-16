@@ -18,8 +18,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -52,9 +52,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.core_ui.CitraDataIndonusaTheme
 import com.example.navigation.LocalAppNavigator
 import com.example.feature_authentication.presentation.AuthViewModel
 import com.example.feature_authentication.state.UiState
@@ -75,11 +78,16 @@ fun ScreenLogin(
     // 🔥 Handling success dan error dalam satu LaunchedEffect
     LaunchedEffect(loginResult) {
         when (loginResult) {
-            is UiState.Success -> { navigator.navigateToHome() }
+            is UiState.Success -> {
+                navigator.navigateToHome()
+            }
+
             is UiState.Error -> {
                 val errorMessage = (loginResult as? UiState.Error)?.message ?: "Terjadi kesalahan"
                 snackBarHostState.showSnackbar(errorMessage)
-            } else -> Unit
+            }
+
+            else -> Unit
         }
     }
 
@@ -91,7 +99,7 @@ fun ScreenLogin(
                 .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp),
+            ,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -103,18 +111,18 @@ fun ScreenLogin(
                 contentScale = ContentScale.Crop
             )
 
-            LoginLayout(
-                isUserNameWrong = uiState.isUserNameWrong,
+            LayoutSection(
+                isEmailWrong = uiState.isEmailWrong,
                 isPassWordWrong = uiState.isPassWordWrong,
-                username = uiState.username,
+                email = uiState.email,
                 password = uiState.password,
-                onUsernameChange = viewModel::onChangeUsername,
+                onEmailChange = viewModel::onChangeUsername,
                 onPasswordChange = viewModel::onChangePassword
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            ButtonLayout(
+            ButtonSection(
                 isLoading = uiState.isLoading,
                 onLoginClick = { viewModel.login() }
             )
@@ -123,7 +131,7 @@ fun ScreenLogin(
 }
 
 @Composable
-fun ButtonLayout(isLoading: Boolean, onLoginClick: () -> Unit) {
+fun ButtonSection(isLoading: Boolean, onLoginClick: () -> Unit) {
 
     Column(
         modifier = Modifier.padding(16.dp),
@@ -131,7 +139,7 @@ fun ButtonLayout(isLoading: Boolean, onLoginClick: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         PrimaryButton(
-            text = stringResource(id = R.string.login),
+            text = stringResource(id = R.string.sign_in),
             onClick = onLoginClick,
             isLoading = isLoading
         )
@@ -149,7 +157,8 @@ fun ButtonLayout(isLoading: Boolean, onLoginClick: () -> Unit) {
             Text(
                 text = stringResource(id = R.string.or),
                 modifier = Modifier.padding(horizontal = 8.dp), // Give space from Divider
-                color = Color.Gray
+                color = Color.Gray,
+                style = MaterialTheme.typography.bodySmall
             )
             HorizontalDivider(
                 modifier = Modifier
@@ -160,7 +169,7 @@ fun ButtonLayout(isLoading: Boolean, onLoginClick: () -> Unit) {
             )
         }
         GoogleLoginButton()
-        SignUpRow()
+        SignUpSection()
     }
 }
 
@@ -182,7 +191,8 @@ fun PrimaryButton(text: String, onClick: () -> Unit, isLoading: Boolean) {
         } else {
             Text(
                 text = text,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium
             )
         }
     }
@@ -203,14 +213,14 @@ fun GoogleLoginButton() {
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = stringResource(id = R.string.login_with_google),
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = Color.Black
         )
     }
 }
 
 @Composable
-fun SignUpRow() {
+fun SignUpSection() {
     val navigator = LocalAppNavigator.current
 
     Row(
@@ -219,23 +229,27 @@ fun SignUpRow() {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = stringResource(id = R.string.have_account))
+        Text(
+            text = stringResource(id = R.string.dont_have_account),
+            style = MaterialTheme.typography.bodyLarge
+        )
         TextButton(onClick = { navigator.navigateToSignUp() }) {
             Text(
                 text = stringResource(id = R.string.sign_up),
-                color = Color.Blue
+                color = Color.Blue, textDecoration = TextDecoration.Underline,
+                style = MaterialTheme.typography.bodyLarge
             )
         }
     }
 }
 
 @Composable
-fun LoginLayout(
+fun LayoutSection(
+    isEmailWrong: Boolean,
     isPassWordWrong: Boolean,
-    isUserNameWrong: Boolean,
-    username: String,
+    email: String,
     password: String,
-    onUsernameChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit
 ) {
     Column(
@@ -246,20 +260,28 @@ fun LoginLayout(
 
         Text(
             text = stringResource(R.string.welcome_back),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier
-                .paddingFromBaseline(top = 40.dp, bottom = 16.dp)
+                .paddingFromBaseline(top = 16.dp)
+                .padding(horizontal = 16.dp)
+        )
+        Text(
+            text = stringResource(R.string.sign),
+            style = MaterialTheme.typography.titleSmall,
+            color = Color.Gray,
+            modifier = Modifier
+                .paddingFromBaseline(bottom = 8.dp)
                 .padding(horizontal = 16.dp)
         )
 
         AuthTextField(
-            value = username,
-            isError = isUserNameWrong,
-            label = if (isUserNameWrong) stringResource(id = R.string.wrong_username) else stringResource(
-                id = R.string.username
+            value = email,
+            isError = isEmailWrong,
+            label = if (isEmailWrong) stringResource(id = R.string.wrong_email) else stringResource(
+                id = R.string.email
             ),
-            leadingIcon = Icons.Default.Person,
-            onValueChange = onUsernameChange
+            leadingIcon = Icons.Default.Email,
+            onValueChange = onEmailChange
 
         )
         PasswordTextField(
@@ -268,23 +290,9 @@ fun LoginLayout(
             isError = isPassWordWrong,
             onPasswordChange = onPasswordChange,
             label = if (isPassWordWrong) stringResource(id = R.string.wrong_password) else stringResource(
-                id = R.string.username
+                id = R.string.password
             )
         )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = { }) {
-                Text(
-                    text = stringResource(id = R.string.forgot_account),
-                    color = Color.Blue
-                )
-            }
-        }
     }
 }
 
@@ -343,4 +351,13 @@ fun AuthTextField(
         isError = isError
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+fun Preview1(){
+    CitraDataIndonusaTheme {
+        ScreenLogin()
+    }
+}
+
 
