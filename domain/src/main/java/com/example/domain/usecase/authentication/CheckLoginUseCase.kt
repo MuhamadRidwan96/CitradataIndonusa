@@ -1,4 +1,4 @@
-package com.example.domain.usecase
+package com.example.domain.usecase.authentication
 
 import com.example.domain.preferences.UserPreferences
 import kotlinx.coroutines.flow.firstOrNull
