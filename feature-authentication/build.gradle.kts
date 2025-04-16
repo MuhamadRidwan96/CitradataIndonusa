@@ -26,11 +26,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -42,12 +42,15 @@ android {
 
 }
 
+
 dependencies {
 
     implementation(project(":domain"))  // Bergantung pada modul domain
     implementation(project(":data"))    // Bergantung pada modul data
     implementation(project(":core-ui")) // Bergantung pada module core-ui
     implementation(project(":navigation"))
+
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -65,6 +68,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose.android)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.transition)
+    implementation(libs.androidx.runtime.android)
+    implementation(libs.androidx.core)
+    implementation(libs.google.firebase.auth.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

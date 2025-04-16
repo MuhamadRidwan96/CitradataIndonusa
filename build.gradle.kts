@@ -7,4 +7,5 @@ plugins {
     alias(libs.plugins.hilt.gradle) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.spotless)
+    id("com.google.gms.google-services") version "4.4.2" apply false
 }

@@ -5,9 +5,18 @@ plugins {
     alias(libs.plugins.hilt.gradle)
     alias(libs.plugins.spotless)
     alias(libs.plugins.compose.compiler)
+    id("com.google.gms.google-services")
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("D:\\Android\\keystore.jks")
+            storePassword = "S@yangfaza123"
+            keyAlias = "keycitradata"
+            keyPassword = "S@yangfaza123"
+        }
+    }
     namespace = "com.example.citradataindonusa"
     compileSdk = 35
 
@@ -31,11 +40,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures{
         compose = true
@@ -88,6 +97,18 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // Firebase Auth
+    implementation(libs.firebase.auth.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+
+
+    //Credential Manager
+    implementation(libs.googleid)
+    implementation (libs.play.services.auth.v2100)
+    implementation(libs.androidx.credentials.v120alpha03)
+    implementation(libs.androidx.credentials.play.services.auth.v120alpha03)
 
 
 }
