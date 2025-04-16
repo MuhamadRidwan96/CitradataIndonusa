@@ -1,10 +1,9 @@
 package com.example.data.di
 
-import com.example.data.GoogleAuthManager
+import com.example.data.remote.google.GoogleAuthManager
 import com.example.data.remote.api.ApiHelper
 import com.example.data.remote.api.ApiHelperImpl
 import com.example.data.remote.api.ApiService
-import com.example.data.remote.firebase.FireStoreService
 import com.example.data.repositoryImpl.RepositoryImpl
 import com.example.domain.repository.AuthRepository
 import dagger.Module
@@ -28,8 +27,7 @@ object DataModule {
     fun provideRepository(
         apiHelper: ApiHelper,
         googleAuthManager: GoogleAuthManager,
-        firestoreService: FireStoreService
     ): AuthRepository {
-        return RepositoryImpl(apiHelper, googleAuthManager, firestoreService)
+        return RepositoryImpl(apiHelper, googleAuthManager)
     }
 }
