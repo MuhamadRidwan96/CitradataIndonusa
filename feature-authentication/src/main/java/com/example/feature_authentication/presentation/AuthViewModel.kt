@@ -15,7 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
@@ -31,22 +31,22 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _loginResult = MutableStateFlow<UiState<LoginResponse>>(UiState.Idle)
-    val loginResult: StateFlow<UiState<LoginResponse>> = _loginResult
+    val loginResult = _loginResult.asStateFlow()
 
     private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState: StateFlow<LoginUiState> = _uiState
+    val uiState = _uiState.asStateFlow()
 
     private val _isLoggedIn = MutableStateFlow(false)
-    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
+    val isLoggedIn = _isLoggedIn.asStateFlow()
 
     private val _authState = MutableStateFlow<AuthResponse?>(null)
-    val authState: StateFlow<AuthResponse?> = _authState
+    val authState = _authState.asStateFlow()
 
-    fun onChangeUsername(newUsername: String) {
+    fun onChangeUsername(newEmail: String) {
         _uiState.update {
             it.copy(
-                email = newUsername,
-                isEmailWrong = !isValidateEmail(newUsername)
+                email = newEmail,
+                isEmailWrong = !isValidEmail(newEmail)
             )
         }
     }
@@ -61,7 +61,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             setLoading(true)
             loginUseCase(uiState.value.email, uiState.value.password)
-                .handleLoginResult()
+                .toUiState()
                 .collectLatest { result ->
                     _loginResult.value = result
                     if (result is UiState.Success) {
@@ -73,13 +73,13 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun isValidateEmail(email: String): Boolean {
+    private fun isValidEmail(email: String): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     private fun validateInput(): Boolean {
         val state = _uiState.value
-        val isEmailValid = isValidateEmail(state.email)
+        val isEmailValid = isValidEmail(state.email)
         val isPasswordValid = state.password.isNotBlank()
 
         val isValid = isEmailValid && isPasswordValid
@@ -100,14 +100,16 @@ class AuthViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = isLoading) }
     }
 
-    private fun Flow<Result<LoginResponse>>.handleLoginResult() = map { result ->
-        result.fold(
-            onSuccess = { UiState.Success(it) },
-            onFailure = { UiState.Error(it.localizedMessage ?: "Login failed") }
-        )
-    }.catch { exception ->
-        emit(UiState.Error(exception.localizedMessage ?: "Something went wrong"))
-    }
+    private fun Flow<Result<LoginResponse>>.toUiState(): Flow<UiState<LoginResponse>> =
+        map { result ->
+            result.fold(
+                onSuccess = { UiState.Success(it) },
+                onFailure = { UiState.Error(it.localizedMessage ?: "Login failed") }
+            )
+        }.catch { exception ->
+            emit(UiState.Error(exception.localizedMessage ?: "Something went wrong"))
+        }
+
 
     fun checkLogin() {
         viewModelScope.launch {
@@ -115,10 +117,9 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun signWithGoogle(){
+    fun signWithGoogle() {
         viewModelScope.launch {
-            googleSignInUseCase().collect{
-                delay(3000)
+            googleSignInUseCase().collect {
                 _authState.value = it
             }
         }

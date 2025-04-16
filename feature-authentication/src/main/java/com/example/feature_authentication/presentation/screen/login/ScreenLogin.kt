@@ -53,11 +53,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.core_ui.CitraDataIndonusaTheme
 import com.example.domain.response.AuthResponse
 import com.example.feature_authentication.presentation.AuthViewModel
 import com.example.feature_authentication.state.UiState
@@ -79,33 +77,29 @@ fun ScreenLogin(
 
 
     // 🔥 Handling success dan error dalam satu LaunchedEffect
-    LaunchedEffect(loginResult) {
+    LaunchedEffect(loginResult, authState) {
         when (loginResult) {
-            is UiState.Success -> {
-                navigator.navigateToHome()
-            }
-
+            is UiState.Success -> navigator.navigateToHome()
             is UiState.Error -> {
                 val errorMessage = (loginResult as? UiState.Error)?.message ?: "Terjadi kesalahan"
                 snackBarHostState.showSnackbar(errorMessage)
             }
             else -> Unit
         }
-    }
-    LaunchedEffect(authState){
-        if (authState is AuthResponse.Success){
+
+        if (authState is AuthResponse.Success) {
             navigator.navigateToHome()
         }
     }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
-    ) { paddingValues ->
+    ) { padding ->
         Column(
             modifier = Modifier
                 .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
-                .padding(paddingValues),
+                .padding(padding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -135,7 +129,6 @@ fun ScreenLogin(
                 },
                 onGoogleClick = {
                     viewModel.signWithGoogle()
-
                 }
             )
         }
@@ -180,7 +173,10 @@ fun ButtonSection(isLoading: Boolean, onLoginClick: () -> Unit, onGoogleClick:()
                 color = Color.Gray
             )
         }
-        GoogleLoginButton(onClick = onGoogleClick)
+        GoogleLoginButton(
+            onClick = onGoogleClick,
+            isLoading = isLoading,
+        )
         SignUpSection()
     }
 }
@@ -211,23 +207,32 @@ fun PrimaryButton(text: String, onClick: () -> Unit, isLoading: Boolean) {
 }
 
 @Composable
-fun GoogleLoginButton(onClick: () -> Unit) {
+fun GoogleLoginButton(onClick: () -> Unit,isLoading: Boolean) {
     OutlinedButton(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
-        onClick = onClick
+        onClick = onClick,
+        enabled = !isLoading
     ) {
         Image(
             painter = painterResource(id = R.drawable.google),
             contentDescription = "Google Login"
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(
-            text = stringResource(id = R.string.login_with_google),
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Black
-        )
+      
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = Color.White
+            )
+        } else {
+            Text(
+                text = stringResource(id = R.string.login_with_google),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Black
+            )
+        }
     }
 }
 
@@ -290,9 +295,7 @@ fun LayoutSection(
         AuthTextField(
             value = email,
             isError = isEmailWrong,
-            label = if (isEmailWrong) stringResource(id = R.string.wrong_email) else stringResource(
-                id = R.string.email
-            ),
+            label = stringResource(id = if (isEmailWrong) R.string.wrong_email else R.string.email),
             leadingIcon = Icons.Default.Email,
             onValueChange = onEmailChange
 
@@ -302,9 +305,7 @@ fun LayoutSection(
             leadingIcon = Icons.Default.Lock,
             isError = isPassWordWrong,
             onPasswordChange = onPasswordChange,
-            label = if (isPassWordWrong) stringResource(id = R.string.wrong_password) else stringResource(
-                id = R.string.password
-            )
+            label = stringResource(id = if (isPassWordWrong) R.string.wrong_password else R.string.password)
         )
     }
 }
@@ -363,14 +364,6 @@ fun AuthTextField(
         keyboardActions = KeyboardActions(onDone = {}),
         isError = isError
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun Preview1() {
-    CitraDataIndonusaTheme {
-        ScreenLogin()
-    }
 }
 
 
