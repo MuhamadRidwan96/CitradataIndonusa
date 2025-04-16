@@ -1,4 +1,4 @@
-package com.example.data.remote
+package com.example.data.remote.api
 
 import com.example.domain.response.LoginResponse
 import com.example.domain.response.RegisterResponse
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class ApiHelperImpl @Inject constructor(
     private val apiService: ApiService
-):ApiHelper {
+): ApiHelper {
     override suspend fun login(requestLogin: LoginModel): Response<LoginResponse> {
         return apiService.login(requestLogin)
     }

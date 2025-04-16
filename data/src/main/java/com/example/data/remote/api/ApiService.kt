@@ -1,4 +1,4 @@
-package com.example.data.remote
+package com.example.data.remote.api
 
 import com.example.domain.response.DataResponse
 import com.example.domain.response.LoginResponse
