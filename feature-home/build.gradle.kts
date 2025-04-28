@@ -41,7 +41,6 @@ dependencies {
     implementation (project(":domain"))  // Bergantung pada modul domain
     implementation (project(":data")) // Bergantung pada modul data
     implementation(project(":core-ui"))
-    implementation(project(":navigation"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

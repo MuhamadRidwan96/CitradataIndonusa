@@ -46,6 +46,7 @@ transition = "1.5.0"
 runtimeAndroid = "1.6.7"
 core = "1.12.0"
 firebaseAuthKtx = "23.2.0"
+foundationAndroid = "1.6.2"
 
 [libraries]
 
@@ -107,6 +108,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 
+material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 play-services-auth-v2100 = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuthVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 
@@ -117,6 +119,7 @@ androidx-transition = { group = "androidx.transition", name = "transition", vers
 androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 google-firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

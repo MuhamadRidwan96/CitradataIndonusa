@@ -15,9 +15,8 @@
             <option value="$PROJECT_DIR$/core-ui" />
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/domain" />
-            <option value="$PROJECT_DIR$/feature-authentication" />
             <option value="$PROJECT_DIR$/feature-home" />
-            <option value="$PROJECT_DIR$/navigation" />
+            <option value="$PROJECT_DIR$/features" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

@@ -61,9 +61,8 @@ dependencies {
     implementation (project(":domain"))  // Bergantung pada modul domain
     implementation (project(":data")) // Bergantung pada modul data
     implementation(project(":core-ui"))//Bergantung pada modul core-ui
-    implementation(project(":feature-authentication"))
+    implementation(project(":features"))
     implementation(project(":feature-home"))
-    implementation(project(":navigation"))
 
 
     implementation(libs.androidx.core.ktx)

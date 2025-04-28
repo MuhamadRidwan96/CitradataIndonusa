@@ -1,7 +1,7 @@
 package com.example.data.di
 
 import com.example.data.remote.api.ApiService
-import com.example.data.utils.AuthInterceptor
+import com.example.data.utils.HttpsRequestInterceptor
 import com.example.data.utils.Constant
 import dagger.Module
 import dagger.Provides
@@ -20,7 +20,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(authInterceptor: AuthInterceptor):OkHttpClient{
+    fun provideOkHttpClient(authInterceptor: HttpsRequestInterceptor):OkHttpClient{
 
         val httpLoggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
