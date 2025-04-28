@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="clear">Clear</string>
+    <string name="placeholder_search">Search projects..</string>
+    <string name="login_with_google">Continue with google</string>
+</resources>
