@@ -17,7 +17,7 @@ fun RootNavigationGraph(navController: NavHostController) {
         splashNavGraph(navController = navController)
         authNavGraph(navController = navController)
         composable(Graph.HOME) {
-            MainScreen()
+            MainScreen(navController)
         }
     }
 }

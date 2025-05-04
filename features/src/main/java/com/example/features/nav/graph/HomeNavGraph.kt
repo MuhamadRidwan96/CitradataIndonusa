@@ -18,6 +18,7 @@ import com.example.features.presentation.search.SearchScreen
 @Composable
 fun HomeNavGraph(
     navController: NavHostController,
+    rootNavController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -27,31 +28,26 @@ fun HomeNavGraph(
         startDestination = BottomNavItem.Home.route
     ) {
         composable(route = BottomNavItem.Home.route) {
-            HomeScreen(
-                name = BottomNavItem.Home.route,
-                onClick = {}
-            )
+            HomeScreen(name = "TODO()", onClick = {})
         }
         composable(route = BottomNavItem.Search.route) {
             SearchScreen(
-                name = BottomNavItem.Search.route,
+                name = " BottomNavItem.Search.route",
                 onClick = { }
             )
         }
         composable(route = BottomNavItem.Favorite.route) {
             FavoriteScreen(
-                name = BottomNavItem.Favorite.route, onClick = {}
+                name = "BottomNavItem.Favorite.route", onClick = {}
             )
         }
 
         composable(route = BottomNavItem.Profile.route) {
-            ProfileScreen(
-                name = BottomNavItem.Profile.route,
-                onClick = {}
-            )
+            ProfileScreen(navController = rootNavController, rootNavController = rootNavController)
         }
 
-        detailsNavGraph(navController = navController)
+        detailsNavGraph(navController)
+        profileNavGraph(navController, rootNavController)
     }
 }
 
