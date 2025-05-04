@@ -62,7 +62,6 @@ dependencies {
     implementation (project(":data")) // Bergantung pada modul data
     implementation(project(":core-ui"))//Bergantung pada modul core-ui
     implementation(project(":features"))
-    implementation(project(":feature-home"))
 
 
     implementation(libs.androidx.core.ktx)

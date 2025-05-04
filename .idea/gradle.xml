@@ -15,7 +15,6 @@
             <option value="$PROJECT_DIR$/core-ui" />
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/domain" />
-            <option value="$PROJECT_DIR$/feature-home" />
             <option value="$PROJECT_DIR$/features" />
           </set>
         </option>
