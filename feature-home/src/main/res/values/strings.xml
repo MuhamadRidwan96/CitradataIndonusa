@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="Greeting">Hello, this is home screen</string>
-    <string name="Logout">Logout</string>
-    <string name="placeholder_search">Search projects...</string>
-    <string name="clear">Clear</string>
-</resources>
