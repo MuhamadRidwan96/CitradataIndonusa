@@ -30,7 +30,6 @@ import com.example.features.nav.graph.ProfileRoutes
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    rootNavController: NavController,
     viewModel: LogOutViewModel = hiltViewModel()
 ) {
     Scaffold(
@@ -64,18 +63,16 @@ fun ProfileScreen(
                 ) {
                     ProfileContent()
                     ProfileContentItems(
-                        onMembershipClick = { navController.navigate(ProfileRoutes.MEMBERSHIP) },
+                        onMembershipClick = {navController.navigate(ProfileRoutes.MEMBERSHIP)},
                         onContactUsClick = { navController.navigate(ProfileRoutes.CONTACT) },
-                        onPrivacyPolicyClick = { navController.navigate(ProfileRoutes.PRIVACY) },
-                        onTermsClick = { navController.navigate(ProfileRoutes.TERMS) }
+                        onPrivacyPolicyClick = {navController.navigate(ProfileRoutes.PRIVACY)},
+                        onTermsClick = {navController.navigate(ProfileRoutes.TERMS)},
                     )
                     LogoutContentRow(
-                        onClick = {
+                        onLogout = {
                             viewModel.logout()
-                            rootNavController.navigate(Graph.AUTHENTICATION){
-                                popUpTo(Graph.ROOT) {
-                                    inclusive = true
-                                }
+                            navController.navigate(Graph.AUTHENTICATION) {
+                                popUpTo(Graph.ROOT) { inclusive = true }
                                 launchSingleTop = true
                             }
                         }

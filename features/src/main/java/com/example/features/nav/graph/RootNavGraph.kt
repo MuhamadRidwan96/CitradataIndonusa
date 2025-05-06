@@ -5,6 +5,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.features.presentation.MainScreen
+import com.example.features.presentation.profile.screen.ContactUsScreen
+import com.example.features.presentation.profile.screen.MyMembershipScreen
+import com.example.features.presentation.profile.screen.PrivacyPolicyScreen
+import com.example.features.presentation.profile.screen.TermsAndConditionScreen
 
 @Composable
 fun RootNavigationGraph(navController: NavHostController) {
@@ -19,6 +23,10 @@ fun RootNavigationGraph(navController: NavHostController) {
         composable(Graph.HOME) {
             MainScreen(navController)
         }
+        composable(ProfileRoutes.MEMBERSHIP) { MyMembershipScreen() }
+        composable(ProfileRoutes.CONTACT) { ContactUsScreen() }
+        composable(ProfileRoutes.PRIVACY) { PrivacyPolicyScreen() }
+        composable(ProfileRoutes.TERMS) { TermsAndConditionScreen() }
     }
 }
 
@@ -29,4 +37,11 @@ object Graph {
     const val HOME = "home_graph"
     const val DETAILS = "details_graph"
 
+}
+
+object ProfileRoutes {
+    const val MEMBERSHIP = "profile/membership"
+    const val CONTACT = "profile/contact"
+    const val PRIVACY = "profile/privacy"
+    const val TERMS = "profile/terms"
 }

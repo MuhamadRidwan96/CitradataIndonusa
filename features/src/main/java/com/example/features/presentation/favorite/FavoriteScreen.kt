@@ -12,7 +12,8 @@ import androidx.compose.ui.text.font.FontWeight
 fun FavoriteScreen(name:String, onClick :()->Unit){
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
+
     ) {
         androidx.compose.material.Text(
             modifier = Modifier.clickable { onClick() },

@@ -18,7 +18,7 @@ import com.example.features.presentation.search.SearchScreen
 @Composable
 fun HomeNavGraph(
     navController: NavHostController,
-    rootNavController: NavHostController,
+    rootNavController:NavHostController,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -42,16 +42,17 @@ fun HomeNavGraph(
             )
         }
 
-        composable(route = BottomNavItem.Profile.route) {
-            ProfileScreen(navController = rootNavController, rootNavController = rootNavController)
+        composable(route = BottomNavItem.Profile.route){
+            ProfileScreen(
+                navController = rootNavController
+            )
         }
 
         detailsNavGraph(navController)
-        profileNavGraph(navController, rootNavController)
     }
 }
 
-fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
+fun NavGraphBuilder. detailsNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.DETAILS,
         startDestination = DetailsScreen.Information.route
@@ -76,3 +77,4 @@ sealed class DetailsScreen(val route: String) {
     data object Information : DetailsScreen(route = "INFORMATION")
     data object Overview : DetailsScreen(route = "OVERVIEW")
 }
+

@@ -117,7 +117,10 @@ private fun BoxScope.Indicator(
             .align(Alignment.BottomStart)
             .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(50))
     )
+
+
 }
+
 
 @Composable
 private fun NavigationItems(

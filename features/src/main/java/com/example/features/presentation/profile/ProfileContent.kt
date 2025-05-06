@@ -179,7 +179,7 @@ fun ProfileContentItems(
                 text = item.text,
                 onClick = item.onClick
             )
-            HorizontalDividers(modifier = Modifier.height(2.dp))
+            HorizontalDivider(modifier = Modifier.height(2.dp))
         }
     }
 }
@@ -216,23 +216,15 @@ private fun ProfileContentRow(
     }
 }
 
-@Composable
-private fun HorizontalDividers(modifier: Modifier = Modifier) {
-    HorizontalDivider(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.outlineVariant,
-        thickness = 2.dp
-    )
-}
 
 
 @Composable
-fun LogoutContentRow(onClick: (() -> Unit)? = null) {
+fun LogoutContentRow(onLogout: (() -> Unit)? = null) {
     Row(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
             .fillMaxWidth()
-            .clickable(enabled = onClick != null) { onClick?.invoke() },
+            .clickable(enabled = onLogout != null) { onLogout?.invoke() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
