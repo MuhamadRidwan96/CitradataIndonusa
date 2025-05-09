@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,6 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.core_ui.component.BenefitCard
+import com.example.core_ui.component.CompareFeatures
 import com.example.core_ui.component.SubscriptionCard
 import com.example.core_ui.component.TopAppBarWithBack
 import com.example.feature_login.R
@@ -70,7 +73,7 @@ fun MyMembershipScreen(navController: NavHostController) {
             )
 
 
-            Column (
+            Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -98,7 +101,8 @@ fun MyMembershipScreen(navController: NavHostController) {
 
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .height(600.dp)
                 ) { page ->
                     when (page) {
@@ -118,9 +122,9 @@ private fun TabSection(
     tabTitles: List<String>,
     selectedTabIndex: Int,
     onTabSelected: (Int) -> Unit,
-    pagerState: androidx.compose.foundation.pager.PagerState
+    pagerState: PagerState
 ) {
-   TabRow(
+    TabRow(
         selectedTabIndex = selectedTabIndex,
         contentColor = MaterialTheme.colorScheme.primary,
         divider = {},
@@ -166,12 +170,34 @@ fun PlansSection() {
 
 @Composable
 fun BenefitsContent() {
-    CenteredTextContent("Benefits Content Here")
+    val benefitPlans = rememberBenefitPlans()
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(benefitPlans) { benefit ->
+            BenefitCard(
+                benefit = benefit
+            )
+        }
+
+    }
 }
 
 @Composable
 fun CompareContent() {
-    CenteredTextContent("Compare Content Here")
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) { item { CompareFeatures() } }
 }
 
 @Composable

@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,8 +13,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Edit
@@ -26,21 +30,28 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.feature_login.R
-import com.example.features.presentation.profile.screen.ProfileItem
 
 @Composable
 fun ProfileContent(
     onEditClick: () -> Unit
 ) {
+
+    val profileIconSize = remember { 96.dp }
+    val editButtonOffset = remember { (-16).dp }
+    val editButtonSize = remember { 18.dp }
+    val editIconSize = remember { 15.dp }
 
     // Stacked Profile Image with Edit Button
     Box(
@@ -50,11 +61,11 @@ fun ProfileContent(
     ) {
         // Profile Image
         Icon(
-            imageVector = Icons.Default.AccountCircle, // ✅ Ikon ringan bawaan vector
+            imageVector = Icons.Default.AccountCircle,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.secondary,
             modifier = Modifier
-                .size(96.dp)
+                .size(profileIconSize)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.secondaryContainer)
         )
@@ -64,8 +75,8 @@ fun ProfileContent(
             onClick = onEditClick,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .offset((-16).dp, (-16).dp) // more adjustable
-                .size(18.dp)
+                .offset(editButtonOffset, editButtonOffset) // more adjustable
+                .size(editButtonSize)
                 .background(
                     color = MaterialTheme.colorScheme.primary,
                     shape = CircleShape
@@ -75,7 +86,7 @@ fun ProfileContent(
                 imageVector = Icons.Default.Edit,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(15.dp)
+                modifier = Modifier.size(editIconSize)
             )
         }
     }
@@ -87,30 +98,39 @@ fun TextName(
     name: String,
     username: String
 ) {
+    val spacer = remember { 24.dp }
+    val padding = remember { 16.dp }
+
+    val nameStyle = MaterialTheme.typography.titleLarge.copy(
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.secondary,
+    )
+
+    val usernameStyle = MaterialTheme.typography.titleMedium.copy(
+        color = Color.Gray
+    )
     Column(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.padding(padding),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
 
-        Spacer(modifier = Modifier.size(24.dp))
+        Spacer(modifier = Modifier.size(spacer))
         // Name
         Text(
             text = name,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.secondary,
+            style = nameStyle,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.size(8.dp))
-
         Text(
             text = username,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 8.dp),
             color = Color.Gray,
             maxLines = 1,
-            style = MaterialTheme.typography.titleMedium
+            style = usernameStyle
         )
     }
 }
@@ -120,17 +140,17 @@ fun ProfileItemRow(
     item: ProfileItem,
     modifier: Modifier = Modifier
 ) {
+    val rowPadding = remember { PaddingValues(vertical = 12.dp, horizontal = 16.dp) }
+    val iconSpacer = remember { 12.dp }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable(
-                enabled = when (item) {
-                    is ProfileItem.Logout -> item.enabled
-                    else -> true
-                },
+                enabled = item.enabled,
                 onClick = item.onClick
             )
-            .padding(vertical = 12.dp, horizontal = 16.dp),
+            .padding(rowPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -141,7 +161,7 @@ fun ProfileItemRow(
                 else -> MaterialTheme.colorScheme.primary
             }
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(iconSpacer))
 
         Text(
             text = item.title,
@@ -155,6 +175,16 @@ fun ProfileItemRow(
 }
 
 @Composable
+private fun ProfileDivider() {
+    HorizontalDivider(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        thickness = 0.5.dp,
+        color = MaterialTheme.colorScheme.outlineVariant
+    )
+}
+
+
+@Composable
 fun ContentProfile(
     onMembershipClick: () -> Unit,
     onContactUsClick: () -> Unit,
@@ -162,69 +192,52 @@ fun ContentProfile(
     onTermsClick: () -> Unit,
     onLogout: (() -> Unit)? = null
 ) {
-    Column {
+    val items = listOf(
+        ProfileItem.Regular(Icons.Default.WorkspacePremium, stringResource(R.string.membership), onMembershipClick),
+        ProfileItem.Regular(Icons.Default.Phone, stringResource(R.string.call_us), onContactUsClick),
+        ProfileItem.Regular(Icons.Default.LocalPolice, stringResource(R.string.privacy_policy), onPrivacyPolicyClick),
+        ProfileItem.Regular(Icons.Default.ContentPaste, stringResource(R.string.term_and_condition), onTermsClick)
+    ) + if (onLogout != null) {
+        listOf(ProfileItem.Logout(onLogout, true))
+    } else emptyList()
 
-        ProfileItemRow(
-            item = ProfileItem.Regular(
-                icon = Icons.Default.WorkspacePremium,
-                title = stringResource(R.string.membership),
-                onClick = onMembershipClick
-            )
-        )
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            thickness = 0.5.dp,
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
-
-
-        ProfileItemRow(
-            item = ProfileItem.Regular(
-                icon = Icons.Default.Phone,
-                title = stringResource(R.string.call_us),
-                onClick = onContactUsClick
-            )
-        )
-
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            thickness = 0.5.dp,
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
-
-        ProfileItemRow(
-            item = ProfileItem.Regular(
-                icon = Icons.Default.LocalPolice,
-                title = stringResource(R.string.privacy_policy),
-                onClick = onPrivacyPolicyClick
-            )
-        )
-
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            thickness = 0.5.dp,
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
-
-        ProfileItemRow(
-            ProfileItem.Regular(
-                icon = Icons.Default.ContentPaste,
-                title = stringResource(R.string.term_and_condition),
-                onClick = onTermsClick
-            )
-        )
-
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            thickness = 0.5.dp,
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
-
-        ProfileItemRow(
-            item = ProfileItem.Logout(
-                onClick = { onLogout?.invoke() },
-                enabled = onLogout != null
-            )
-        )
+    LazyColumn(
+        modifier = Modifier
+            .size(650.dp)
+    ){
+        itemsIndexed(items) { index, item ->
+            ProfileItemRow(item)
+            if (index < items.lastIndex) {
+                ProfileDivider()
+            }
+        }
     }
 }
+
+@Stable
+sealed interface ProfileItem {
+    val icon: ImageVector
+    val title: String
+    val onClick: () -> Unit
+    val enabled: Boolean
+        get() = true
+
+    data class Regular(
+        override val icon: ImageVector,
+        override val title: String,
+        override val onClick: () -> Unit
+    ) : ProfileItem
+
+    data class Logout(
+        override val onClick: () -> Unit,
+        override val enabled: Boolean
+    ) : ProfileItem {
+        override val icon: ImageVector = Icons.AutoMirrored.Filled.Logout
+        override val title: String = ProfileItemConstant.LOGOUT
+    }
+}
+
+object ProfileItemConstant {
+    const val LOGOUT = "Logout"
+}
+
