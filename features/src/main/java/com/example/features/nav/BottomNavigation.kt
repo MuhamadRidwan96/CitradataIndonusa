@@ -22,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -34,98 +35,76 @@ import com.example.features.nav.graph.Graph
 
 
 @Composable
-fun FloatingBottomNavigationWithIndicator(navController: NavHostController,modifier: Modifier = Modifier) {
-    val items = listOf(
-        BottomNavItem.Home,
-        BottomNavItem.Search,
-        BottomNavItem.Favorite,
-        BottomNavItem.Profile
-    )
+fun FloatingBottomNavigationWithIndicator(
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    val items = remember {
+        listOf(
+            BottomNavItem.Home,
+            BottomNavItem.Search,
+            BottomNavItem.Favorite,
+            BottomNavItem.Profile
+        )
+    }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-
     val currentRoute = navBackStackEntry?.destination?.route
     val selectedItem = items.indexOfFirst { it.route == currentRoute }.takeIf { it != -1 } ?: 0
 
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
     val horizontalPadding = 24.dp
     val itemWidth = (screenWidth - horizontalPadding * 2) / items.size
 
     val indicatorOffset by animateDpAsState(
         targetValue = itemWidth * selectedItem,
-        label = "Indicator Offset Animation"
+        label = "Indicator Offset"
     )
 
     Box(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        FloatingBottomNavigationSurface(
-            items = items,
-            selectedItem = selectedItem,
-            indicatorOffset = indicatorOffset,
-            itemWidth = itemWidth,
-            horizontalPadding = horizontalPadding,
-            currentRoute = currentRoute,
-            navController = navController
-        )
-    }
-}
-
-@Composable
-private fun BoxScope.FloatingBottomNavigationSurface(
-    items: List<BottomNavItem>,
-    selectedItem: Int,
-    indicatorOffset: Dp,
-    itemWidth: Dp,
-    horizontalPadding: Dp,
-    currentRoute: String?,
-    navController: NavHostController
-) {
-    Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(100.dp)
-            .align(Alignment.BottomCenter)
-            .padding(start = horizontalPadding, end = horizontalPadding, bottom = 28.dp),
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 12.dp,
-        shadowElevation = 12.dp
+            .padding(bottom = 28.dp),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Indicator(indicatorOffset = indicatorOffset, itemWidth = itemWidth)
-            NavigationItems(
-                items = items,
-                selectedItem = selectedItem,
-                currentRoute = currentRoute,
-                navController = navController
-            )
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp)
+                .padding(horizontal = horizontalPadding),
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 12.dp,
+            shadowElevation = 12.dp
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Indicator(indicatorOffset, itemWidth)
+                NavigationItems(items, selectedItem, currentRoute, navController)
+            }
         }
     }
 }
 
 @Composable
-private fun BoxScope.Indicator(
-    indicatorOffset: Dp,
-    itemWidth: Dp
-) {
+private fun BoxScope.Indicator(offset: Dp, width: Dp) {
     Box(
         modifier = Modifier
-            .offset(x = indicatorOffset)
-            .width(itemWidth)
+            .offset(x = offset)
+            .width(width)
             .height(4.dp)
             .align(Alignment.BottomStart)
-            .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(50))
+            .background(
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(50)
+            )
     )
-
-
 }
-
 
 @Composable
 private fun NavigationItems(
     items: List<BottomNavItem>,
-    selectedItem: Int,
+    selectedIndex: Int,
     currentRoute: String?,
     navController: NavHostController
 ) {
@@ -137,9 +116,9 @@ private fun NavigationItems(
         items.forEachIndexed { index, item ->
             NavigationItem(
                 item = item,
-                isSelected = selectedItem == index,
+                isSelected = index == selectedIndex,
                 onClick = {
-                    if (currentRoute != item.route) {
+                    if (item.route != currentRoute) {
                         navController.navigate(item.route) {
                             popUpTo(Graph.HOME) { inclusive = true }
                             launchSingleTop = true
@@ -182,4 +161,5 @@ private fun RowScope.NavigationItem(
         }
     }
 }
+
 

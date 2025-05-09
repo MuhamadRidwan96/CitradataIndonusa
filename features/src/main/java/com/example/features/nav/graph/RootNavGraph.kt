@@ -5,10 +5,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.features.presentation.MainScreen
-import com.example.features.presentation.profile.screen.ContactUsScreen
-import com.example.features.presentation.profile.screen.MyMembershipScreen
-import com.example.features.presentation.profile.screen.PrivacyPolicyScreen
-import com.example.features.presentation.profile.screen.TermsAndConditionScreen
+import com.example.features.presentation.profile.screen.subscreen.contact_us.ContactUsScreen
+import com.example.features.presentation.profile.screen.main.MyMembershipScreen
+import com.example.features.presentation.profile.screen.subscreen.policy.PrivacyPolicyScreen
+import com.example.features.presentation.profile.screen.subscreen.terms.TermsAndConditionScreen
+import com.example.features.presentation.profile.screen.subscreen.update.UpdateProfileScreen
 
 @Composable
 fun RootNavigationGraph(navController: NavHostController) {
@@ -23,10 +24,11 @@ fun RootNavigationGraph(navController: NavHostController) {
         composable(Graph.HOME) {
             MainScreen(navController)
         }
-        composable(ProfileRoutes.MEMBERSHIP) { MyMembershipScreen() }
-        composable(ProfileRoutes.CONTACT) { ContactUsScreen() }
-        composable(ProfileRoutes.PRIVACY) { PrivacyPolicyScreen() }
-        composable(ProfileRoutes.TERMS) { TermsAndConditionScreen() }
+        composable(ProfileRoutes.MEMBERSHIP) { MyMembershipScreen(navController = navController) }
+        composable(ProfileRoutes.CONTACT) { ContactUsScreen(navController = navController) }
+        composable(ProfileRoutes.PRIVACY) { PrivacyPolicyScreen(navController = navController) }
+        composable(ProfileRoutes.TERMS) { TermsAndConditionScreen(navController = navController) }
+        composable(ProfileRoutes.EDIT){ UpdateProfileScreen(navController = navController) }
     }
 }
 
@@ -44,4 +46,5 @@ object ProfileRoutes {
     const val CONTACT = "profile/contact"
     const val PRIVACY = "profile/privacy"
     const val TERMS = "profile/terms"
+    const val EDIT = "profile/edit"
 }

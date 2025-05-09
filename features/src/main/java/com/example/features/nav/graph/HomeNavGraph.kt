@@ -11,7 +11,7 @@ import com.example.features.nav.BottomNavItem
 import com.example.features.presentation.ScreenContent
 import com.example.features.presentation.favorite.FavoriteScreen
 import com.example.features.presentation.home.screen.HomeScreen
-import com.example.features.presentation.profile.ProfileScreen
+import com.example.features.presentation.profile.screen.main.ProfileScreen
 import com.example.features.presentation.search.SearchScreen
 
 
@@ -28,21 +28,25 @@ fun HomeNavGraph(
         startDestination = BottomNavItem.Home.route
     ) {
         composable(route = BottomNavItem.Home.route) {
+
             HomeScreen(name = "TODO()", onClick = {})
         }
         composable(route = BottomNavItem.Search.route) {
+
             SearchScreen(
                 name = " BottomNavItem.Search.route",
                 onClick = { }
             )
         }
         composable(route = BottomNavItem.Favorite.route) {
+
             FavoriteScreen(
                 name = "BottomNavItem.Favorite.route", onClick = {}
             )
         }
 
         composable(route = BottomNavItem.Profile.route){
+
             ProfileScreen(
                 navController = rootNavController
             )
