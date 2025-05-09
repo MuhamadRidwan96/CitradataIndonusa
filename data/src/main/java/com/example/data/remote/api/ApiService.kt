@@ -11,6 +11,8 @@ import com.example.domain.model.FilterDataModel
 import com.example.domain.model.LoginModel
 import com.example.domain.model.ProvinceModel
 import com.example.domain.model.RegisterModel
+import com.example.domain.response.ProfileResponse
+import com.example.domain.response.UpdateProfileResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -33,6 +35,12 @@ interface ApiService {
         @Header("Limit") limit: Int,
         @Body search: Map<String, String>
     ): Response<DataResponse>
+
+    @GET("CitraDataIndonusa/apl/api/v1/getUser")
+    suspend fun getUser():Response<ProfileResponse>
+
+    @POST("/CitraDaraIndonusa/apl/api/vi/update-profile")
+    suspend fun updateProfile(): Response<UpdateProfileResponse>
     
     @POST("/CitraDataIndonusa/apl/api/v1/home")
     suspend fun getData(

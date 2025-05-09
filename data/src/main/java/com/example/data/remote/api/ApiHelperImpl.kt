@@ -5,7 +5,9 @@ import com.example.domain.response.RegisterResponse
 import com.example.domain.model.LoginModel
 import com.example.domain.model.RegisterModel
 import com.example.domain.response.DataResponse
+import com.example.domain.response.ProfileResponse
 import com.example.domain.response.ProjectDetailResponse
+import com.example.domain.response.UpdateProfileResponse
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -29,6 +31,14 @@ class ApiHelperImpl @Inject constructor(
     }
 
     override suspend fun getDetailData(idProject: String): Response<ProjectDetailResponse> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getUser(): Response<ProfileResponse> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateProfile(): Response<UpdateProfileResponse> {
         TODO("Not yet implemented")
     }
 }

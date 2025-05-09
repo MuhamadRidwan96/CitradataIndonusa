@@ -63,7 +63,7 @@ class RepositoryImpl @Inject constructor(
             }
             emit(Result.failure(Exception(errorMessage)))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override fun signWithGoogle(
     ): Flow<AuthResponse> {
