@@ -3,4 +3,9 @@
     <string name="clear">Clear</string>
     <string name="placeholder_search">Search projects..</string>
     <string name="login_with_google">Continue with google</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="take_photo">Pilih gambar</string>
+    <string name="email">Email</string>
+    <string name="limited">Akses terbatas</string>
+    <string name="choose_plan">Choose Plan</string>
 </resources>
