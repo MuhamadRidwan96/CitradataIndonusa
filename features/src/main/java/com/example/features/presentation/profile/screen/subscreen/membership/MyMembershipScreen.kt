@@ -1,4 +1,4 @@
-package com.example.features.presentation.profile.screen.main
+package com.example.features.presentation.profile.screen.subscreen.membership
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -200,13 +200,3 @@ fun CompareContent() {
     ) { item { CompareFeatures() } }
 }
 
-@Composable
-private fun CenteredTextContent(text: String) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text)
-    }
-}

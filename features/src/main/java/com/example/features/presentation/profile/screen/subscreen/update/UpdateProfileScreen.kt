@@ -18,7 +18,7 @@ fun UpdateProfileScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
-            TopAppBarWithBack(title = stringResource(R.string.privacy_policy),
+            TopAppBarWithBack(title = stringResource(R.string.update_profile),
                 onBackClick = { navController.popBackStack() })
         }
     ) { paddingValues ->

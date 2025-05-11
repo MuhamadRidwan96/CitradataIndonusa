@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,13 +19,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ContentPaste
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocalPolice
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,14 +41,9 @@ import androidx.compose.ui.unit.dp
 import com.example.feature_login.R
 
 @Composable
-fun ProfileContent(
-    onEditClick: () -> Unit
-) {
+fun ProfileContent() {
 
     val profileIconSize = remember { 96.dp }
-    val editButtonOffset = remember { (-16).dp }
-    val editButtonSize = remember { 18.dp }
-    val editIconSize = remember { 15.dp }
 
     // Stacked Profile Image with Edit Button
     Box(
@@ -69,26 +61,6 @@ fun ProfileContent(
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.secondaryContainer)
         )
-
-        // Edit Icon
-        IconButton(
-            onClick = onEditClick,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .offset(editButtonOffset, editButtonOffset) // more adjustable
-                .size(editButtonSize)
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
-                )
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(editIconSize)
-            )
-        }
     }
 }
 
@@ -193,10 +165,26 @@ fun ContentProfile(
     onLogout: (() -> Unit)? = null
 ) {
     val items = listOf(
-        ProfileItem.Regular(Icons.Default.WorkspacePremium, stringResource(R.string.membership), onMembershipClick),
-        ProfileItem.Regular(Icons.Default.Phone, stringResource(R.string.call_us), onContactUsClick),
-        ProfileItem.Regular(Icons.Default.LocalPolice, stringResource(R.string.privacy_policy), onPrivacyPolicyClick),
-        ProfileItem.Regular(Icons.Default.ContentPaste, stringResource(R.string.term_and_condition), onTermsClick)
+        ProfileItem.Regular(
+            Icons.Default.WorkspacePremium,
+            stringResource(R.string.membership),
+            onMembershipClick
+        ),
+        ProfileItem.Regular(
+            Icons.Default.Phone,
+            stringResource(R.string.call_us),
+            onContactUsClick
+        ),
+        ProfileItem.Regular(
+            Icons.Default.LocalPolice,
+            stringResource(R.string.privacy_policy),
+            onPrivacyPolicyClick
+        ),
+        ProfileItem.Regular(
+            Icons.Default.ContentPaste,
+            stringResource(R.string.term_and_condition),
+            onTermsClick
+        )
     ) + if (onLogout != null) {
         listOf(ProfileItem.Logout(onLogout, true))
     } else emptyList()
@@ -204,7 +192,7 @@ fun ContentProfile(
     LazyColumn(
         modifier = Modifier
             .size(650.dp)
-    ){
+    ) {
         itemsIndexed(items) { index, item ->
             ProfileItemRow(item)
             if (index < items.lastIndex) {

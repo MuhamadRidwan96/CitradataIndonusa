@@ -1,4 +1,4 @@
-package com.example.features.presentation.profile.screen.main
+package com.example.features.presentation.profile.screen.subscreen.membership
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -8,7 +8,6 @@ import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.example.core_ui.component.BenefitPlan
-import com.example.core_ui.component.CompareFeature
 import com.example.core_ui.component.Feature
 import com.example.core_ui.component.SubscriptionPlan
 
