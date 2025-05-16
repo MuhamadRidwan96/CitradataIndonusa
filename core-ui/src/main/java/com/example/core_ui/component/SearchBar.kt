@@ -1,13 +1,7 @@
 package com.example.core_ui.component
 
-import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -17,108 +11,95 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.core_ui.Dimens
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.core_ui.R
 
 @Composable
-fun SearchBar(
-    query: String,
+fun SearchBars(
     modifier: Modifier = Modifier,
-    isEnabled: (Boolean) = true,
+    query: String,
     onSearchClicked: () -> Unit = {},
     onQueryChange: (String) -> Unit = {},
-) {
-    var isTextFieldFocused by remember { mutableStateOf(false) }
 
-    Box(
+) {
+
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = Dimens.dp16, end = Dimens.dp16, top = Dimens.dp8, bottom = Dimens.dp8)
-            .clickable { onSearchClicked() }
-    ) {
-        TextField(
-            value = query,
-            onValueChange = onQueryChange,
-            enabled = isEnabled,
-            modifier = modifier
-                .focusRequester(FocusRequester())
-                .onFocusChanged { isTextFieldFocused = it.isFocused }
-                .fillMaxWidth()
-                .heightIn(min = Dimens.dp48, max = Dimens.dp55)
-                .clip(shape = RoundedCornerShape(Dimens.dp8))
-                .border(
-                    border = BorderStroke(Dimens.dp1, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
-                    shape = RoundedCornerShape(Dimens.dp8)
-                ),
-            textStyle = TextStyle(fontSize = Dimens.sp14),
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null,
-                    modifier = Modifier.size(Dimens.dp20),
-                )
-            },
-            trailingIcon = {
-                if (isTextFieldFocused && query.isNotEmpty()) {
-                    IconButton(onClick = { onQueryChange("") }) {
-                        Icon(
-                            imageVector = Icons.Filled.Clear,
-                            contentDescription = stringResource(R.string.clear),
-                            modifier = Modifier.size(Dimens.dp20),
-                        )
-                    }
+            .height(52.dp),
+        shape = RoundedCornerShape(12.dp),
+        placeholder = {
+            Text(text = stringResource(R.string.placeholder_search), fontSize = 14.sp)
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+        },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
-            },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedIndicatorColor = Color.Transparent,
-                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            ),
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.placeholder_search),
-                    fontSize = Dimens.sp14,
-                )
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(onSearch = {}),
+            }
+        },
+        textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            disabledBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+            cursorColor = MaterialTheme.colorScheme.primary
+        ),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Search
+        ),
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                onSearchClicked()
+            }
+        )
+    )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewSearchBAr(){
+
+   LightPreviewTheme {
+        SearchBars(
+            query = "Search query",
+            onSearchClicked = {},
+            onQueryChange = { }
         )
     }
 }
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun SearchBarDarkPreview() {
-    var query by remember { mutableStateOf("") }
 
-    MaterialTheme {
-        SearchBar(
-            query = query,
-            onQueryChange = { query = it }
-        )
-    }
+@Composable
+fun LightPreviewTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = lightColorScheme(),
+        content = content
+    )
 }

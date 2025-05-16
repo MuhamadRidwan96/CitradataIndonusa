@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 
@@ -25,7 +26,7 @@ fun StackProfile() {
 
     Box(
         modifier = Modifier
-            .size(112.dp)
+            .size(96.dp)
             .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
@@ -35,7 +36,7 @@ fun StackProfile() {
             contentDescription = null,
             tint = MaterialTheme.colorScheme.secondary,
             modifier = Modifier
-                .size(96.dp)
+                .size(72.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.secondaryContainer)
         )
@@ -61,4 +62,10 @@ fun StackProfile() {
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewStackProfile(){
+    StackProfile()
 }

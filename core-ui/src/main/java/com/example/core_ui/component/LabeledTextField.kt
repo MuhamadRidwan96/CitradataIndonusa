@@ -1,12 +1,11 @@
 package com.example.core_ui.component
 
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -33,7 +32,6 @@ fun LabeledTextField(
 ) {
 
     Text(text = label, fontSize = 14.sp)
-    Spacer(modifier = Modifier.height(4.dp))
 
     TextField(
         value = value,
@@ -59,12 +57,10 @@ fun LabeledTextField(
             }
             .sizeIn(48.dp),
         colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            focusedIndicatorColor = MaterialTheme.colorScheme.background,
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.onPrimary
         ),
         shape = RoundedCornerShape(16.dp),
         singleLine = true,
     )
-
-    Spacer(modifier = Modifier.height(12.dp))
 }
