@@ -1,0 +1,68 @@
+package com.example.features.presentation.search
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.example.core_ui.component.SearchAbleProvinceDropDown
+import com.example.domain.model.ProvinceModel
+
+@Composable
+fun DropdownProvince() {
+    val province by produceState(initialValue = emptyList()) {
+        value = listOf(
+            ProvinceModel(11, "NANGGRO ACEH DARUSALAM"),
+            ProvinceModel(12, "SUMATERA UTARA"),
+            ProvinceModel(13, "SUMATERA BARAT"),
+            ProvinceModel(14, "RIAU"),
+            ProvinceModel(15, "JAMBI"),
+            ProvinceModel(16, "SUMATERA SELATAN"),
+            ProvinceModel(17, "BENGKULU"),
+            ProvinceModel(18, "LAMPUNG"),
+            ProvinceModel(19, "KEPULAUAN BANGKA BELITUNG"),
+            ProvinceModel(21, "KEPULAUAN RIAU"),
+            ProvinceModel(31, "DKI JAKARTA"),
+            ProvinceModel(32, "JAWA BARAT"),
+            ProvinceModel(33, "JAWA TENGAH"),
+            ProvinceModel(34, "DI YOGYAKARTA"),
+            ProvinceModel(35, "JAWA TIMUR"),
+            ProvinceModel(36, "BANTEN"),
+            ProvinceModel(51, "BALI"),
+            ProvinceModel(52, "NUSA TENGGARA BARAT"),
+            ProvinceModel(53, "NUSA TENGGARA TIMUR"),
+            ProvinceModel(61, "KALIMANTAN BARAT"),
+            ProvinceModel(62, "KALIMANTAN TENGAH"),
+            ProvinceModel(63, "KALIMANTAN SELATAN"),
+            ProvinceModel(64, "KALIMANTAN TIMUR"),
+            ProvinceModel(65, "KALIMANTAN UTARA"),
+            ProvinceModel(71, "SULAWESI UTARA"),
+            ProvinceModel(72, "SULAWESI TENGAH"),
+            ProvinceModel(73, "SULAWESI SELATAN"),
+            ProvinceModel(74, "SULAWESI TENGGARA"),
+            ProvinceModel(75, "GORONTALO"),
+            ProvinceModel(76, "SULAWESI BARAT"),
+            ProvinceModel(81, "MALUKU"),
+            ProvinceModel(82, "MALUKU UTARA"),
+            ProvinceModel(91, "PAPUA BARAT"),
+            ProvinceModel(94, "PAPUA")
+        )
+    }
+
+    var selectedProvince by rememberSaveable { mutableStateOf<ProvinceModel?>(null) }
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+    ) {
+        SearchAbleProvinceDropDown(
+            provinces = province,
+            selectedProvince = selectedProvince,
+            onSelectedProvince = { selectedProvince = it }
+        )
+    }
+}
+

@@ -33,9 +33,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.core_ui.AppTheme
 import com.example.core_ui.component.LabeledTextField
 import com.example.feature_login.R
 
@@ -53,9 +52,10 @@ fun UpdateProfileComponent() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        ProfileHeader()
-
-        Spacer(modifier = Modifier.height(36.dp))
+        ProfileHeader(
+            desc = stringResource(R.string.share)
+        )
+        Spacer(modifier = Modifier.height(24.dp))
 
         ProfileTextField(
             label = stringResource(R.string.username),
@@ -91,32 +91,34 @@ fun UpdateProfileComponent() {
 }
 
 @Composable
-private fun ProfileHeader() {
-    val updateStyle = MaterialTheme.typography.titleLarge.copy(
+fun ProfileHeader(desc: String) {
+    val updateStyle = MaterialTheme.typography.titleMedium.copy(
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.secondary,
     )
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    val descStyle = MaterialTheme.typography.bodySmall.copy(
+        color = Color.Gray
+    )
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = Icons.Default.AccountCircle,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.secondary,
             modifier = Modifier
-                .size(72.dp)
+                .size(56.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.secondaryContainer)
         )
 
         Column(modifier = Modifier.padding(start = 16.dp)) {
-            Text("Test User", style = updateStyle)
+            Text("Ridwan Test", style = updateStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(
-                text = stringResource(R.string.share),
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.Gray
+                text = desc,
+                style = descStyle,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -156,14 +158,6 @@ private fun UpdateButton(onClick: () -> Unit) {
         )
         Spacer(modifier = Modifier.size(6.dp))
         Text(stringResource(R.string.update_profile))
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewUpdate() {
-    AppTheme {
-        UpdateProfileComponent()
     }
 }
 
