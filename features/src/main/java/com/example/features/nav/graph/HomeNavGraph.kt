@@ -29,14 +29,11 @@ fun HomeNavGraph(
     ) {
         composable(route = BottomNavItem.Home.route) {
 
-            HomeScreen(name = "TODO()", onClick = {})
+            HomeScreen()
         }
         composable(route = BottomNavItem.Search.route) {
 
-            SearchScreen(
-                name = " BottomNavItem.Search.route",
-                onClick = { }
-            )
+            SearchScreen()
         }
         composable(route = BottomNavItem.Favorite.route) {
 

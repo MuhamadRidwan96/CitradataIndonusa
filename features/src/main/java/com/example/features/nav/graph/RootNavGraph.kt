@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.features.presentation.MainScreen
 import com.example.features.presentation.profile.screen.subscreen.contact_us.ContactUsScreen
-import com.example.features.presentation.profile.screen.main.MyMembershipScreen
+import com.example.features.presentation.profile.screen.subscreen.membership.MyMembershipScreen
 import com.example.features.presentation.profile.screen.subscreen.policy.PrivacyPolicyScreen
 import com.example.features.presentation.profile.screen.subscreen.terms.TermsAndConditionScreen
 import com.example.features.presentation.profile.screen.subscreen.update.UpdateProfileScreen
