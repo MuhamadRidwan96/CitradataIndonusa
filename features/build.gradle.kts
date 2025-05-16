@@ -117,5 +117,10 @@ dependencies {
 
     implementation(libs.androidx.material.icons.extended)
 
+    //Shimmer
+    implementation(libs.accompanist.placeholder.material)
+
+    // For tabs and pager (now in androidx)
+    implementation (libs.androidx.foundation)
 
 }
