@@ -16,7 +16,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -34,8 +36,8 @@ class AuthViewModel @Inject constructor(
     private val googleSignInUseCase: GoogleSignInUseCase
 ) : ViewModel() {
 
-    private val _loginResult = MutableStateFlow<UiState<LoginResponse>>(UiState.Idle)
-    val loginResult = _loginResult.asStateFlow()
+    private val _loginEvent = MutableSharedFlow<LoginEvent>()
+    val loginEvent: SharedFlow<LoginEvent> = _loginEvent
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
@@ -75,11 +77,18 @@ class AuthViewModel @Inject constructor(
             loginUseCase(uiState.value.email, uiState.value.password)
                 .toUiState()
                 .collectLatest { result ->
-                    _loginResult.value = result
-                    if (result is UiState.Success) {
-                        delay(3000)
-                        _isLoggedIn.value = true
+                    when (result) {
+                        is UiState.Success -> {
+                            _loginEvent.emit(LoginEvent.Success)
+                            delay(3000)
+                            _isLoggedIn.value = true
+                        }
+                        is UiState.Error -> {
+                            _loginEvent.emit(LoginEvent.Error(result.message ?: "Terjadi kesalahan"))
+                        }
+                        else -> Unit
                     }
+
                     setLoading(false)
                 }
         }
@@ -142,4 +151,9 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+}
+
+sealed class LoginEvent {
+    data object Success : LoginEvent()
+    data class Error(val message: String) : LoginEvent()
 }

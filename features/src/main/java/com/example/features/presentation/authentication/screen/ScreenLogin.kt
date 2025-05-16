@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -45,7 +45,9 @@ import com.example.core_ui.component.PrimaryButton
 import com.example.domain.response.AuthResponse
 import com.example.feature_login.R
 import com.example.features.presentation.authentication.AuthViewModel
-import com.example.features.presentation.authentication.state.UiState
+import com.example.features.presentation.authentication.LoginEvent
+import com.example.features.presentation.authentication.state.LoginUiState
+import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
@@ -55,101 +57,113 @@ fun ScreenLogin(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val loginResult by viewModel.loginResult.collectAsStateWithLifecycle()
     val authState by viewModel.authState.collectAsStateWithLifecycle()
 
     val snackBarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(loginResult, authState) {
-        when (loginResult) {
-            is UiState.Success -> onLoginSuccess()
-            is UiState.Error -> {
-                val errorMessage = (loginResult as? UiState.Error)?.message ?: "Terjadi kesalahan"
-                snackBarHostState.showSnackbar(errorMessage)
+    // Handle login result dan navigasi
+    LaunchedEffect(Unit) {
+        viewModel.loginEvent.collectLatest { event ->
+            when (event) {
+                is LoginEvent.Success -> onLoginSuccess()
+                is LoginEvent.Error -> {
+                    snackBarHostState.showSnackbar(event.message)
+                }
             }
-
-            else -> Unit
         }
 
         if (authState is AuthResponse.Success) {
             onLoginSuccess()
         }
     }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .statusBarsPadding()
-                .verticalScroll(rememberScrollState())
-                .padding(padding),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            Image(
-                modifier = Modifier.size(150.dp),
-                painter = painterResource(id = R.drawable.logo_dummy),
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
-
-            LayoutSection(
-                isEmailWrong = uiState.isEmailWrong,
-                isPassWordWrong = uiState.isPassWordWrong,
-                email = uiState.email,
-                password = uiState.password,
-                onEmailChange = viewModel::onChangeEmail,
-                onPasswordChange = viewModel::onChangePassword
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ButtonSection(
-                isLoading = uiState.isLoading,
-                onLoginClick = {
-                    viewModel.login()
-                },
-                onGoogleClick = {
-                    viewModel.signWithGoogle()
-                }
-            )
-            SignUpSection(onSignUpClick)
-        }
+        LoginContent(
+            uiState = uiState,
+            onEmailChange = viewModel::onChangeEmail,
+            onPasswordChange = viewModel::onChangePassword,
+            onLoginClick = viewModel::login,
+            onGoogleClick = viewModel::signWithGoogle,
+            onSignUpClick = onSignUpClick,
+            modifier = Modifier.padding(padding)
+        )
     }
 }
 
+@Composable
+fun LoginContent(
+    uiState: LoginUiState,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLoginClick: () -> Unit,
+    onGoogleClick: () -> Unit,
+    onSignUpClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .statusBarsPadding()
+            .verticalScroll(rememberScrollState())
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        LoginHeaderSection()
+        Spacer(modifier = Modifier.height(24.dp))
+        LoginFormSection(
+            email = uiState.email,
+            password = uiState.password,
+            isEmailWrong = uiState.isEmailWrong,
+            isPassWordWrong = uiState.isPassWordWrong,
+            onEmailChange = onEmailChange,
+            onPasswordChange = onPasswordChange
+        )
+        Spacer(modifier = Modifier.height(26.dp))
+        LoginButtonSection(
+            isLoading = uiState.isLoading,
+            onLoginClick = onLoginClick,
+            onGoogleClick = onGoogleClick
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        SignUpSection(onSignUpClick = onSignUpClick)
+    }
+}
 
 @Composable
-fun LayoutSection(
-    isEmailWrong: Boolean,
-    isPassWordWrong: Boolean,
+fun LoginHeaderSection() {
+    Image(
+        painter = painterResource(id = R.drawable.logo_dummy),
+        contentDescription = null,
+        modifier = Modifier.size(150.dp),
+        contentScale = ContentScale.Crop
+    )
+}
+
+@Composable
+fun LoginFormSection(
     email: String,
     password: String,
+    isEmailWrong: Boolean,
+    isPassWordWrong: Boolean,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(
             text = stringResource(R.string.welcome_back),
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier
-                .paddingFromBaseline(top = 16.dp)
-                .padding(horizontal = 16.dp),
             fontWeight = FontWeight.Bold
         )
         Text(
             text = stringResource(R.string.sign),
             style = MaterialTheme.typography.titleSmall,
-            color = Color.Gray,
-            modifier = Modifier
-                .paddingFromBaseline(bottom = 8.dp)
-                .padding(horizontal = 16.dp)
+            color = Color.Gray
         )
 
         EmailTextField(
@@ -158,8 +172,8 @@ fun LayoutSection(
             label = stringResource(id = if (isEmailWrong) R.string.wrong_email else R.string.email),
             leadingIcon = Icons.Default.Email,
             onValueChange = onEmailChange
-
         )
+
         PasswordTextField(
             password = password,
             leadingIcon = Icons.Default.Lock,
@@ -171,10 +185,12 @@ fun LayoutSection(
 }
 
 @Composable
-fun ButtonSection(isLoading: Boolean, onLoginClick: () -> Unit, onGoogleClick: () -> Unit) {
-
+fun LoginButtonSection(
+    isLoading: Boolean,
+    onLoginClick: () -> Unit,
+    onGoogleClick: () -> Unit
+) {
     Column(
-        modifier = Modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -183,6 +199,7 @@ fun ButtonSection(isLoading: Boolean, onLoginClick: () -> Unit, onGoogleClick: (
             onClick = onLoginClick,
             isLoading = isLoading
         )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -196,7 +213,7 @@ fun ButtonSection(isLoading: Boolean, onLoginClick: () -> Unit, onGoogleClick: (
             )
             Text(
                 text = stringResource(id = R.string.or),
-                modifier = Modifier.padding(horizontal = 8.dp), // Give space from Divider
+                modifier = Modifier.padding(horizontal = 8.dp),
                 color = Color.Gray,
                 style = MaterialTheme.typography.bodySmall
             )
@@ -208,11 +225,11 @@ fun ButtonSection(isLoading: Boolean, onLoginClick: () -> Unit, onGoogleClick: (
                 color = Color.Gray
             )
         }
-        GoogleLoginButton(
-            onClick = onGoogleClick
-        )
+
+        GoogleLoginButton(onClick = onGoogleClick)
     }
 }
+
 
 
 @Composable

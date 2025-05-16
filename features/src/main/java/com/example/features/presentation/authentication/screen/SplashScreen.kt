@@ -19,10 +19,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.feature_login.R
 import com.example.features.presentation.authentication.AuthViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -30,16 +34,18 @@ fun SplashScreen(
     onNavigate: (Boolean) -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
-
-    val scale = remember { Animatable(0.8f) }
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+    val scale = remember { Animatable(0.8f) }
 
+    // Jalankan pengecekan login di awal
     LaunchedEffect(Unit) {
-        viewModel.checkLogin()
+        withContext(Dispatchers.IO) {
+            viewModel.checkLogin()
+        }
     }
 
-    LaunchedEffect (isLoggedIn){
-        //splash animation
+    // Ketika login status sudah tersedia, mulai animasi
+    LaunchedEffect(isLoggedIn) {
         scale.animateTo(
             targetValue = 1.5f,
             animationSpec = spring(
@@ -47,27 +53,34 @@ fun SplashScreen(
                 stiffness = Spring.StiffnessLow
             )
         )
-
         scale.animateTo(
             targetValue = 1f,
             animationSpec = tween(durationMillis = 300)
         )
+        delay(100) // small buffer
         onNavigate(isLoggedIn)
     }
 
+    SplashContent(scale = scale.value)
+}
+
+@Composable
+private fun SplashContent(scale: Float) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.onPrimary),
+            .background(MaterialTheme.colorScheme.primaryContainer),
         contentAlignment = Alignment.Center
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo_dummy),
-            contentDescription = "App Logo",
+            contentDescription = stringResource(R.string.title_activity_screen_login),
             modifier = Modifier
                 .size(200.dp)
-                .scale(scale.value)
+                .scale(scale)
         )
     }
 }
+
+
 
