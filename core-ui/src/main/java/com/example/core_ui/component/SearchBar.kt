@@ -1,7 +1,8 @@
 package com.example.core_ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,68 +28,75 @@ import androidx.compose.ui.unit.sp
 import com.example.core_ui.R
 
 @Composable
-fun SearchBars(
+fun CompactSearchBar(
     modifier: Modifier = Modifier,
     query: String,
     onSearchClicked: () -> Unit = {},
     onQueryChange: (String) -> Unit = {},
-
 ) {
-
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp),
-        shape = RoundedCornerShape(12.dp),
+            .heightIn(min = 45.dp, max = 48.dp), // Lebih compact dari default , // Padding internal diperkecil
+        shape = RoundedCornerShape(8.dp), // Radius lebih kecil
         placeholder = {
-            Text(text = stringResource(R.string.placeholder_search), fontSize = 14.sp)
+            Text(
+                text = stringResource(R.string.placeholder_search),
+                fontSize = 14.sp, // Ukuran font lebih kecil
+                lineHeight = 18.sp // Line height compact
+            )
         },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(18.dp) // Icon lebih kecil
             )
         },
         trailingIcon = {
             if (query.isNotEmpty()) {
-                IconButton(onClick = { onQueryChange("") }) {
+                IconButton(
+                    onClick = { onQueryChange("") },
+                    modifier = Modifier.size(24.dp) // Ukuran tetap untuk area sentuh
+                ) {
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(16.dp) // Icon clear lebih kecil
                     )
                 }
             }
         },
-        textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
+        textStyle = LocalTextStyle.current.copy(
+            fontSize = 12.sp, // Text lebih kecil
+            lineHeight = 14.sp
+        ),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
             unfocusedBorderColor = MaterialTheme.colorScheme.outline,
             disabledBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
-            cursorColor = MaterialTheme.colorScheme.primary
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface
         ),
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Search
         ),
         keyboardActions = KeyboardActions(
-            onSearch = {
-                onSearchClicked()
-            }
+            onSearch = { onSearchClicked() }
         )
     )
 }
-
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewSearchBAr(){
 
    LightPreviewTheme {
-        SearchBars(
+       CompactSearchBar(
             query = "Search query",
             onSearchClicked = {},
             onQueryChange = { }

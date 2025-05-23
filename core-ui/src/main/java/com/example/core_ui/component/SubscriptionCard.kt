@@ -59,7 +59,10 @@ fun SubscriptionCard(
             ) else null
         ) {
             // Header with plan name and price
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
 
                 Text(
                     plan.planName,
@@ -175,14 +178,14 @@ private fun PlanDivider() {
 
 @Preview(showBackground = true)
 @Composable
-fun Preview(){
+fun Preview() {
     AppTheme {
         CompareFeatures()
     }
 }
 
 @Composable
- fun CompareFeatures() {
+fun CompareFeatures() {
     val planNames = listOf("Free", "Basic", "Premium")
     val features = rememberComparePlans()
 
@@ -214,7 +217,7 @@ fun Preview(){
                 Text(compareFeature.name, style = planStyle, modifier = Modifier.weight(1.5f))
                 planNames.forEach { plan ->
                     Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        if (plan in compareFeature.availableIn){
+                        if (plan in compareFeature.availableIn) {
                             Icon(
                                 imageVector = Icons.Default.CheckCircle, // Atau icon centang lain
                                 contentDescription = null,

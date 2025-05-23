@@ -3,7 +3,6 @@ package com.example.core_ui.component
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocationOn
@@ -24,10 +23,7 @@ fun AddressTextField(
     value: String,
     onValueChange: (String) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-    ) {
+    Column {
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
@@ -45,10 +41,14 @@ fun AddressTextField(
             ),
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
-                .heightIn(52.dp)
+                .heightIn(min = 48.dp, max = 48.dp)
                 .fillMaxWidth(),
             placeholder = {
-                Text(text = stringResource(R.string.alamat), fontSize = 14.sp)
+                Text(
+                    text = stringResource(R.string.alamat),
+                    fontSize = 14.sp,
+                    lineHeight = 18.sp
+                )
             }
         )
     }
