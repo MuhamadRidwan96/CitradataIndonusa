@@ -84,7 +84,7 @@ class AuthViewModel @Inject constructor(
                             _isLoggedIn.value = true
                         }
                         is UiState.Error -> {
-                            _loginEvent.emit(LoginEvent.Error(result.message ?: "Terjadi kesalahan"))
+                            _loginEvent.emit(LoginEvent.Error(result.message))
                         }
                         else -> Unit
                     }

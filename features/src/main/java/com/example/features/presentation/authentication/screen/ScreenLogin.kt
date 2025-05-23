@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -47,6 +48,7 @@ import com.example.feature_login.R
 import com.example.features.presentation.authentication.AuthViewModel
 import com.example.features.presentation.authentication.LoginEvent
 import com.example.features.presentation.authentication.state.LoginUiState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 
@@ -63,6 +65,7 @@ fun ScreenLogin(
 
     // Handle login result dan navigasi
     LaunchedEffect(Unit) {
+        delay(1000)
         viewModel.loginEvent.collectLatest { event ->
             when (event) {
                 is LoginEvent.Success -> onLoginSuccess()
@@ -87,7 +90,8 @@ fun ScreenLogin(
             onLoginClick = viewModel::login,
             onGoogleClick = viewModel::signWithGoogle,
             onSignUpClick = onSignUpClick,
-            modifier = Modifier.padding(padding)
+            modifier = Modifier.padding(padding),
+            onDone = viewModel::login
         )
     }
 }
@@ -100,8 +104,17 @@ fun LoginContent(
     onLoginClick: () -> Unit,
     onGoogleClick: () -> Unit,
     onSignUpClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDone: () -> Unit
 ) {
+    val emailFocus = remember { FocusRequester() }
+    val passwordFocus = remember { FocusRequester() }
+
+
+    LaunchedEffect(Unit) {
+        emailFocus.requestFocus()
+    }
+
     Column(
         modifier = modifier
             .statusBarsPadding()
@@ -119,7 +132,10 @@ fun LoginContent(
             isEmailWrong = uiState.isEmailWrong,
             isPassWordWrong = uiState.isPassWordWrong,
             onEmailChange = onEmailChange,
-            onPasswordChange = onPasswordChange
+            onPasswordChange = onPasswordChange,
+            focusRequester = emailFocus,
+            nextFocusRequester = passwordFocus,
+            onDone = onDone,
         )
         Spacer(modifier = Modifier.height(26.dp))
         LoginButtonSection(
@@ -149,7 +165,10 @@ fun LoginFormSection(
     isEmailWrong: Boolean,
     isPassWordWrong: Boolean,
     onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit
+    onPasswordChange: (String) -> Unit,
+    focusRequester: FocusRequester,
+    nextFocusRequester: FocusRequester?,
+    onDone : () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -171,7 +190,9 @@ fun LoginFormSection(
             isError = isEmailWrong,
             label = stringResource(id = if (isEmailWrong) R.string.wrong_email else R.string.email),
             leadingIcon = Icons.Default.Email,
-            onValueChange = onEmailChange
+            onValueChange = onEmailChange,
+            focusRequester = focusRequester,
+            nextFocusRequester = nextFocusRequester
         )
 
         PasswordTextField(
@@ -179,7 +200,9 @@ fun LoginFormSection(
             leadingIcon = Icons.Default.Lock,
             isError = isPassWordWrong,
             onPasswordChange = onPasswordChange,
-            label = stringResource(id = if (isPassWordWrong) R.string.pass_req else R.string.password)
+            label = stringResource(id = if (isPassWordWrong) R.string.pass_req else R.string.password),
+            onDone = onDone,
+            focusRequester = nextFocusRequester?:remember { FocusRequester() }
         )
     }
 }
