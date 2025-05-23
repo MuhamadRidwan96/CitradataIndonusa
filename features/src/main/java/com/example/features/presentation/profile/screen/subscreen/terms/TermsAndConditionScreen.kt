@@ -30,7 +30,11 @@ fun TermsAndConditionScreen(navController: NavHostController) {
         topBar = {
             TopAppBarWithBack(
                 title = stringResource(R.string.term_and_condition),
-                onBackClick = { navController.popBackStack() }
+                onBackClick = {
+                    if (navController.previousBackStackEntry != null) {
+                        navController.popBackStack()
+                    }
+                }
             )
         },
         bottomBar = {
@@ -59,7 +63,7 @@ fun TermsAndConditionScreen(navController: NavHostController) {
             }
         }
     ) { paddingValues ->
-     Column(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -71,7 +75,7 @@ fun TermsAndConditionScreen(navController: NavHostController) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewTerms(){
+fun PreviewTerms() {
     AppTheme {
         TermsAndConditionScreen(navController = rememberNavController())
     }

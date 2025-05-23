@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,6 +28,7 @@ import com.example.features.presentation.profile.LogOutViewModel
 import com.example.features.presentation.profile.screen.subscreen.update.ContentProfile
 import com.example.features.presentation.profile.screen.subscreen.update.ProfileContent
 import com.example.features.presentation.profile.screen.subscreen.update.TextName
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,8 +62,13 @@ fun ProfileScreen(navController: NavController) {
 }
 
 @Composable
-fun ProfileScreenContent(navController: NavController, paddingValues: PaddingValues,viewModel: LogOutViewModel = hiltViewModel()) {
+fun ProfileScreenContent(
+    navController: NavController,
+    paddingValues: PaddingValues,
+    viewModel: LogOutViewModel = hiltViewModel()
+) {
 
+    val coroutineScope = rememberCoroutineScope()
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -85,10 +92,12 @@ fun ProfileScreenContent(navController: NavController, paddingValues: PaddingVal
                 onPrivacyPolicyClick = { navController.navigate(ProfileRoutes.PRIVACY) },
                 onTermsClick = { navController.navigate(ProfileRoutes.TERMS) },
                 onLogout = {
-                    viewModel.logout()
-                    navController.navigate(Graph.AUTHENTICATION) {
-                        popUpTo(Graph.ROOT) { inclusive = true }
-                        launchSingleTop = true
+                    coroutineScope.launch {
+                        viewModel.logout()
+                        navController.navigate(Graph.AUTHENTICATION) {
+                            popUpTo(Graph.ROOT) { inclusive = true }
+                            launchSingleTop = true
+                        }
                     }
                 }
             )

@@ -19,7 +19,11 @@ fun UpdateProfileScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBarWithBack(title = stringResource(R.string.update_profile),
-                onBackClick = { navController.popBackStack() })
+                onBackClick = {
+                    if (navController.previousBackStackEntry != null) {
+                        navController.popBackStack()
+                    }
+                })
         }
     ) { paddingValues ->
         Column(

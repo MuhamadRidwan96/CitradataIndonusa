@@ -20,7 +20,7 @@ fun ContactUsScreen(navController:NavHostController){
         topBar = {
             TopAppBarWithBack(
                 title = stringResource(R.string.contact_us),
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { if(navController.previousBackStackEntry != null){navController.popBackStack()} }
             )
         }
     ) { paddingValues ->

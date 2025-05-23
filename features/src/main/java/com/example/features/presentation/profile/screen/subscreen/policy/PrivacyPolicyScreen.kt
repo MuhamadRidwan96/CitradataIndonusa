@@ -20,11 +20,15 @@ fun PrivacyPolicyScreen(navController: NavHostController) {
         topBar = {
             TopAppBarWithBack(
                 title = stringResource(R.string.privacy_and_policy),
-                onBackClick = { navController.popBackStack() }
+                onBackClick = {
+                    if (navController.previousBackStackEntry != null) {
+                        navController.popBackStack()
+                    }
+                }
             )
         }
     ) { paddingValues ->
-       Column(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
