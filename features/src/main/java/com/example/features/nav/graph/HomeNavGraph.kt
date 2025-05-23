@@ -28,22 +28,20 @@ fun HomeNavGraph(
         startDestination = BottomNavItem.Home.route
     ) {
         composable(route = BottomNavItem.Home.route) {
-
             HomeScreen()
         }
         composable(route = BottomNavItem.Search.route) {
-
-            SearchScreen()
+            SearchScreen(
+                navController = rootNavController
+            )
         }
         composable(route = BottomNavItem.Favorite.route) {
-
             FavoriteScreen(
                 name = "BottomNavItem.Favorite.route", onClick = {}
             )
         }
 
         composable(route = BottomNavItem.Profile.route){
-
             ProfileScreen(
                 navController = rootNavController
             )

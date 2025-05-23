@@ -10,6 +10,9 @@ import com.example.features.presentation.profile.screen.subscreen.membership.MyM
 import com.example.features.presentation.profile.screen.subscreen.policy.PrivacyPolicyScreen
 import com.example.features.presentation.profile.screen.subscreen.terms.TermsAndConditionScreen
 import com.example.features.presentation.profile.screen.subscreen.update.UpdateProfileScreen
+import com.example.features.presentation.search.subscreen.ConsultantScreen
+import com.example.features.presentation.search.subscreen.ContractorScreen
+import com.example.features.presentation.search.subscreen.DeveloperScreen
 
 @Composable
 fun RootNavigationGraph(navController: NavHostController) {
@@ -28,7 +31,11 @@ fun RootNavigationGraph(navController: NavHostController) {
         composable(ProfileRoutes.CONTACT) { ContactUsScreen(navController = navController) }
         composable(ProfileRoutes.PRIVACY) { PrivacyPolicyScreen(navController = navController) }
         composable(ProfileRoutes.TERMS) { TermsAndConditionScreen(navController = navController) }
-        composable(ProfileRoutes.EDIT){ UpdateProfileScreen(navController = navController) }
+        composable(ProfileRoutes.EDIT) { UpdateProfileScreen(navController = navController) }
+
+        composable(SearchRoutes.CONTRACTOR) { ContractorScreen(navController = navController) }
+        composable(SearchRoutes.DEVELOPER) { DeveloperScreen(navController = navController) }
+        composable(SearchRoutes.CONSULTANT) { ConsultantScreen(navController = navController) }
     }
 }
 
@@ -47,4 +54,10 @@ object ProfileRoutes {
     const val PRIVACY = "profile/privacy"
     const val TERMS = "profile/terms"
     const val EDIT = "profile/edit"
+}
+
+object SearchRoutes {
+    const val CONTRACTOR = "search/contractor"
+    const val DEVELOPER = "search/developer"
+    const val CONSULTANT = "search/consultant"
 }

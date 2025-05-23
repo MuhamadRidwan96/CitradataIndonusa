@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -27,9 +25,9 @@ import com.example.features.nav.graph.Graph
 
 @Composable
 fun FloatingBottomNavigationWithIndicator(
-    navController: NavHostController,
-    modifier: Modifier = Modifier
+    navController: NavHostController
 ) {
+
     val items = remember {
         listOf(
             BottomNavItem.Home,
@@ -38,39 +36,28 @@ fun FloatingBottomNavigationWithIndicator(
             BottomNavItem.Profile
         )
     }
-    val horizontalPadding = 24.dp
 
-    Box(
-        modifier = modifier
+    Surface(
+        modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 18.dp),
-        contentAlignment = Alignment.BottomCenter
+            .height(70.dp),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.background,
+        tonalElevation = 16.dp,
+        shadowElevation = 8.dp
     ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(65.dp)
-                .padding(horizontal = horizontalPadding),
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.background,
-            tonalElevation = 16.dp,
-            shadowElevation = 8.dp
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-
-
-
-            )  {
-                BottomNavigation(items, navController)
-            }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+            ) {
+           MainBottomNavigation(items, navController)
         }
     }
 }
 
+
 @Composable
-fun BottomNavigation(
+fun MainBottomNavigation(
     items: List<BottomNavItem>,
     navController: NavHostController
 ) {
@@ -79,7 +66,6 @@ fun BottomNavigation(
     val currentRoute = currentDestination?.destination?.route
 
     NavigationBar(
-        modifier = Modifier.offset(y = 4.dp),
         containerColor = MaterialTheme.colorScheme.background,
         tonalElevation = 0.dp,
         windowInsets = WindowInsets(0)
