@@ -10,6 +10,6 @@ class CheckLoginUseCase @Inject constructor(private val userPreferences: UserPre
     suspend operator fun invoke(): Boolean {
         return userPreferences.getSession().map {
             it.isLogin
-        }.firstOrNull() ?: false
+        }.firstOrNull() == true
     }
 }

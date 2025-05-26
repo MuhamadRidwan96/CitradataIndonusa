@@ -5,10 +5,8 @@ import com.example.domain.model.UserModel
 import com.example.domain.preferences.UserPreferences
 import com.example.domain.repository.AuthRepository
 import com.example.domain.response.LoginResponse
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
@@ -34,5 +32,4 @@ class LoginUseCase @Inject constructor(
             .catch { e ->
                 emit(Result.failure(e)) // ✅ Tetap emit agar Flow tidak berhenti
             }
-            .flowOn(Dispatchers.IO)
 }

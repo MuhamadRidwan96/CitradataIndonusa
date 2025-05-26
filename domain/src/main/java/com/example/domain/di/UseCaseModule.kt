@@ -2,9 +2,12 @@ package com.example.domain.di
 
 import com.example.domain.preferences.UserPreferences
 import com.example.domain.repository.AuthRepository
+import com.example.domain.repository.LocationRepository
 import com.example.domain.usecase.authentication.CheckLoginUseCase
 import com.example.domain.usecase.authentication.GoogleSignInUseCase
 import com.example.domain.usecase.authentication.LoginUseCase
+import com.example.domain.usecase.location.CityUseCase
+import com.example.domain.usecase.location.ProvinceUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,4 +38,20 @@ object UseCaseModule {
     fun provideGoogleSignUseCase(
         repository: AuthRepository
     ): GoogleSignInUseCase = GoogleSignInUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideProvinceUseCase(
+        repository: LocationRepository
+    ): ProvinceUseCase {
+        return ProvinceUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCityUseCase(
+        repository: LocationRepository
+    ): CityUseCase {
+        return CityUseCase(repository)
+    }
 }
