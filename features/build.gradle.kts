@@ -123,4 +123,6 @@ dependencies {
     // For tabs and pager (now in androidx)
     implementation (libs.androidx.foundation)
 
+    implementation(libs.androidx.compose.material3)
+
 }

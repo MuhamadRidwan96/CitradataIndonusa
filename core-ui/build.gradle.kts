@@ -41,6 +41,10 @@ android {
 }
 
 dependencies {
+    implementation(project(":domain"))
+    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.lottie)
     dependencies {
         implementation(platform(libs.androidx.compose.bom))
         implementation(libs.androidx.compose.ui)
@@ -58,7 +62,8 @@ dependencies {
         debugImplementation(libs.androidx.ui.test.manifest)
         implementation(libs.material.icons.extended)
         implementation(libs.coil.compose)
+        implementation(libs.androidx.ui.text.google.fonts)
     }
 
-    }
+}
 
