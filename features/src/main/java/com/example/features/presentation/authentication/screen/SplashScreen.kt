@@ -24,9 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.feature_login.R
 import com.example.features.presentation.authentication.AuthViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -39,9 +37,7 @@ fun SplashScreen(
 
     // Jalankan pengecekan login di awal
     LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
             viewModel.checkLogin()
-        }
     }
 
     // Ketika login status sudah tersedia, mulai animasi
