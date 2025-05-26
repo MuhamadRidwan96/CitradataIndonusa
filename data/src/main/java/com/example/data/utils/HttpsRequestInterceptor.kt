@@ -13,7 +13,9 @@ class HttpsRequestInterceptor @Inject constructor(private val userPreferenceImpl
            userPreferenceImpl.getSession().firstOrNull()?.token
         } ?:throw IllegalArgumentException("Token is not available. Please login first.")
         val request = chain.request().newBuilder()
-            .addHeader("Authorization","Bearer $token")
+            .addHeader("Auth-Token", token)
+            .addHeader("Content-Type", "application/json")
+            .addHeader("Accept", "application/json")
             .build()
         return chain.proceed(request)
     }

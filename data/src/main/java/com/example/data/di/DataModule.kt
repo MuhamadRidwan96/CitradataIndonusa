@@ -4,8 +4,10 @@ import com.example.data.remote.google.GoogleAuthManager
 import com.example.data.remote.api.ApiHelper
 import com.example.data.remote.api.ApiHelperImpl
 import com.example.data.remote.api.ApiService
-import com.example.data.repositoryImpl.RepositoryImpl
+import com.example.data.repositoryImpl.AuthenticationRepositoryImpl
+import com.example.data.repositoryImpl.LocationRepositoryImpl
 import com.example.domain.repository.AuthRepository
+import com.example.domain.repository.LocationRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,6 +30,16 @@ object DataModule {
         apiHelper: ApiHelper,
         googleAuthManager: GoogleAuthManager,
     ): AuthRepository {
-        return RepositoryImpl(apiHelper, googleAuthManager)
+        return AuthenticationRepositoryImpl(apiHelper, googleAuthManager)
     }
+
+    @Provides
+    @Singleton
+    fun provideLocationRepository(
+        apiHelper: ApiHelper
+    ): LocationRepository{
+        return LocationRepositoryImpl(apiHelper)
+    }
+
+
 }

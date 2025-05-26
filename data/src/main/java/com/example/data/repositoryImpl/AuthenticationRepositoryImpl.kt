@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class RepositoryImpl @Inject constructor(
+class AuthenticationRepositoryImpl @Inject constructor(
     private val apiHelper: ApiHelper,
     private val googleAuthManager: GoogleAuthManager
     ) : AuthRepository {
@@ -32,7 +32,7 @@ class RepositoryImpl @Inject constructor(
                 val errorBody = response.errorBody()?.string()
                 val errorMessage = try {
                     errorBody?.let { ErrorHandle.parseErrorBody(it) } ?: Constant.UNKNOWN_ERROR
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     Constant.FAILED_PARSE
                 }
                 emit(Result.failure(Exception(errorMessage)))
@@ -58,7 +58,7 @@ class RepositoryImpl @Inject constructor(
             val errorBody = response.errorBody()?.string()
             val errorMessage = try {
                 errorBody?.let { ErrorHandle.parseErrorBody(it) } ?: Constant.UNKNOWN_ERROR
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Constant.FAILED_PARSE
             }
             emit(Result.failure(Exception(errorMessage)))

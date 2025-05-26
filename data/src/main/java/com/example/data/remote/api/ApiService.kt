@@ -60,18 +60,13 @@ interface ApiService {
         @Body filter: FilterDataModel
     ): Response<DataResponse>
 
-    @POST("/CitraDataIndonusa/apl/api/master/province")
+    @POST("/CitraDataIndonusa/apl/api/master/Province/province")
     suspend fun getProvince(
-        @Header("Auth-Token") authToken: String,
-        @Header("Page") page: Int,
-        @Header("Limit") limit: Int,
-        @Body search: ProvinceModel
+        @Body search: ProvinceModel? = null
     ): Response<ProvinceResponse>
 
     @POST("/CitraDataIndonusa/apl/api/master/city")
     suspend fun getCity(
-        @Header("Page") page: Int,
-        @Header("Limit") limit: Int,
         @Body search: CityModel
     ): Response<RegenciesResponse>
 
