@@ -1,7 +1,8 @@
-package com.example.features.presentation.search
+package com.example.features.presentation.search.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +22,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SearchChips(
     selectedCategoryId: Int?,
-    onCategorySelected: (Int) -> Unit
+    onCategorySelected: (Int) -> Unit,
 ) {
     val buildingCategories by produceState(initialValue = emptyList()) {
 
@@ -55,12 +56,14 @@ fun SearchChips(
                 onClick = {
                     onCategorySelected(category.id)
                 },
-                modifier = Modifier.padding(4.dp),
-                shape = RoundedCornerShape(6.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                     selectedLabelColor = MaterialTheme.colorScheme.onSurface
                 ),
+                modifier = Modifier
+                    .heightIn(min = 43.dp)
+                    .padding(4.dp),
                 leadingIcon = if (isSelected) {
                     {
                         Icon(
