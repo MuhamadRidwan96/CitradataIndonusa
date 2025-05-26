@@ -27,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
@@ -90,13 +91,13 @@ fun DatePickerTextField(
             .clickable { showDatePicker = true },
         shape = RoundedCornerShape(12.dp),
         placeholder = {
-            Text(text = placeHolder, fontSize = 14.sp)
+            Text(text = placeHolder, fontSize = 12.sp, lineHeight = 18.sp )
         },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.DateRange,
                 contentDescription = null,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(14.dp)
             )
         },
         trailingIcon = {
@@ -105,7 +106,7 @@ fun DatePickerTextField(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
@@ -117,7 +118,7 @@ fun DatePickerTextField(
             disabledPlaceholderColor = MaterialTheme.colorScheme.outline,
             disabledLeadingIconColor = MaterialTheme.colorScheme.outline
         ),
-        textStyle = LocalTextStyle.current.copy(fontSize = 13.sp),
+        textStyle = LocalTextStyle.current.copy(fontSize = 12.sp, textAlign = TextAlign.Center, lineHeight = 18.sp ),
         singleLine = true,
 
         enabled = false

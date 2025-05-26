@@ -2,7 +2,6 @@ package com.example.core_ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -22,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,7 +44,7 @@ fun CompactSearchBar(
         placeholder = {
             Text(
                 text = stringResource(R.string.placeholder_search),
-                fontSize = 14.sp, // Ukuran font lebih kecil
+                fontSize = 12.sp, // Ukuran font lebih kecil
                 lineHeight = 18.sp // Line height compact
             )
         },
@@ -64,14 +64,14 @@ fun CompactSearchBar(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = null,
-                        modifier = Modifier.size(16.dp) // Icon clear lebih kecil
+                        modifier = Modifier.size(18.dp) // Icon clear lebih kecil
                     )
                 }
             }
         },
         textStyle = LocalTextStyle.current.copy(
-            fontSize = 12.sp, // Text lebih kecil
-            lineHeight = 14.sp
+            fontSize = 12.sp,
+            textAlign = TextAlign.Start// Text lebih kecil
         ),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(

@@ -1,13 +1,13 @@
 package com.example.core_ui.component
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -17,6 +17,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -34,15 +35,15 @@ fun AppOutlinedTextFieldEnableFalse(
         onValueChange = {},
         modifier = modifier
             .heightIn(min = 45.dp, max = 48.dp)
-            .widthIn(min = 150.dp)
+            .fillMaxWidth()
             .clickable { onClicked ()},
         shape = RoundedCornerShape(12.dp),
         placeholder = {
-            Text(text = placeHolder, fontSize = 14.sp)
+            Text(text = placeHolder, fontSize = 12.sp)
         },
         leadingIcon = {
             Icon(
-                imageVector = Icons.Default.DateRange,
+                imageVector = Icons.Default.LocationCity,
                 contentDescription = null,
                 modifier = Modifier.size(18.dp)
             )
@@ -65,7 +66,7 @@ fun AppOutlinedTextFieldEnableFalse(
             disabledPlaceholderColor = MaterialTheme.colorScheme.outline,
             disabledLeadingIconColor = MaterialTheme.colorScheme.outline
         ),
-        textStyle = LocalTextStyle.current.copy(fontSize = 13.sp),
+        textStyle = LocalTextStyle.current.copy(fontSize = 12.sp, textAlign = TextAlign.Center),
         singleLine = true,
 
         enabled = false
