@@ -46,9 +46,9 @@ import com.example.features.nav.graph.SearchRoutes
 import com.example.features.presentation.search.component.ButtonRow
 import com.example.features.presentation.search.component.CityBottomSheet
 import com.example.features.presentation.search.component.ProjectStatusCategory
+import com.example.features.presentation.search.component.ProvinceBottomSheet
 import com.example.features.presentation.search.component.SearchChips
 import com.example.features.presentation.search.component.StartAndEndDate
-import com.example.features.presentation.search.component.ProvinceBottomSheet
 import kotlinx.coroutines.delay
 
 
@@ -236,8 +236,12 @@ private fun LocationDropdownSection(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    var selectedProvinceId by remember { mutableStateOf<String?>(null) }
+
     val provinceViewModel: ProvinceViewModel = hiltViewModel()
     val cityViewModel: CityViewModel = hiltViewModel()
+
     Card(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -251,12 +255,21 @@ private fun LocationDropdownSection(
         Column(modifier = Modifier.padding(12.dp)) {
             ProvinceBottomSheet(
                 onDismiss = {},
-                viewModel = provinceViewModel
+                viewModel = provinceViewModel,
+                onProvinceSelected = { idProvince ->
+                    selectedProvinceId = idProvince
+                },
             )
+
             Spacer(modifier = Modifier.height(8.dp))
             CityBottomSheet(
                 onDismiss = { },
-                viewModel = cityViewModel
+                viewModel = cityViewModel,
+                idProvince = selectedProvinceId,
+                onClear = {
+                    cityViewModel.updateCity("", null, "")
+                    selectedProvinceId = null
+                },
             )
             Spacer(modifier = Modifier.height(8.dp))
             AddressTextField(

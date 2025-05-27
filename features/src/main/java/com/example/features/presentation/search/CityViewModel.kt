@@ -28,7 +28,7 @@ class CityViewModel @Inject constructor(
     private val _cityEvent = MutableSharedFlow<CityEvent>()
     val cityEvent: SharedFlow<CityEvent> = _cityEvent
 
-    private val _cityState =  MutableStateFlow(CityState())
+    private val _cityState = MutableStateFlow(CityState())
     val cityState = _cityState.asStateFlow()
 
     private val _query = mutableStateOf("")
@@ -37,15 +37,18 @@ class CityViewModel @Inject constructor(
     fun onQueryChange(newQuery: String) {
         _query.value = newQuery
     }
+    fun getCity(idProvince: String?) {
 
-    fun getCity() {
         viewModelScope.launch {
-            cityUseCase("", "", "").collectLatest { result ->
+            cityUseCase("",idProvince, "").collectLatest { result ->
                 result.onSuccess { response ->
-                    val cities = response.data.map { CityModel(
-                        idCity = it.idCity, idProvince = it.idProvince!!,
-                        cityName = it.cityName,
-                    ) }
+                    val cities = response.data.map {
+                        CityModel(
+                            idCity = it.idCity,
+                            idProvince = it.idProvince ?: "",
+                            cityName = it.cityName,
+                        )
+                    }
                     _cityList.value = cities
                     _cityEvent.emit(CityEvent.Success)
                 }.onFailure { e ->
@@ -61,17 +64,17 @@ class CityViewModel @Inject constructor(
 
     fun updateCity(
         idCity: String,
-        idProvince: String,
+        idProvince: String?,
         name: String
     ) {
-        _cityState.update {current ->
+        _cityState.update { current ->
             current.copy(
-                idCity = idCity ,
+                idCity = idCity,
                 idProvince = idProvince,
                 cityName = name
             )
-
         }
+        _cityList.value = emptyList()
     }
 }
 
@@ -83,6 +86,7 @@ sealed class CityEvent {
 
 data class CityState(
     val idCity: String = "",
-    val idProvince: String = "",
-    val cityName: String = ""
+    val idProvince: String? = null,
+    val cityName: String = "",
+    val isLoading: Boolean = false
 )

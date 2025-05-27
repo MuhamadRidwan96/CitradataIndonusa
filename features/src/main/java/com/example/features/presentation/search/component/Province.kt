@@ -29,7 +29,8 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun ProvinceBottomSheet(
     onDismiss: () -> Unit,
-    viewModel: ProvinceViewModel
+    viewModel: ProvinceViewModel,
+    onProvinceSelected: (String) -> Unit
 ) {
 
     var showListProvince by rememberSaveable { mutableStateOf(false) }
@@ -97,6 +98,7 @@ fun ProvinceBottomSheet(
                                         id = province.idProvince!!,
                                         name = province.name!!
                                     )
+                                    onProvinceSelected(province.idProvince!!)
                                     showListProvince = false
                                     onDismiss()
                                 }

@@ -27,8 +27,10 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun CityBottomSheet(
+    idProvince: String?,
     onDismiss: () -> Unit,
-    viewModel: CityViewModel
+    viewModel: CityViewModel,
+    onClear:()->Unit
 ) {
     var showListCity by rememberSaveable { mutableStateOf(false) }
     val query by viewModel.query
@@ -36,9 +38,9 @@ fun CityBottomSheet(
     val searchState by viewModel.cityState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(showListCity) {
+    LaunchedEffect(showListCity, idProvince) {
         if (showListCity) {
-            viewModel.getCity()
+            viewModel.getCity(idProvince)
         }
     }
 
@@ -57,7 +59,7 @@ fun CityBottomSheet(
     Column {
         AppOutlinedTextFieldEnableFalse(
             value = searchState.cityName,
-            onClearClicked = { viewModel.updateCity("", "", "") },
+            onClearClicked = onClear,
             placeHolder = "Pilih Kota",
             onClicked = { showListCity = true },
         )
@@ -66,7 +68,7 @@ fun CityBottomSheet(
             isVisible = showListCity,
             onDismiss = {
                 showListCity = false
-                onDismiss
+                onDismiss()
             },
         ) {
             Column(
@@ -101,12 +103,9 @@ fun CityBottomSheet(
                                 }
                                 .padding(16.dp)
                         )
-
                     }
                 }
             }
         }
-
     }
-
 }
