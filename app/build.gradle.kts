@@ -1,13 +1,22 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.gradle)
     alias(libs.plugins.spotless)
+    alias(libs.plugins.compose.compiler)
+    id("com.google.gms.google-services")
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("D:\\Android\\keystore.jks")
+            storePassword = "S@yangfaza123"
+            keyAlias = "keycitradata"
+            keyPassword = "S@yangfaza123"
+        }
+    }
     namespace = "com.example.citradataindonusa"
     compileSdk = 35
 
@@ -31,30 +40,45 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
-    buildFeatures {
+    buildFeatures{
         compose = true
+        aidl = false
+        buildConfig = false
+        renderScript = false
+        shaders = false
     }
+
 }
 
 dependencies {
 
     implementation (project(":domain"))  // Bergantung pada modul domain
-    implementation (project(":data"))    // Bergantung pada modul data
+    implementation (project(":data")) // Bergantung pada modul data
+    implementation(project(":core-ui"))//Bergantung pada modul core-ui
+    implementation(project(":features"))
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(libs.litert.support.api)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,38 +90,23 @@ dependencies {
     //hilt
     implementation(libs.hilt.android)
     ksp (libs.hilt.android.compiler)
+
+    // Arch Components
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    // Asyncronous
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
+    // Firebase Auth
+    implementation(libs.firebase.auth.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
 
 
-    // ViewModel & LiveData
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
+    //Credential Manager
+    implementation(libs.googleid)
+    implementation (libs.play.services.auth.v2100)
+    implementation(libs.androidx.credentials.v120alpha03)
+    implementation(libs.androidx.credentials.play.services.auth.v120alpha03)
 
 
-    //datastore
-    implementation(libs.androidx.datastore.preferences)
-
-    //lottie
-    implementation(libs.lottie)
-
-    //ra
-    implementation(libs.coil.compose)
-
-    //pagination
-    implementation( libs.androidx.paging.common.ktx)
-    implementation(libs.androidx.paging.runtime.ktx)
-    implementation(libs.androidx.paging.compose)
-
-    //carousel
-    implementation(libs.accompanist.pager)
-    implementation(libs.accompanist.pager.indicators.v0320)
-
-    //navigation
-    implementation(libs.androidx.navigation.compose)
-    //Timber
-    implementation(libs.timber)
 }
