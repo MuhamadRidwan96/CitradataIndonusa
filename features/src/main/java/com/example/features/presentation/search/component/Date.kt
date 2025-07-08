@@ -4,10 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,9 +12,14 @@ import com.example.core_ui.component.DatePickerTextField
 import com.example.feature_login.R
 
 @Composable
-fun StartAndEndDate() {
-    var startDate by remember { mutableStateOf("") }
-    var endDate by remember { mutableStateOf("") }
+fun StartAndEndDate(
+    startDate: String,
+    endDate:String,
+    onStartDateSelected: (String) -> Unit,
+    onEndDateSelected: (String) -> Unit,
+    onClearStartDate: () -> Unit,
+    onClearEndDate: () -> Unit
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -28,16 +29,16 @@ fun StartAndEndDate() {
         DatePickerTextField(
             modifier = Modifier.weight(1f),
             selectedDate = startDate,
-            onDateSelected = { date -> startDate = date },
-            onClearClicked = { startDate = "" },
+            onDateSelected = onStartDateSelected,
+            onClearClicked = onClearStartDate,
             placeHolder = stringResource(R.string.start_date)
         )
 
         DatePickerTextField(
             modifier = Modifier.weight(1f),
             selectedDate = endDate,
-            onDateSelected = { date -> endDate = date },
-            onClearClicked = { endDate = "" },
+            onDateSelected = onEndDateSelected,
+            onClearClicked = onClearEndDate,
             placeHolder = stringResource(R.string.end_date)
         )
     }

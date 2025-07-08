@@ -4,8 +4,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.features.presentation.authentication.screen.ScreenLogin
-import com.example.features.presentation.authentication.screen.SignUpScreen
+import com.example.features.presentation.authentication.screen.login.ScreenLogin
+import com.example.features.presentation.authentication.screen.signup.SignUpScreen
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController){
     navigation(
@@ -13,11 +13,15 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController){
         startDestination = AuthNavigationScreen.Login.route
     ){
 
+
+
         composable(AuthNavigationScreen.Login.route){
            ScreenLogin(
                onLoginSuccess = {
-                   navController.popBackStack()
-                   navController.navigate(Graph.HOME)
+                   navController.navigate(Graph.HOME){
+                       popUpTo(Graph.AUTHENTICATION){inclusive = true}
+                       launchSingleTop = true
+                   }
                },
                onSignUpClick = {navController.navigate(AuthNavigationScreen.SignUp.route)}
            )
@@ -25,11 +29,12 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController){
 
         composable(AuthNavigationScreen.SignUp.route){
             SignUpScreen(
-                onBackClick = {navController.popBackStack()}
+                onBackClick = { navController.navigate(AuthNavigationScreen.Login.route) }
             )
         }
     }
 }
+
 
 sealed class AuthNavigationScreen(val route :String){
     data object SignUp : AuthNavigationScreen(route = "SIGNUP")

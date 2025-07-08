@@ -116,7 +116,7 @@ fun StatusPreviewRow(
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
             shape = RoundedCornerShape(16.dp)
         ) {
-            Text("See All", fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimary)
+            Text("See All", fontSize = 11.sp, color = MaterialTheme.colorScheme.onPrimary)
         }
     }
 }
@@ -131,7 +131,7 @@ fun StatusChip(
 
     Surface(
         shape = MaterialTheme.shapes.large,
-        color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
+        color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.13f)
         else MaterialTheme.colorScheme.background,
         modifier = Modifier
             .clickable { currentOnClick() }
@@ -145,7 +145,7 @@ fun StatusChip(
             text = status.status,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
             textAlign = TextAlign.Center,
-            fontSize = 12.sp,
+            fontSize = 11.sp,
             color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
             else MaterialTheme.colorScheme.onSurface
         )
@@ -209,4 +209,6 @@ fun StatusSelectionRow(
         }
     }
 }
+
+
 

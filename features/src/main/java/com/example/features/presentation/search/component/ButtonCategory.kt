@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 
 @Composable
@@ -23,5 +24,5 @@ fun ButtonRow(title: String, onClick: () -> Unit) {
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
 
-    ) { Text(text = title, color = MaterialTheme.colorScheme.onPrimary) }
+    ) { Text(text = title, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimary) }
 }

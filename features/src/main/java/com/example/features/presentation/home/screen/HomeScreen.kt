@@ -30,16 +30,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.core_ui.AppTheme
 import com.example.core_ui.component.CardItem
 import com.example.core_ui.component.Carousel
 import com.example.core_ui.component.CarouselItem
 import com.example.core_ui.component.FilterCategory
 import com.example.core_ui.component.FilterCategoryRow
 import com.example.core_ui.component.ProjectCard
-import com.example.core_ui.component.SearchBars
+import com.example.core_ui.component.CompactSearchBar
 import com.example.feature_login.R
 import com.example.features.presentation.home.component.TopAppBarContent
 import kotlinx.coroutines.delay
@@ -55,47 +58,130 @@ fun HomeScreen() {
 
 @Composable
 private fun HomeContent(paddingValues: PaddingValues) {
-
-    var showList by remember { mutableStateOf(false) }
+    val projectList = remember { getSampleProjectList() }
+    val (showList, setShowList) = remember { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+    val favoriteMap = remember { mutableStateMapOf<String, Boolean>() }
 
     LaunchedEffect(Unit) {
-        delay(1500)
-        showList = true
+        delay(1000)
+        setShowList(true)
     }
 
-    val listState = rememberLazyListState()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
     ) {
         SearchSection()
-        Spacer(modifier = Modifier.size(32.dp))
-        CarouselSection()
-        Spacer(modifier = Modifier.size(24.dp))
-        CategoryFilterSection()
 
         if (showList) {
-            TestList(listState = listState)
+            ProjectList(
+                projects = projectList,
+                listState = listState,
+                favoriteMap = favoriteMap
+            )
         } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            LoadingPlaceholder()
         }
-        Spacer(modifier = Modifier.size(75.dp))
     }
 }
+
+@Composable
+private fun ProjectList(
+    projects: List<CardItem>,
+    listState: LazyListState,
+    favoriteMap: SnapshotStateMap<String, Boolean>
+) {
+    LazyColumn(
+        state = listState,
+        modifier = Modifier
+            .fillMaxWidth(),
+        contentPadding = PaddingValues(vertical = 36.dp)
+    ) {
+        item {
+            CarouselSection()
+            Spacer(modifier = Modifier.size(28.dp))
+        }
+
+        item { CategoryFilterSection() }
+
+        items(
+            items = projects,
+            key = { it.title },
+            contentType = { "project card" }
+        ) { project ->
+            ProjectCard(
+                items = project,
+                isFavorite = favoriteMap[project.title] == true,
+                onFavoriteClick = {
+                    favoriteMap[project.title] = favoriteMap[project.title] != false
+                }
+            )
+        }
+        item { Spacer(modifier = Modifier.size(75.dp)) }
+    }
+}
+
+@Composable
+private fun LoadingPlaceholder() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+private fun getSampleProjectList(): List<CardItem> = listOf(
+    CardItem(
+        title = "PASAR INDUK BANYUWANGI DAN ASRAMA INGGRISAN BANYUWANGI (REVITALISASI)",
+        date = "May,15-2025",
+        category = "Middle Project",
+        location = "Ngawi, East Java",
+        statusProject = "New",
+        status = "Planning",
+    ),
+    CardItem(
+        title = "Harbor Tower Development",
+        date = "Jun 15, 2023",
+        category = "Highrise and commercial building",
+        location = "Downtown, Tokyo",
+        status = "Finish",
+        statusProject = "Update",
+    ),
+    CardItem(
+        title = "HOSPITAL – RS. MAYAPADA JAKARTA TIMUR",
+        date = "Jun 15, 2023",
+        category = "Highrise and commercial building",
+        location = "Downtown, Tokyo",
+        status = "Construction Start",
+        statusProject = "New",
+    ),
+    CardItem(
+        title = "OFFICE - GEDUNG DAN KAWASAN PERKANTORAN KEMENTERIAN PERTAHANAN IKN NUSANTARA (TAHAP 1)",
+        date = "Jun 15, 2023",
+        category = "Industrial and Construction",
+        location = "Downtown, Tokyo",
+        status = "Post Tender",
+        statusProject = ""
+    ),
+    CardItem(
+        title = "HOTEL - HOTEL MAWAR MELATI",
+        date = "Jun 15, 2023",
+        category = "Middle Project",
+        location = "Downtown, Tokyo",
+        status = "Under Construction",
+        statusProject = ""
+    )
+)
 
 @Composable
 private fun SearchSection() {
     // Move state management higher if used elsewhere
     var query by remember { mutableStateOf("") }
-    SearchBars(
+    CompactSearchBar(
         query = query,
         onQueryChange = { query = it },
         modifier = Modifier.padding(horizontal = 16.dp)
@@ -152,11 +238,11 @@ fun CategoryFilterSection() {
     // Extract categories list to avoid recreation on recomposition
     val categories = remember {
         listOf(
-            FilterCategory(5,"Highrise & Commercial", "HRC", Icons.Default.Apartment),
-            FilterCategory(6,"Middle Project", "MDL", Icons.Default.Home),
-            FilterCategory(7,"Low Project", "LOW", Icons.Default.House),
-            FilterCategory(8,"Industrial & Infrastructure", "IND", Icons.Default.Factory),
-            FilterCategory(9,"Fitting Out & Interior", "FTO", Icons.Default.Store)
+            FilterCategory(5, "Highrise & Commercial", "HRC", Icons.Default.Apartment),
+            FilterCategory(6, "Middle Project", "MDL", Icons.Default.Home),
+            FilterCategory(7, "Low Project", "LOW", Icons.Default.House),
+            FilterCategory(8, "Industrial & Infrastructure", "IND", Icons.Default.Factory),
+            FilterCategory(9, "Fitting Out & Interior", "FTO", Icons.Default.Store)
         )
     }
 
@@ -172,70 +258,11 @@ fun CategoryFilterSection() {
     )
 }
 
+
+@Preview(showBackground = true)
 @Composable
-private fun TestList(listState: LazyListState) {
-
-    val favoriteMap = remember { mutableStateMapOf<String, Boolean>() }
-
-    val list = remember {
-        listOf(
-            CardItem(
-                title = "PASAR INDUK BANYUWANGI DAN ASRAMA INGGRISAN BANYUWANGI (REVITALISASI)",
-                date = "May,15-2025",
-                category = "Middle Project",
-                location = "Ngawi, East Java",
-                statusProject = "New",
-                status = "Planning",
-            ),
-            CardItem(
-                title = "Harbor Tower Development",
-                date = "Jun 15, 2023",
-                category = "Highrise and commercial building",
-                location = "Downtown, Tokyo",
-                status = "Finish",
-                statusProject = "Update",
-            ),
-            CardItem(
-                title = "HOSPITAL – RS. MAYAPADA JAKARTA TIMUR",
-                date = "Jun 15, 2023",
-                category = "Highrise and commercial building",
-                location = "Downtown, Tokyo",
-                status = "Construction Start",
-                statusProject = "New",
-            ),
-            CardItem(
-                title = "OFFICE - GEDUNG DAN KAWASAN PERKANTORAN KEMENTERIAN PERTAHANAN IKN NUSANTARA (TAHAP 1)",
-                date = "Jun 15, 2023",
-                category = "Industrial and Construction",
-                location = "Downtown, Tokyo",
-                status = "Post Tender",
-                statusProject = ""
-            ),
-            CardItem(
-                title = "HOTEL - HOTEL MAWAR MELATI",
-                date = "Jun 15, 2023",
-                category = "Middle Project",
-                location = "Downtown, Tokyo",
-                status = "Under Construction",
-                statusProject = ""
-            )
-        )
-    }
-
-    LazyColumn(
-        state = listState,
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(4.dp)
-    ) {
-        items(items = list, key = { it.title }, contentType = { "project_card" }) { item ->
-            val isFavorite = favoriteMap[item.title] ?: false
-            ProjectCard(
-                items = item,
-                isFavorite = isFavorite,
-                onFavoriteClick = {
-                    favoriteMap[item.title] = !isFavorite
-                }
-            )
-        }
+fun CheckHomeScreen() {
+    AppTheme {
+        HomeScreen()
     }
 }

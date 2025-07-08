@@ -1,7 +1,9 @@
-package com.example.features.presentation.authentication.screen
+package com.example.features.presentation.authentication.screen.signup
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -11,10 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachFile
@@ -31,11 +31,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,17 +51,48 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.feature_login.R
-import com.example.features.presentation.authentication.AuthViewModel
 import com.example.features.presentation.authentication.state.SignUpFormState
 import com.example.features.theme.Shapes
 
 
 @Composable
+fun SignUpScreenContent(
+    state: SignUpFormState,
+    contentPadding: PaddingValues,
+    onUsernameChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onSignUpClick: () -> Unit,
+    onSignInClick:() -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(contentPadding)
+            .padding(horizontal = 16.dp, vertical = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        SignUpFormSection(
+            state = state,
+            onUsernameChange = onUsernameChange,
+            onEmailChange = onEmailChange,
+            onPasswordChange = onPasswordChange
+        )
+        ButtonSection(
+            onSignUpClick = onSignUpClick,
+            onSignInClick = onSignInClick
+        )
+    }
+}
+
+@Composable
 fun SignUpScreen(
     onBackClick: () -> Unit,
-    viewmodel: AuthViewModel = hiltViewModel()
+    viewmodel: SignUpViewmodel = hiltViewModel()
 ) {
-    val uiState = viewmodel.uiStates.collectAsStateWithLifecycle()
+    val state by viewmodel.formState.collectAsStateWithLifecycle()
+    val snackBarHostState = remember { SnackbarHostState() }
     Scaffold(
         topBar = {
             MyTopAppBar(
@@ -69,23 +103,33 @@ fun SignUpScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
-                    .verticalScroll(rememberScrollState()),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                FieldSection(
-                    state =uiState,
-                    onUsernameChange = { },
-                    onEmailChange = { },
-                    onPasswordChange = { }
-                )
-                ButtonSection(
-                    onSignUpClick = { },
-                    onSignInClick = { }
+                SignUpScreenContent(
+                    state = state,
+                    contentPadding = padding,
+                    onUsernameChange = viewmodel.onChangeUsername,
+                    onEmailChange = viewmodel.onChangeEmail,
+                    onPasswordChange = viewmodel.onChangePassword,
+                    onSignUpClick = viewmodel.signUp,
+                    onSignInClick = onBackClick
                 )
             }
         }
     )
+
+    LaunchedEffect(Unit) {
+        viewmodel.signUpEvent.collect { event ->
+            when (event) {
+                is SignUpEvent.Success -> {"Success!"}
+                is SignUpEvent.ShowSnackBar -> {
+                    snackBarHostState.showSnackbar(event.message)
+                }
+            }
+
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,8 +172,8 @@ fun MyTopAppBar(
 }
 
 @Composable
-fun FieldSection(
-    state: State<SignUpFormState>,
+fun SignUpFormSection(
+    state: SignUpFormState,
     onUsernameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit
@@ -156,33 +200,33 @@ fun FieldSection(
         )
 
         SignUpTextField(
-            value = state.value.username,
-            isError = state.value.isUsernameWrong,
-            label = if (state.value.isUsernameWrong) stringResource(R.string.required_username) else stringResource(
+            value = state.username,
+            label = stringResource(
                 R.string.username
             ),
             leadingIcon = Icons.Default.Person,
-            onValueChange = onUsernameChange,
+            onValueChange = { onUsernameChange(it) },
+            isError = state.isUsernameWrong,
         )
         SignUpTextField(
-            value = state.value.email,
-            isError = state.value.isEmailWrong,
-            label = if (state.value.isEmailWrong) stringResource(R.string.wrong_email) else stringResource(
+            value = state.email,
+            isError = state.isEmailWrong,
+            label = if (state.isEmailWrong) stringResource(R.string.wrong_email) else stringResource(
                 R.string.email
             ),
             leadingIcon = Icons.Default.Email,
-            onValueChange = onEmailChange,
+            onValueChange = { onEmailChange(it) },
 
             )
 
         SignUpTextField(
-            value = state.value.password,
-            isError = state.value.isPasswordWrong,
-            label = if (state.value.isPasswordWrong) stringResource(R.string.wrong_password) else stringResource(
+            value = state.password,
+            isError = state.isPasswordWrong,
+            label = if (state.isPasswordWrong) stringResource(R.string.wrong_password) else stringResource(
                 R.string.password
             ),
             leadingIcon = Icons.Default.Lock,
-            onValueChange = onPasswordChange
+            onValueChange = { onPasswordChange(it) }
         )
 
         Text(
@@ -194,7 +238,6 @@ fun FieldSection(
         )
     }
 }
-
 
 @Composable
 fun ButtonSection(
@@ -212,7 +255,10 @@ fun ButtonSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            onClick = onSignUpClick,
+            onClick = {
+                Log.d("Test button", "Sign button clicked")
+                onSignUpClick()
+                   },
         ) {
             Icon(
                 imageVector = Icons.Default.PersonAddAlt1,

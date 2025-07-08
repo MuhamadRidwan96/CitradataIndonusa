@@ -4,7 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.features.presentation.authentication.screen.SplashScreen
+import com.example.features.presentation.authentication.screen.login.SplashScreen
 
 fun NavGraphBuilder.splashNavGraph(navController: NavHostController) {
     navigation(
@@ -13,12 +13,16 @@ fun NavGraphBuilder.splashNavGraph(navController: NavHostController) {
     ) {
         composable(SplashNavigationScreen.Splash.route){
             SplashScreen(
-                onNavigate = {isLoggedIn ->
-                    navController.popBackStack()
-                    if (isLoggedIn){
-                        navController.navigate(Graph.HOME)
-                    } else {
-                        navController.navigate(Graph.AUTHENTICATION)
+                onNavigateToHome = {
+                    navController.navigate(Graph.HOME) {
+                        popUpTo(Graph.SPLASH) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.navigate(Graph.AUTHENTICATION) {
+                        popUpTo(Graph.SPLASH) { inclusive = true }
+                        launchSingleTop = true
                     }
                 }
             )

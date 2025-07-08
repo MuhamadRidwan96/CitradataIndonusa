@@ -27,13 +27,13 @@ fun MainScreen(navController: NavHostController) {
                 navController = innerNavController,
                 rootNavController = navController,
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxSize()
             )
         }
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(16.dp) // margin dari bawah
+                .padding(12.dp)
         ) {
             FloatingBottomNavigationWithIndicator(navController = innerNavController)
         }
