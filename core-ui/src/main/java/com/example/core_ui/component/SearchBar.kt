@@ -16,13 +16,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core_ui.R
@@ -44,7 +42,7 @@ fun CompactSearchBar(
         placeholder = {
             Text(
                 text = stringResource(R.string.placeholder_search),
-                fontSize = 12.sp, // Ukuran font lebih kecil
+                fontSize = 13.sp, // Ukuran font lebih kecil
                 lineHeight = 18.sp // Line height compact
             )
         },
@@ -70,7 +68,7 @@ fun CompactSearchBar(
             }
         },
         textStyle = LocalTextStyle.current.copy(
-            fontSize = 12.sp,
+            fontSize = 13.sp,
             textAlign = TextAlign.Start// Text lebih kecil
         ),
         singleLine = true,
@@ -88,26 +86,5 @@ fun CompactSearchBar(
         keyboardActions = KeyboardActions(
             onSearch = { onSearchClicked() }
         )
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewSearchBAr(){
-
-   LightPreviewTheme {
-       CompactSearchBar(
-            query = "Search query",
-            onSearchClicked = {},
-            onQueryChange = { }
-        )
-    }
-}
-
-@Composable
-fun LightPreviewTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = lightColorScheme(),
-        content = content
     )
 }
