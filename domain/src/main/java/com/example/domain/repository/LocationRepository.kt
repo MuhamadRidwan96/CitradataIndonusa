@@ -5,6 +5,7 @@ import com.example.domain.model.ProvinceModel
 import com.example.domain.response.ProvinceResponse
 import com.example.domain.response.RegenciesResponse
 import kotlinx.coroutines.flow.Flow
+import com.example.common.Result
 
 interface LocationRepository {
     fun province(provinceModel: ProvinceModel?): Flow<Result<ProvinceResponse>>

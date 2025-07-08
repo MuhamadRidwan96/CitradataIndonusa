@@ -7,6 +7,7 @@ import com.example.domain.response.AuthResponse
 import com.example.domain.response.LoginResponse
 import com.example.domain.response.RegisterResponse
 import kotlinx.coroutines.flow.Flow
+import com.example.common.Result
 
 interface AuthRepository {
    fun login(requestLogin: LoginModel): Flow<Result<LoginResponse>>

@@ -1,7 +1,12 @@
 package com.example.domain.model
 
+import com.google.gson.annotations.SerializedName
+
 data class CityModel(
-    val idCity: String,
-    val idProvince: String,
-    val cityName: String
+    @SerializedName("id_city")
+    val idCity: String = "",
+    @SerializedName("id_province")
+    val idProvince: String? = null,
+    @SerializedName("city_name")
+    val cityName: String =""
 )

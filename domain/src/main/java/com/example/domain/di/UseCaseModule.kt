@@ -6,6 +6,7 @@ import com.example.domain.repository.LocationRepository
 import com.example.domain.usecase.authentication.CheckLoginUseCase
 import com.example.domain.usecase.authentication.GoogleSignInUseCase
 import com.example.domain.usecase.authentication.LoginUseCase
+import com.example.domain.usecase.authentication.RegisterUseCase
 import com.example.domain.usecase.location.CityUseCase
 import com.example.domain.usecase.location.ProvinceUseCase
 import dagger.Module
@@ -25,6 +26,12 @@ object UseCaseModule {
         userPreferences: UserPreferences
     ): LoginUseCase {
         return LoginUseCase(repository, userPreferences)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegisterUseCase(repository: AuthRepository): RegisterUseCase{
+        return RegisterUseCase(repository)
     }
 
     @Provides
