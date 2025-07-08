@@ -1,5 +1,6 @@
 package com.example.data.repositoryImpl
 
+import com.example.common.Result
 import com.example.data.remote.api.ApiHelper
 import com.example.data.utils.Constant
 import com.example.data.utils.ErrorHandle
@@ -8,10 +9,8 @@ import com.example.domain.model.ProvinceModel
 import com.example.domain.repository.LocationRepository
 import com.example.domain.response.ProvinceResponse
 import com.example.domain.response.RegenciesResponse
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class LocationRepositoryImpl @Inject constructor(
@@ -21,8 +20,8 @@ class LocationRepositoryImpl @Inject constructor(
         try {
             val response = apiHelper.getProvince(provinceModel)
             if (response.isSuccessful) {
-                response.body()?.let { emit(Result.success(it)) } ?: emit(
-                    Result.failure(
+                response.body()?.let { emit(Result.Success(it)) } ?: emit(
+                    Result.Error(
                         Exception(
                             Constant.ERROR_NULL
                         )
@@ -35,20 +34,20 @@ class LocationRepositoryImpl @Inject constructor(
                 } catch (_: Exception) {
                     Constant.FAILED_PARSE
                 }
-                emit(Result.failure(Exception(errorMessage)))
+                emit(Result.Error(Exception(errorMessage)))
             }
         } catch (e: Exception) {
-            emit(Result.failure(e))
+            emit(Result.Error(e))
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
     override fun city(cityModel: CityModel): Flow<Result<RegenciesResponse>> = flow {
 
         try {
             val cityResponse = apiHelper.getCity(cityModel)
             if (cityResponse.isSuccessful) {
-                cityResponse.body()?.let { emit(Result.success(it)) } ?: emit(
-                    Result.failure(
+                cityResponse.body()?.let { emit(Result.Success(it)) } ?: emit(
+                    Result.Error(
                         Exception(
                             Constant.ERROR_NULL
                         )
@@ -61,10 +60,10 @@ class LocationRepositoryImpl @Inject constructor(
                 } catch (_: Exception) {
                     Constant.FAILED_PARSE
                 }
-                emit(Result.failure(Exception(errorMessage)))
+                emit(Result.Error(Exception(errorMessage)))
             }
         } catch (e: Exception) {
-            emit(Result.failure(e))
+            emit(Result.Error(e))
         }
-    }.flowOn(Dispatchers.IO)
+    }
 }

@@ -25,7 +25,7 @@ interface ApiHelper{
     suspend fun updateProfile():Response<UpdateProfileResponse>
     suspend fun getProvince(province: ProvinceModel?): Response<ProvinceResponse>
     suspend fun getCity(city: CityModel): Response<RegenciesResponse>
-    suspend fun filterData(page: Int, limit: Int,filteredData: FilterDataModel): Response<DataResponse>
+    suspend fun filterData(page: Int, limit: Int,filteredData: FilterDataModel?): Response<DataResponse>
 
 }
 

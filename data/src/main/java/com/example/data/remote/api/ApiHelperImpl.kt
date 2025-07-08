@@ -58,7 +58,7 @@ class ApiHelperImpl @Inject constructor(
     override suspend fun filterData(
         page: Int,
         limit: Int,
-        filteredData: FilterDataModel
+        filteredData: FilterDataModel?
     ): Response<DataResponse> {
         return apiService.filterData(page,limit,filteredData)
     }

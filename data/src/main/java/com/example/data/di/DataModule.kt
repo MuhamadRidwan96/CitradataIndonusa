@@ -1,12 +1,14 @@
 package com.example.data.di
 
-import com.example.data.remote.google.GoogleAuthManager
 import com.example.data.remote.api.ApiHelper
 import com.example.data.remote.api.ApiHelperImpl
 import com.example.data.remote.api.ApiService
+import com.example.data.remote.google.GoogleAuthManager
 import com.example.data.repositoryImpl.AuthenticationRepositoryImpl
+import com.example.data.repositoryImpl.FilterDataRepositoryImpl
 import com.example.data.repositoryImpl.LocationRepositoryImpl
 import com.example.domain.repository.AuthRepository
+import com.example.domain.repository.FilterDataRepository
 import com.example.domain.repository.LocationRepository
 import dagger.Module
 import dagger.Provides
@@ -39,6 +41,14 @@ object DataModule {
         apiHelper: ApiHelper
     ): LocationRepository{
         return LocationRepositoryImpl(apiHelper)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFilterDataRepository(
+        apiHelper: ApiHelper
+    ): FilterDataRepository{
+        return FilterDataRepositoryImpl(apiHelper)
     }
 
 

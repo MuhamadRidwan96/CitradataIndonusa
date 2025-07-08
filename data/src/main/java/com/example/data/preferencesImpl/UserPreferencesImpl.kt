@@ -33,7 +33,7 @@ class UserPreferencesImpl @Inject constructor(
             .map { preferences ->
                 UserModel(
                     token = preferences[TOKEN_KEY] ?: "",
-                    isLogin = preferences[IS_LOGGED_IN] ?: false
+                    isLogin = preferences[IS_LOGGED_IN] == true
                 )
             }
     }
