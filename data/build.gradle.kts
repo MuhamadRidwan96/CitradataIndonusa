@@ -31,7 +31,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures{
+    buildFeatures {
         aidl = false
         buildConfig = false
         renderScript = false
@@ -40,7 +40,8 @@ android {
 }
 
 dependencies {
-    implementation (project(":domain"))// Bergantung pada modul domain
+    implementation(project(":domain"))// Bergantung pada modul domain
+    implementation(project(":common"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -50,14 +51,14 @@ dependencies {
 
 
     // Room Database
-    implementation( libs.androidx.room.runtime.v250)
-    ksp (libs.androidx.room.compiler.v250)
-    implementation( libs.androidx.room.ktx.v250)
+    implementation(libs.androidx.room.runtime.v250)
+    ksp(libs.androidx.room.compiler.v250)
+    implementation(libs.androidx.room.ktx.v250)
 
     //network
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
-    implementation (libs.logging.interceptor)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
 
     //datastore
     implementation(libs.androidx.datastore.preferences)
@@ -68,7 +69,7 @@ dependencies {
 
     //Dependency Injection "Hilt"
     implementation(libs.hilt.android)
-    ksp (libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
     // Firebase Auth
@@ -78,11 +79,16 @@ dependencies {
 
     //Credential Manager
     implementation(libs.googleid)
-    implementation (libs.play.services.auth.v2100)
+    implementation(libs.play.services.auth.v2100)
     implementation(libs.androidx.credentials.v120alpha03)
     implementation(libs.androidx.credentials.play.services.auth.v120alpha03)
 
     //Firestore
     implementation(libs.firebase.firestore.ktx)
+
+    //pagination
+    implementation(libs.androidx.paging.common.ktx)
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
 
 }

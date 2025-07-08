@@ -42,6 +42,7 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":common"))
     implementation(libs.androidx.foundation.layout.android)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.lottie)

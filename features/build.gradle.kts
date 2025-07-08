@@ -48,7 +48,7 @@ dependencies {
     implementation(project(":domain"))  // Bergantung pada modul domain
     implementation(project(":data"))    // Bergantung pada modul data
     implementation(project(":core-ui")) // Bergantung pada module core-ui
-
+    implementation(project(":common"))
 
 
 
@@ -124,5 +124,7 @@ dependencies {
     implementation (libs.androidx.foundation)
 
     implementation(libs.androidx.compose.material3)
+    //coil
+    implementation(libs.coil.compose)
 
 }

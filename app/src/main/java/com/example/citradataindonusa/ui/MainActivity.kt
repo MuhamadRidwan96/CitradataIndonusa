@@ -4,8 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
-import com.example.core_ui.CitraDataIndonusaTheme
+import com.example.core_ui.AppTheme
 import com.example.features.nav.graph.RootNavigationGraph
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,10 +17,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         FirebaseApp.initializeApp(this)
-        setContent {
-            CitraDataIndonusaTheme {
-                RootNavigationGraph(navController = rememberNavController())
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
+
+
+        setContent {
+            AppTheme {
+                RootNavigationGraph(navController = rememberNavController())
             }
         }
     }
