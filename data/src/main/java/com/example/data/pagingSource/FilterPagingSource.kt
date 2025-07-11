@@ -2,6 +2,7 @@ package com.example.data.pagingSource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.example.common.Result
 import com.example.data.utils.Constant
 import com.example.domain.model.FilterDataModel
 import com.example.domain.repository.FilterDataRepository
@@ -22,22 +23,28 @@ class FilterPagingSource @Inject constructor(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, RecordData> {
-        val page = params.key ?:1
+        val page = params.key ?: 1
         return try {
 
-            val result = repository.filterData(page,limit,filterData).first()
+            val result = repository.filterData(page, limit, filterData).first()
 
-            if (result.isSuccess) {
-                val data = result.getOrNull()?.data ?: emptyList()
-                LoadResult.Page(
-                    data = data,
-                    prevKey = if (page == 1) null else page - 1,
-                    nextKey = if (data.isEmpty()) null else page + 1
-                )
-            } else {
-                LoadResult.Error(result.exceptionOrNull() ?: Exception(Constant.UNKNOWN_ERROR))
+            when (result) {
+                is Result.Success -> {
+                    val data = result.data.data ?: emptyList()
+                    LoadResult.Page(
+                        data = data,
+                        prevKey = if (page == 1) null else page - 1,
+                        nextKey = if (data.isEmpty()) null else page + 1
+                    )
+                }
+                is Result.Error -> {
+                    LoadResult.Error(result.exception)
+                }
+                is Result.Loading -> {
+                    LoadResult.Error(Exception(Constant.UNKNOWN_ERROR))
+                }
             }
-        } catch (e: Exception) {
+        } catch (e: Exception){
             LoadResult.Error(e)
         }
     }
