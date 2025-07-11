@@ -1,22 +1,20 @@
-package com.example.domain.usecase
+package com.example.domain.usecase.data
 
 import androidx.paging.PagingData
-import com.example.domain.model.FilterDataModel
-import com.example.domain.repository.FilterDataRepository
+import com.example.domain.repository.DataRepository
 import com.example.domain.response.RecordData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class FilterDataUseCase @Inject constructor(
-    private val repository: FilterDataRepository,
+class DataUseCase @Inject constructor(
+    private val dataRepository: DataRepository,
     private val dispatcher: CoroutineDispatcher
 ) {
     operator fun invoke(
-        filterData: FilterDataModel? = null,
         limit: Int = 10
     ): Flow<PagingData<RecordData>> {
-        return repository.getFilterDataPaging(filterData, limit).flowOn(dispatcher)
+        return dataRepository.getDataPaging(limit).flowOn(dispatcher)
     }
 }
