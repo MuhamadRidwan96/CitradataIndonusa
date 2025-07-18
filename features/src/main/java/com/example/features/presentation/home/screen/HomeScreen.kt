@@ -2,17 +2,12 @@ package com.example.features.presentation.home.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apartment
 import androidx.compose.material.icons.filled.Factory
@@ -20,162 +15,214 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Store
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.core_ui.AppTheme
-import com.example.core_ui.component.CardItem
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.core_ui.component.Carousel
 import com.example.core_ui.component.CarouselItem
+import com.example.core_ui.component.CompactSearchBar
 import com.example.core_ui.component.FilterCategory
 import com.example.core_ui.component.FilterCategoryRow
-import com.example.core_ui.component.ProjectCard
-import com.example.core_ui.component.CompactSearchBar
+import com.example.data.utils.TokenExpiredException
 import com.example.feature_login.R
+import com.example.features.presentation.home.DataEvent
+import com.example.features.presentation.home.HomeViewModel
+import com.example.features.presentation.home.component.ProjectCard
 import com.example.features.presentation.home.component.TopAppBarContent
-import kotlinx.coroutines.delay
+import com.example.features.presentation.home.state.toDataState
+import com.example.features.presentation.profile.LogOutViewModel
+import kotlinx.coroutines.launch
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
-    Scaffold(
-        topBar = { TopAppBarContent(imageVector = Icons.Default.Notifications) }
-    ) { paddingValues ->
-        HomeContent(paddingValues)
-    }
-}
-
-@Composable
-private fun HomeContent(paddingValues: PaddingValues) {
-    val projectList = remember { getSampleProjectList() }
-    val (showList, setShowList) = remember { mutableStateOf(false) }
-    val listState = rememberLazyListState()
-    val favoriteMap = remember { mutableStateMapOf<String, Boolean>() }
-
-    LaunchedEffect(Unit) {
-        delay(1000)
-        setShowList(true)
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-    ) {
-        SearchSection()
-
-        if (showList) {
-            ProjectList(
-                projects = projectList,
-                listState = listState,
-                favoriteMap = favoriteMap
-            )
-        } else {
-            LoadingPlaceholder()
-        }
-    }
-}
-
-@Composable
-private fun ProjectList(
-    projects: List<CardItem>,
-    listState: LazyListState,
-    favoriteMap: SnapshotStateMap<String, Boolean>
+fun HomeScreen(
+    viewmodel: HomeViewModel = hiltViewModel(),
+    logoutViewmodel: LogOutViewModel = hiltViewModel(),
+    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onNavigateToLogin: () -> Unit
 ) {
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .fillMaxWidth(),
-        contentPadding = PaddingValues(vertical = 36.dp)
-    ) {
-        item {
-            CarouselSection()
-            Spacer(modifier = Modifier.size(28.dp))
+    val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
+    val pagingItems = viewmodel.dataPaging.collectAsLazyPagingItems()
+    val sheetState = rememberModalBottomSheetState()
+    val coroutineScope = rememberCoroutineScope()
+    var showErrorSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(pagingItems.loadState) {
+        val error = pagingItems.loadState.refresh as? LoadState.Error
+        if (error?.error is TokenExpiredException) {
+            showErrorSheet = true
         }
+    }
 
-        item { CategoryFilterSection() }
-
-        items(
-            items = projects,
-            key = { it.title },
-            contentType = { "project card" }
-        ) { project ->
-            ProjectCard(
-                items = project,
-                isFavorite = favoriteMap[project.title] == true,
-                onFavoriteClick = {
-                    favoriteMap[project.title] = favoriteMap[project.title] != false
+    if (showErrorSheet) {
+        ErrorBottomSheet(
+            message = "Sesi anda telah berakhir, silahkan login kembali!",
+            sheetState = sheetState,
+            onDismiss = {
+                coroutineScope.launch {
+                    logoutViewmodel.logout() // optional: clear token
+                    showErrorSheet = false
+                    onNavigateToLogin()
                 }
-            )
+            }
+        )
+    }
+
+
+    // Listen to UI Events
+    LaunchedEffect(Unit) {
+        viewmodel.dataEvent.collect { event ->
+            when (event) {
+                is DataEvent.ShowSnackBar -> {
+                    snackBarHostState.showSnackbar(event.message)
+                }
+
+                is DataEvent.Success -> {}
+            }
         }
-        item { Spacer(modifier = Modifier.size(75.dp)) }
+    }
+    Scaffold(
+        topBar = { TopAppBarContent(imageVector = Icons.Default.Notifications) },
+        snackbarHost = { SnackbarHost(snackBarHostState) }
+    ) { paddingValues ->
+        LazyColumn(
+            contentPadding = paddingValues,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            items(pagingItems.itemCount) { index ->
+                val recordData = pagingItems[index]
+                recordData?.let {
+                    val dataState = it.toDataState(uiState.isFavorite)
+                    ProjectCard(
+                        project = dataState,
+                        onFavoriteClick = { id ->
+                            viewmodel.favoriteChecked(id)
+                        }
+                    )
+                }
+
+            }
+            pagingItems.apply {
+                when {
+                    loadState.refresh is LoadState.Loading -> {
+                        item { LoadingItem() }
+                    }
+
+                    loadState.append is LoadState.Loading -> {
+                        item { LoadingItem() }
+                    }
+
+                    loadState.refresh is LoadState.Error -> {
+                        val e = (loadState.refresh as LoadState.Error).error
+                        if (e !is TokenExpiredException) {
+                            item {
+                                PagingErrorItem(e.message ?: "Gagal memuat data")
+                            }
+                        }
+                    }
+
+                    loadState.append is LoadState.Error -> {
+                        val e = (loadState.append as LoadState.Error).error
+                        if (e !is TokenExpiredException) {
+                            item {
+                                PagingErrorItem(e.message?:"Gagal memuat data berikutnya")
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 @Composable
-private fun LoadingPlaceholder() {
+fun LoadingItem() {
     Box(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
     }
 }
 
-private fun getSampleProjectList(): List<CardItem> = listOf(
-    CardItem(
-        title = "PASAR INDUK BANYUWANGI DAN ASRAMA INGGRISAN BANYUWANGI (REVITALISASI)",
-        date = "May,15-2025",
-        category = "Middle Project",
-        location = "Ngawi, East Java",
-        statusProject = "New",
-        status = "Planning",
-    ),
-    CardItem(
-        title = "Harbor Tower Development",
-        date = "Jun 15, 2023",
-        category = "Highrise and commercial building",
-        location = "Downtown, Tokyo",
-        status = "Finish",
-        statusProject = "Update",
-    ),
-    CardItem(
-        title = "HOSPITAL – RS. MAYAPADA JAKARTA TIMUR",
-        date = "Jun 15, 2023",
-        category = "Highrise and commercial building",
-        location = "Downtown, Tokyo",
-        status = "Construction Start",
-        statusProject = "New",
-    ),
-    CardItem(
-        title = "OFFICE - GEDUNG DAN KAWASAN PERKANTORAN KEMENTERIAN PERTAHANAN IKN NUSANTARA (TAHAP 1)",
-        date = "Jun 15, 2023",
-        category = "Industrial and Construction",
-        location = "Downtown, Tokyo",
-        status = "Post Tender",
-        statusProject = ""
-    ),
-    CardItem(
-        title = "HOTEL - HOTEL MAWAR MELATI",
-        date = "Jun 15, 2023",
-        category = "Middle Project",
-        location = "Downtown, Tokyo",
-        status = "Under Construction",
-        statusProject = ""
-    )
-)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ErrorBottomSheet(
+    message: String,
+    onDismiss: () -> Unit,
+    sheetState: SheetState
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surface
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = message,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(onClick = onDismiss) {
+                Text("Tutup")
+            }
+        }
+    }
+}
+
+@Composable
+fun PagingErrorItem(message: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = message,
+            textAlign = TextAlign.Center,
+            color = Color.Red,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
 
 @Composable
 private fun SearchSection() {
@@ -192,7 +239,6 @@ private fun SearchSection() {
 @Composable
 private fun CarouselSection() {
 
-    // Use remember with keys if these items might change
     val dummyItems = remember {
         listOf(
             CarouselItem(
@@ -235,7 +281,6 @@ private fun CarouselSection() {
 @Composable
 fun CategoryFilterSection() {
 
-    // Extract categories list to avoid recreation on recomposition
     val categories = remember {
         listOf(
             FilterCategory(5, "Highrise & Commercial", "HRC", Icons.Default.Apartment),
@@ -246,7 +291,6 @@ fun CategoryFilterSection() {
         )
     }
 
-    // State hoisted to parent if needed elsewhere
     var selectedCategory by rememberSaveable { mutableStateOf<Int?>(5) }
 
     FilterCategoryRow(
@@ -258,11 +302,3 @@ fun CategoryFilterSection() {
     )
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun CheckHomeScreen() {
-    AppTheme {
-        HomeScreen()
-    }
-}
