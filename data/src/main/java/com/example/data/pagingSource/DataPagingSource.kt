@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.common.Result
 import com.example.data.utils.Constant
+import com.example.data.utils.TokenExpiredException
 import com.example.domain.repository.DataRepository
 import com.example.domain.response.RecordData
 import kotlinx.coroutines.flow.first
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 class DataPagingSource @Inject constructor(
     private val dataRepository: DataRepository,
-    private val limit: Int = 10
+    private val limit: Int = 10,
+    private val onTokenExpired: () -> Unit
 ) : PagingSource<Int, RecordData>() {
     override fun getRefreshKey(state: PagingState<Int, RecordData>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -36,6 +38,9 @@ class DataPagingSource @Inject constructor(
                 }
 
                 is Result.Error -> {
+                    if (result.exception is TokenExpiredException) {
+                        onTokenExpired() //Throw tokenExpiredException
+                    }
                     LoadResult.Error(result.exception)
                 }
 
@@ -44,6 +49,9 @@ class DataPagingSource @Inject constructor(
                     LoadResult.Error(Exception(Constant.UNKNOWN_ERROR))
                 }
             }
+        } catch (e:TokenExpiredException){
+            onTokenExpired() // kirim sinyal ke viewmodel
+            LoadResult.Error(e)
         } catch (e: Exception) {
             LoadResult.Error(e)
         }

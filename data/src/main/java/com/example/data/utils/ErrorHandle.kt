@@ -6,8 +6,12 @@ object ErrorHandle {
     fun parseErrorBody(errorBody: String): String? {
         return try {
             val jsonObject = JSONObject(errorBody)
-            jsonObject.getString("message")
-        } catch (e: Exception) {
+            if (jsonObject.has("message")) {
+                jsonObject.getString("message")
+            } else {
+                null
+            }
+        } catch (_: Exception) {
             null
         }
     }

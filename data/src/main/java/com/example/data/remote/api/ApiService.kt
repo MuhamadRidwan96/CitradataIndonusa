@@ -13,6 +13,7 @@ import com.example.domain.model.ProvinceModel
 import com.example.domain.model.RegisterModel
 import com.example.domain.response.ProfileResponse
 import com.example.domain.response.UpdateProfileResponse
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -46,7 +47,7 @@ interface ApiService {
     suspend fun getData(
         @Header("Page") page: Int,
         @Header("Limit") limit: Int,
-    ): Response<DataResponse>
+    ): Response<ResponseBody>
 
     @GET("/CitraDataIndonusa/apl/api/v1/project/detail/{idProject}")
     suspend fun getDetailData(

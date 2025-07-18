@@ -13,6 +13,7 @@ import com.example.domain.response.ProvinceResponse
 import com.example.domain.response.RegenciesResponse
 import com.example.domain.response.RegisterResponse
 import com.example.domain.response.UpdateProfileResponse
+import okhttp3.ResponseBody
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -31,7 +32,7 @@ class ApiHelperImpl @Inject constructor(
         return apiService.searchData(page,limit,search)
     }
 
-    override suspend fun getData(page: Int,limit:Int): Response<DataResponse> {
+    override suspend fun getData(page: Int,limit:Int): Response<ResponseBody> {
        return apiService.getData(page,limit)
     }
 
