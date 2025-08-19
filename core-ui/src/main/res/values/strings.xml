@@ -60,4 +60,25 @@
     <string name="end_date">End Date</string>
     <string name="alamat">Alamat</string>
     <string name="with_ppr">Dengan PPR</string>
+    <string name="project_overview">Project Overview</string>
+    <string name="budget">Budget</string>
+    <string name="funding_source">Funding Source</string>
+    <string name="location">Location</string>
+    <string name="cat_project">Category Project</string>
+    <string name="const_schedule">Construction Schedule</string>
+    <string name="month_start">Month Start</string>
+    <string name="month_end">Month End</string>
+    <string name="exp_date">Expired Date</string>
+    <string name="stage">Current Stage</string>
+    <string name="add_info">Additional Info</string>
+    <string name="date_created">"Created: "</string>
+    <string name="luas_bangunan">Luas bangunan</string>
+    <string name="project_specification">Project Specification</string>
+    <string name="report_progress">Progress Report</string>
+    <string name="team_member">Team Member</string>
+    <string name="contractor">Contractor</string>
+    <string name="consultant">Consultant</string>
+    <string name="developer">Developer</string>
+    <string name="last_update">Last update</string>
+    <string name="id_project">Id project : </string>
 </resources>
