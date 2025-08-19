@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,11 +45,13 @@ fun SubscriptionCard(
 ) {
     val planStyle = MaterialTheme.typography.headlineMedium.copy(
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.secondary,
+        color = MaterialTheme.colorScheme.onSurface,
     )
 
     Box(modifier = modifier.fillMaxWidth()) {
         Card(
+            elevation = CardDefaults.cardElevation(2.dp),
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onSecondary),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = if (plan.isMostPopular) 12.dp else 0.dp),
@@ -133,7 +136,7 @@ fun SubscriptionCard(
 fun BenefitCard(benefit: BenefitPlan) {
     val planStyle = MaterialTheme.typography.titleLarge.copy(
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.secondary,
+        color = MaterialTheme.colorScheme.onSurface,
     )
 
     val descStyle = MaterialTheme.typography.titleMedium.copy(
@@ -144,10 +147,11 @@ fun BenefitCard(benefit: BenefitPlan) {
             imageVector = benefit.icon,
             contentDescription = null,
             modifier = Modifier
-                .size(45.dp, 45.dp)
-                .align(Alignment.Top)
+                .size(26.dp, 26.dp)
+                .align(Alignment.Top),
+            tint = MaterialTheme.colorScheme.primary
         )
-        Spacer(modifier = Modifier.size(6.dp))
+        Spacer(modifier = Modifier.size(8.dp))
         Column {
             Text(benefit.planName, style = planStyle)
             Text(benefit.description, style = descStyle)

@@ -36,7 +36,7 @@ fun FilterCategoryRow(
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.SpaceBetween,
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
         modifier = modifier.fillMaxWidth()
     ) {
         items(categories) { category ->
