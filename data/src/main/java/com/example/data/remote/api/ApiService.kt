@@ -34,7 +34,7 @@ interface ApiService {
     suspend fun searchData(
         @Header("Page") page: Int,
         @Header("Limit") limit: Int,
-        @Body search: Map<String, String>
+        @Body filters: Map<String, String>
     ): Response<DataResponse>
 
     @GET("CitraDataIndonusa/apl/api/v1/getUser")

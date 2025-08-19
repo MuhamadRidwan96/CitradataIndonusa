@@ -12,6 +12,7 @@ import javax.inject.Inject
 
 class DataPagingSource @Inject constructor(
     private val dataRepository: DataRepository,
+    private val filters: Map<String, String> = emptyMap(),
     private val limit: Int = 10,
     private val onTokenExpired: () -> Unit
 ) : PagingSource<Int, RecordData>() {
@@ -25,7 +26,10 @@ class DataPagingSource @Inject constructor(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, RecordData> {
         val page = params.key ?: 1
         return try {
-            val result = dataRepository.getData(page, limit).first()
+
+            val result = if (filters.isEmpty()) {dataRepository.getData(page, limit).first()} else {
+                dataRepository.searchData(page,limit, filters)
+            }
 
             when (result) {
                 is Result.Success -> {

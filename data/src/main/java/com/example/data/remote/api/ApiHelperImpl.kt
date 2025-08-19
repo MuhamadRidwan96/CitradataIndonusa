@@ -28,8 +28,8 @@ class ApiHelperImpl @Inject constructor(
        return apiService.register(requestRegister)
     }
 
-    override suspend fun searchData(page: Int, limit:Int,search: Map<String, String>): Response<DataResponse> {
-        return apiService.searchData(page,limit,search)
+    override suspend fun searchData(page: Int, limit:Int,filters: Map<String, String>): Response<DataResponse> {
+        return apiService.searchData(page,limit,filters)
     }
 
     override suspend fun getData(page: Int,limit:Int): Response<ResponseBody> {

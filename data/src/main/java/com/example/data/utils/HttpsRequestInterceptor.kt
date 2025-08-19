@@ -18,5 +18,14 @@ class HttpsRequestInterceptor @Inject constructor(private val userPreferenceImpl
             .addHeader("Accept", "application/json")
             .build()
         return chain.proceed(request)
+
+        val response = chain.proceed(request)
+
+        // ✅ Deteksi jika token expired dari kode status (misalnya 401 Unauthorized)
+        if (response.code == 401){
+            response.close()
+            throw TokenExpiredException("Token Expired, Silahkan login kembali!")
+        }
+        return response
     }
 }

@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import com.example.common.Result
 import com.example.data.pagingSource.DataPagingSource
 import com.example.data.remote.api.ApiHelper
+import com.example.data.utils.toResult
 import com.example.data.utils.toTypedResult
 import com.example.domain.repository.DataRepository
 import com.example.domain.response.DataResponse
@@ -23,7 +24,20 @@ class DataRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) :
         emit(response.toTypedResult())
     }
 
-    override fun getDataPaging(limit: Int): Flow<PagingData<RecordData>> {
+    override suspend fun searchData(
+        page: Int,
+        limit: Int,
+        filters: Map<String, String>
+    ): Result<DataResponse> {
+        val response = apiHelper.searchData(page, limit, filters)
+        return response.toResult()
+    }
+
+
+    override fun getDataPaging(
+        limit: Int,
+        filters:Map<String, String>
+    ): Flow<PagingData<RecordData>> {
         return Pager(
             config = PagingConfig(
                 pageSize = limit,
@@ -35,6 +49,7 @@ class DataRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) :
                     dataRepository = this,
                     limit = limit,
                     onTokenExpired = { onTokenExpiredCallBack.invoke() },
+                    filters = filters
                 )
             }
         ).flow

@@ -18,16 +18,17 @@ import com.example.common.Result
 class FilterDataRepositoryImpl @Inject constructor(
     private val apiHelper: ApiHelper
 ) : FilterDataRepository {
+
     override fun filterData(
         page: Int,
         limit: Int,
         filterData: FilterDataModel?
     ): Flow<Result<DataResponse>> = flow {
-       val response = apiHelper.filterData(
-           page = page,
-           limit = limit,
-           filteredData = filterData
-       )
+        val response = apiHelper.filterData(
+            page = page,
+            limit = limit,
+            filteredData = filterData
+        )
         emit(response.toResult())
     }
 

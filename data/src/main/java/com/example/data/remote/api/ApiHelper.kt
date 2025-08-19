@@ -19,7 +19,7 @@ import retrofit2.Response
 interface ApiHelper{
     suspend fun login(requestLogin:LoginModel):Response<LoginResponse>
     suspend fun register(requestRegister: RegisterModel):Response<RegisterResponse>
-    suspend fun searchData(page: Int,limit: Int,search:Map<String,String>):Response<DataResponse>
+    suspend fun searchData(page: Int,limit: Int,filters:Map<String,String>):Response<DataResponse>
     suspend fun getData(page: Int, limit : Int):Response<ResponseBody>
     suspend fun getDetailData(idProject:String):Response<ProjectDetailResponse>
     suspend fun getUser():Response<ProfileResponse>

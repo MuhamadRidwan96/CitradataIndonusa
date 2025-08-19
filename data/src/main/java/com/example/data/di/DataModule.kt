@@ -6,10 +6,12 @@ import com.example.data.remote.api.ApiService
 import com.example.data.remote.google.GoogleAuthManager
 import com.example.data.repositoryImpl.AuthenticationRepositoryImpl
 import com.example.data.repositoryImpl.DataRepositoryImpl
+import com.example.data.repositoryImpl.DetailDataRepositoryImpl
 import com.example.data.repositoryImpl.FilterDataRepositoryImpl
 import com.example.data.repositoryImpl.LocationRepositoryImpl
 import com.example.domain.repository.AuthRepository
 import com.example.domain.repository.DataRepository
+import com.example.domain.repository.DetailDataRepository
 import com.example.domain.repository.FilterDataRepository
 import com.example.domain.repository.LocationRepository
 import dagger.Module
@@ -58,6 +60,14 @@ object DataModule {
     fun provideDataRepository(apiHelper: ApiHelper): DataRepository{
         return DataRepositoryImpl(apiHelper)
     }
+
+    @Singleton
+    @Provides
+    fun providesDetailRepository(apiHelper: ApiHelper): DetailDataRepository{
+        return DetailDataRepositoryImpl(apiHelper)
+    }
+
+
 
 
 }
