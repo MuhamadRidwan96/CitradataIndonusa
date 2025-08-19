@@ -24,7 +24,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -50,7 +49,6 @@ import com.example.features.presentation.search.component.StartAndEndDate
 import com.example.features.presentation.search.viewmodel.CityViewModel
 import com.example.features.presentation.search.viewmodel.ProvinceViewModel
 import com.example.features.presentation.search.viewmodel.SearchViewModel
-import kotlinx.coroutines.delay
 
 // Added focus management and better state organization
 @OptIn(ExperimentalMaterial3Api::class)
@@ -176,8 +174,7 @@ private fun SearchHeaderSection(
         ) {
             CompactSearchBar(
                 query = filterState.query,
-                onQueryChange = { viewModel.updateFilterState { copy(query = it) } },
-                onSearchClicked = {}
+                onQueryChange = { viewModel.updateFilterState { copy(query = it) } }
             )
             Spacer(modifier = Modifier.height(10.dp))
             StartAndEndDate(

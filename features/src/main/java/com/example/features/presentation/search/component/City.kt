@@ -84,7 +84,6 @@ fun CityBottomSheet(
             ) {
                 CompactSearchBar(
                     query = query,
-                    onSearchClicked = {},
                     onQueryChange = { viewModel::onQueryChange }
                 )
 

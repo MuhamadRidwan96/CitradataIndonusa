@@ -28,9 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.core_ui.AppTheme
 import com.example.core_ui.component.BenefitCard
 import com.example.core_ui.component.CompareFeatures
 import com.example.core_ui.component.SubscriptionCard
@@ -84,7 +86,7 @@ fun MyMembershipScreen(navController: NavHostController) {
             ) {
                 Surface(
                     modifier = Modifier
-                        .padding(horizontal = 24.dp)
+                        .padding(horizontal = 16.dp)
                         .sizeIn(minHeight = 58.dp),
                     shape = MaterialTheme.shapes.large,
                     color = MaterialTheme.colorScheme.surface,
@@ -131,6 +133,7 @@ private fun TabSection(
     TabRow(
         selectedTabIndex = selectedTabIndex,
         contentColor = MaterialTheme.colorScheme.primary,
+        containerColor = MaterialTheme.colorScheme.onSecondary,
         divider = {},
         indicator = { tabPositions ->
             SecondaryIndicator(
@@ -160,7 +163,7 @@ fun PlansSection() {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(subscriptionPlans) { plan ->
@@ -172,6 +175,7 @@ fun PlansSection() {
     }
 }
 
+
 @Composable
 fun BenefitsContent() {
     val benefitPlans = rememberBenefitPlans()
@@ -180,7 +184,7 @@ fun BenefitsContent() {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(top = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(benefitPlans) { benefit ->
@@ -197,10 +201,19 @@ fun CompareContent() {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(top = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) { item { CompareFeatures() } }
 }
+
+@Composable
+@Preview(showBackground = true)
+fun TestPreview(){
+    AppTheme {
+        PlansSection()
+    }
+}
+
 

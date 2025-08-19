@@ -1,80 +1,102 @@
 package com.example.features.presentation.home
 
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.data.repositoryImpl.DataRepositoryImpl
-import com.example.domain.preferences.UserPreferences
-import com.example.domain.repository.DataRepository
+import com.example.data.utils.TokenExpiredException
+import com.example.domain.model.UserProfile
 import com.example.domain.response.RecordData
-import com.example.domain.usecase.data.DataUseCase
+import com.example.domain.usecase.authentication.ProfileUseCase
+import com.example.domain.usecase.data.FilteredUseCase
+import com.example.features.presentation.home.state.HomeUiState
+import com.example.features.presentation.home.utils.toFilterDataModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    dataUseCase: DataUseCase,
-    repository: DataRepository,
-
-
+    filteredUseCase: FilteredUseCase,
+    profileUseCase: ProfileUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     private val _tokenExpired = MutableSharedFlow<Unit>()
-    val tokenExpired: SharedFlow<Unit> = _tokenExpired
+
+    private val _searchQuery = MutableStateFlow<Map<String, String>>(emptyMap())
+    val search = _searchQuery.asStateFlow()
+
+    private val _searchCategory = MutableStateFlow<Map<String, String>>(emptyMap())
 
     private val _dataEvent = Channel<DataEvent>(Channel.BUFFERED)
     val dataEvent = _dataEvent.receiveAsFlow()
 
-    val dataPaging: Flow<PagingData<RecordData>> = dataUseCase()
-        .cachedIn(viewModelScope)
+    var userProfile by mutableStateOf<UserProfile?>(null)
+        private set
 
     init {
-        if (repository is DataRepositoryImpl){
-            repository.onTokenExpiredCallBack = {
-                viewModelScope.launch {
-                    _tokenExpired.emit(Unit)
-                }
+        viewModelScope.launch {
+            profileUseCase().collect { profile ->
+                userProfile = profile
             }
         }
     }
 
-    suspend fun sendEvent(event: DataEvent) {
-        _dataEvent.send(event)
+
+    fun applyCategories(category: String?) {
+        _searchCategory.value = if (category.isNullOrEmpty()) emptyMap() else mapOf(
+            "idproject_category" to category
+        )
     }
 
-    fun showSnackBar(message: String) {
-        viewModelScope.launch {
-            _dataEvent.send(DataEvent.ShowSnackBar(message))
-        }
+    fun applyProjectName(names: Map<String, String>) {
+        _searchQuery.value = if (names.isEmpty()) emptyMap() else names
     }
+
+    val currentPagingData: Flow<PagingData<RecordData>> =
+        combine(
+            _searchQuery.debounce(300).distinctUntilChanged(),
+            _searchCategory.debounce(300).distinctUntilChanged()
+        ) { query, category ->
+            query to category
+        }.flatMapLatest { (query, category) ->
+            val merge = query + category
+            filteredUseCase(filterData = merge.toFilterDataModel())
+        }.catch { e ->
+            if (e is TokenExpiredException){
+                _tokenExpired.emit(Unit)
+            } else {
+                throw e
+            }
+        }.cachedIn(viewModelScope)
 
     fun favoriteChecked(favorite: Boolean) {
         _uiState.update { it.copy(isFavorite = favorite) }
     }
 }
 
-@Immutable
-data class HomeUiState(
-    val isFavorite: Boolean = false,
-    val isLoading: Boolean = false,
-    val selectedFilter: String = "",
-    val showDialog: Boolean = false
-)
 
 sealed class DataEvent {
     data object Success : DataEvent()

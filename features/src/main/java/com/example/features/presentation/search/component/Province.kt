@@ -85,7 +85,6 @@ fun ProvinceBottomSheet(
             ) {
                 CompactSearchBar(
                     query = query,
-                    onSearchClicked = { },
                     onQueryChange = viewModel::onQueryChange
                 )
 

@@ -16,6 +16,15 @@ data class DataState(
     val location: String = "",
     val province: String = "",
     val isLoading: Boolean = false,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val filters: Map<String, String> = emptyMap()
 
+)
+
+@Immutable
+data class HomeUiState(
+    val isFavorite: Boolean = false,
+    val isLoading: Boolean = false,
+    val selectedFilter: String = "",
+    val showDialog: Boolean = false
 )

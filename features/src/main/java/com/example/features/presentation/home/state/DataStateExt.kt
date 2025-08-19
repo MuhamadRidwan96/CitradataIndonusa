@@ -2,10 +2,10 @@ package com.example.features.presentation.home.state
 
 import com.example.domain.response.RecordData
 
-fun RecordData.toDataState(isFavorite: Boolean = false):DataState{
+fun RecordData.toDataState(isFavorite: Boolean = false,no :Int = 0):DataState{
     return DataState(
         checkbox = this.checkbox,
-        no = this.no,
+        no = no,
         lastUpdate = this.lastUpdate,
         idRecord = this.idRecord,
         idProject = this.idProject,

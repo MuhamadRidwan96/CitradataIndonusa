@@ -1,13 +1,16 @@
-package com.example.features.presentation.home.screen
+package com.example.features.presentation.home.screen.dashboard
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apartment
 import androidx.compose.material.icons.filled.Factory
@@ -29,6 +32,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,13 +47,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.core_ui.component.Carousel
-import com.example.core_ui.component.CarouselItem
 import com.example.core_ui.component.CompactSearchBar
 import com.example.core_ui.component.FilterCategory
 import com.example.core_ui.component.FilterCategoryRow
 import com.example.data.utils.TokenExpiredException
-import com.example.feature_login.R
 import com.example.features.presentation.home.DataEvent
 import com.example.features.presentation.home.HomeViewModel
 import com.example.features.presentation.home.component.ProjectCard
@@ -65,13 +66,17 @@ fun HomeScreen(
     viewmodel: HomeViewModel = hiltViewModel(),
     logoutViewmodel: LogOutViewModel = hiltViewModel(),
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    onNavigateToDetail: (String) -> Unit
 ) {
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
-    val pagingItems = viewmodel.dataPaging.collectAsLazyPagingItems()
+    val pagingItems = viewmodel.currentPagingData.collectAsLazyPagingItems()
+    val profile = viewmodel.userProfile
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
     var showErrorSheet by remember { mutableStateOf(false) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var selectedCategory by rememberSaveable { mutableIntStateOf(4) }
 
     LaunchedEffect(pagingItems.loadState) {
         val error = pagingItems.loadState.refresh as? LoadState.Error
@@ -86,14 +91,14 @@ fun HomeScreen(
             sheetState = sheetState,
             onDismiss = {
                 coroutineScope.launch {
-                    logoutViewmodel.logout() // optional: clear token
-                    showErrorSheet = false
                     onNavigateToLogin()
+                    logoutViewmodel.logout()
+                    showErrorSheet = false
+
                 }
             }
         )
     }
-
 
     // Listen to UI Events
     LaunchedEffect(Unit) {
@@ -108,57 +113,134 @@ fun HomeScreen(
         }
     }
     Scaffold(
-        topBar = { TopAppBarContent(imageVector = Icons.Default.Notifications) },
+        topBar = {
+            TopAppBarContent(
+                imageVector = Icons.Default.Notifications,
+                photo = profile?.photo ?: "",
+                email = profile?.email ?: "",
+                name = profile?.name ?: ""
+            )
+        },
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { paddingValues ->
-        LazyColumn(
-            contentPadding = paddingValues,
+        Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(pagingItems.itemCount) { index ->
-                val recordData = pagingItems[index]
-                recordData?.let {
-                    val dataState = it.toDataState(uiState.isFavorite)
-                    ProjectCard(
-                        project = dataState,
-                        onFavoriteClick = { id ->
-                            viewmodel.favoriteChecked(id)
-                        }
-                    )
+
+            SearchSection(
+                query = searchQuery,
+                onQueryChange = {
+                    searchQuery = it
+                    viewmodel.applyProjectName(mapOf("project_name" to it))
                 }
+            )
 
-            }
-            pagingItems.apply {
-                when {
-                    loadState.refresh is LoadState.Loading -> {
-                        item { LoadingItem() }
+            CategoryFilterSection(
+                selectedCategory = selectedCategory,
+                onCategorySelected = { category ->
+                    selectedCategory = category
+                    viewmodel.applyCategories(getCategoryCode(category))
+                }
+            )
+
+            val listState = rememberSaveable(
+                saver = LazyListState.Saver
+            ) { LazyListState() }
+
+            LazyColumn(
+                contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding() + 50.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 12.dp),
+                state = listState
+
+            ) {
+                items(pagingItems.itemCount) { index ->
+                    val recordData = pagingItems[index]
+                    recordData?.let {
+                        val no = index + 1
+                        val dataState = it.toDataState(uiState.isFavorite, no)
+
+                        ProjectCard(
+                            project = dataState,
+                            onFavoriteClick = { id ->
+                                viewmodel.favoriteChecked(id)
+                            },
+                            onClick = { onNavigateToDetail(dataState.idProject) }
+                        )
                     }
+                }
+                pagingItems.apply {
+                    when {
+                        loadState.refresh is LoadState.Loading -> {
+                            item { LoadingItem() }
+                        }
 
-                    loadState.append is LoadState.Loading -> {
-                        item { LoadingItem() }
-                    }
+                        loadState.append is LoadState.Loading -> {
+                            item { LoadingItem() }
+                        }
 
-                    loadState.refresh is LoadState.Error -> {
-                        val e = (loadState.refresh as LoadState.Error).error
-                        if (e !is TokenExpiredException) {
-                            item {
-                                PagingErrorItem(e.message ?: "Gagal memuat data")
+                        loadState.refresh is LoadState.Error -> {
+                            val e = (loadState.refresh as LoadState.Error).error
+                            if (e !is TokenExpiredException) {
+                                item {
+                                    PagingErrorItem("Gagal memuat data")
+                                }
                             }
                         }
-                    }
 
-                    loadState.append is LoadState.Error -> {
-                        val e = (loadState.append as LoadState.Error).error
-                        if (e !is TokenExpiredException) {
-                            item {
-                                PagingErrorItem(e.message?:"Gagal memuat data berikutnya")
+                        loadState.append is LoadState.Error -> {
+                            val e = (loadState.append as LoadState.Error).error
+                            if (e !is TokenExpiredException) {
+                                item {
+                                    PagingErrorItem("Tidak ada data berikutnya!")
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+
+@Composable
+fun CategoryFilterSection(
+    selectedCategory: Int,
+    onCategorySelected: (Int) -> Unit
+) {
+    val categories = remember {
+        listOf(
+            FilterCategory(5, "Highrise & Commercial", "HRC", Icons.Default.Apartment),
+            FilterCategory(6, "Middle Project", "MDL", Icons.Default.Home),
+            FilterCategory(7, "Low Project", "LOW", Icons.Default.House),
+            FilterCategory(8, "Industrial & Infrastructure", "IND", Icons.Default.Factory),
+            FilterCategory(9, "Fitting Out & Interior", "FTO", Icons.Default.Store)
+        )
+    }
+
+    FilterCategoryRow(
+        categories = categories,
+        selectedCategoryProjectId = selectedCategory,
+        onCategoryProjectSelected = { categoryId ->
+            onCategorySelected(categoryId)
+        },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+private fun getCategoryCode(categoryId: Int): String {
+    return when (categoryId) {
+        5 -> "5"
+        6 -> "6"
+        7 -> "7"
+        8 -> "8"
+        9 -> "9"
+        else -> ""
     }
 }
 
@@ -225,80 +307,20 @@ fun PagingErrorItem(message: String) {
 }
 
 @Composable
-private fun SearchSection() {
-    // Move state management higher if used elsewhere
-    var query by remember { mutableStateOf("") }
+private fun SearchSection(
+    query: String,
+    onQueryChange: (String) -> Unit
+) {
     CompactSearchBar(
         query = query,
-        onQueryChange = { query = it },
-        modifier = Modifier.padding(horizontal = 16.dp)
-
-    )
-}
-
-@Composable
-private fun CarouselSection() {
-
-    val dummyItems = remember {
-        listOf(
-            CarouselItem(
-                imageRes = R.drawable.carousel_001,
-                status = "Baru",
-                date = "3 Mei 2025",
-                title = "Proyek Jalan Tol",
-                location = "Jakarta",
-                category = "Konstruksi"
-            ),
-            CarouselItem(
-                imageRes = R.drawable.carousel_002,
-                status = "Sedang Berjalan",
-                date = "1 Mei 2025",
-                title = "Jembatan Baru",
-                location = "Bandung",
-                category = "Infrastruktur"
-            ),
-            CarouselItem(
-                imageRes = R.drawable.carousel_003,
-                status = "Sedang Berjalan",
-                date = "1 Mei 2025",
-                title = "Jembatan Baru",
-                location = "Bandung",
-                category = "Infrastruktur"
-            )
-        )
-    }
-
-    // Limit carousel height to prevent excessive rendering
-    Carousel(
-        items = dummyItems,
+        onQueryChange = onQueryChange,
         modifier = Modifier
+            .padding(horizontal = 12.dp)
             .fillMaxWidth()
-            .height(140.dp) // Fixed height for better performance
+
     )
 }
 
 
-@Composable
-fun CategoryFilterSection() {
 
-    val categories = remember {
-        listOf(
-            FilterCategory(5, "Highrise & Commercial", "HRC", Icons.Default.Apartment),
-            FilterCategory(6, "Middle Project", "MDL", Icons.Default.Home),
-            FilterCategory(7, "Low Project", "LOW", Icons.Default.House),
-            FilterCategory(8, "Industrial & Infrastructure", "IND", Icons.Default.Factory),
-            FilterCategory(9, "Fitting Out & Interior", "FTO", Icons.Default.Store)
-        )
-    }
-
-    var selectedCategory by rememberSaveable { mutableStateOf<Int?>(5) }
-
-    FilterCategoryRow(
-
-        categories = categories,
-        selectedCategoryProjectId = selectedCategory,
-        onCategoryProjectSelected = { selectedCategory = it },
-        modifier = Modifier.fillMaxWidth()
-    )
-}
 

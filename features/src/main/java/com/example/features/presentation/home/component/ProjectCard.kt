@@ -1,8 +1,8 @@
 package com.example.features.presentation.home.component
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
@@ -33,21 +31,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.core_ui.AppTheme
 import com.example.core_ui.R
+import com.example.core_ui.component.IconText
+import com.example.core_ui.component.StatusChip
 import com.example.features.presentation.home.state.DataState
+import com.example.features.presentation.home.utils.formatToFullDate
 
 
 @Composable
 fun ProjectCard(
     project: DataState,
+    onClick: () -> Unit,
     onFavoriteClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -56,10 +58,11 @@ fun ProjectCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = cardConfiguration.topPadding, bottom = 8.dp,start = 12.dp, end = 12.dp)
+            .padding(top = cardConfiguration.topPadding, bottom = 12.dp)
     ) {
         ProjectCardContent(
             project = project,
+            onClick = onClick,
             onFavoriteClick = onFavoriteClick,
             cardConfiguration = cardConfiguration
         )
@@ -79,15 +82,18 @@ fun ProjectCard(
 @Composable
 private fun ProjectCardContent(
     project: DataState,
+    onClick: () -> Unit,
     onFavoriteClick: (Boolean) -> Unit,
     cardConfiguration: CardConfiguration
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         border = cardConfiguration.border,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onSecondary)
     ) {
         Column(
             modifier = Modifier.padding(
@@ -103,16 +109,15 @@ private fun ProjectCardContent(
                 textCategory = project.category,
                 number = project.no
             )
+            ProjectTitle(title = project.project)
 
-            ProjectTitle(
-                title = project.project,
-                idProject = project.idProject
-            )
 
+            val dates = project.lastUpdate
             ProjectMetadata(
-                date = project.lastUpdate,
+                date = formatToFullDate(dates),
                 location = project.location,
-                province = project.province
+                province = project.province,
+                idProject = project.idProject
             )
 
             HorizontalDivider(modifier = Modifier.height(0.5.dp))
@@ -139,14 +144,19 @@ private fun rememberCardConfiguration(statProject: String): CardConfiguration {
         when (statProject) {
             "New" -> CardConfiguration(
                 topPadding = 12.dp,
-                border = BorderStroke(2.dp, Color.Unspecified), // Will be resolved at composition time
+                border = BorderStroke(
+                    2.dp,
+                    Color.Unspecified
+                ), // Will be resolved at composition time
                 statusColor = Color.Unspecified
             )
+
             "Update" -> CardConfiguration(
                 topPadding = 12.dp,
                 border = BorderStroke(2.dp, Color.Unspecified),
                 statusColor = Color.Unspecified
             )
+
             else -> CardConfiguration(
                 topPadding = 0.dp,
                 border = null,
@@ -230,20 +240,15 @@ private fun HeaderText(text: String) {
 
 
 @Composable
-private fun ProjectTitle(title: String, idProject: String) {
-    Column(modifier = Modifier.padding(top = 12.dp)) {
+private fun ProjectTitle(modifier: Modifier = Modifier, title: String) {
+    Column(modifier = modifier.padding(top = 8.dp, bottom = 8.dp, start = 4.dp, end = 0.dp)) {
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
-            maxLines = 2,
+            maxLines = 4,
             overflow = TextOverflow.Ellipsis
-        )
-        Text(
-            text = idProject,
-            color = Color.Gray,
-            fontSize = 12.sp
         )
     }
 }
@@ -252,60 +257,65 @@ private fun ProjectTitle(title: String, idProject: String) {
 private fun ProjectMetadata(
     date: String,
     location: String,
-    province: String
+    province: String,
+    idProject: String
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
-
-
-        IconText(R.drawable.ic_place_marker, location)
-        IconText(R.drawable.ic_location, province)
-        IconText(R.drawable.ic_calendar, date)
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        RowLocation(location, province)
+        IconText(R.drawable.ic_schedule, date)
+        TextComponent(text = stringResource(R.string.id_project)) {
+            Text(
+                text = idProject,
+                color = Color.Gray,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 
 @Composable
-private fun IconText(
-    @DrawableRes icon: Int,
-    text: String,
-    modifier: Modifier = Modifier
-) {
+private fun TextComponent(text: String, content: @Composable () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .padding(vertical = 0.dp, horizontal = 2.dp)
-            .wrapContentHeight()
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        Text(text = text, fontSize = 10.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+        content()
+    }
+}
+
+@Composable
+private fun RowLocation(location: String, province: String) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Icon(
-            painter = painterResource(id = icon),
+            painter = painterResource(R.drawable.ic_location),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.size(12.dp)
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .size(16.dp)
+                .alignBy(FirstBaseline)
+
         )
-        Spacer(modifier = Modifier.width(4.dp))
         Text(
-            text = text,
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onBackground,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            text = "$location, $province",
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.labelMedium
         )
     }
 }
 
 @Composable
-fun BottomCard(idRecord: String, isFavorite: Boolean,  onFavoriteClick: () -> Unit) {
+fun BottomCard(idRecord: String, isFavorite: Boolean, onFavoriteClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = idRecord,
-            fontSize = 12.sp,
-            color = Color.Gray,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        IconText(R.drawable.ic_contract, idRecord)
         FavoriteButton(
             isFavorite = isFavorite,
             onClick = onFavoriteClick
@@ -314,41 +324,6 @@ fun BottomCard(idRecord: String, isFavorite: Boolean,  onFavoriteClick: () -> Un
     }
 }
 
-
-@Immutable
-private data class StatusChipColors(
-    val backgroundColor: Color,
-    val textColor: Color
-)
-
-@Composable
-private fun StatusChip(status: String) {
-    val chipColors = remember(status) {
-        when (status.lowercase()) {
-            "planning" -> StatusChipColors(Color(0xFF4CAF50), Color.White)
-            "post tender", "pilling work" -> StatusChipColors(Color(0xFFFFEB3B), Color.Black)
-            "construction start", "project canceled" -> StatusChipColors(Color(0xFFF44336), Color.White)
-            "under construction", "final project" -> StatusChipColors(Color(0xFF2196F3), Color.White)
-            "existing", "hold project" -> StatusChipColors(Color(0xFFFF9800), Color.Black)
-            "finish" -> StatusChipColors(Color.Gray, Color.White)
-            else -> StatusChipColors(Color.Transparent, Color.Black)
-        }
-    }
-
-    Text(
-        text = status,
-        color = chipColors.textColor,
-        modifier = Modifier
-            .background(
-                color = chipColors.backgroundColor,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(horizontal = 12.dp, vertical = 4.dp),
-        style = MaterialTheme.typography.bodySmall,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
-    )
-}
 
 @Composable
 private fun FavoriteButton(
@@ -366,48 +341,6 @@ private fun FavoriteButton(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-private fun PreviewProjectCard1() {
-    AppTheme {
-        ProjectCard(
-            project = DataState(
-                no = 2,
-                project = "INFRASTRUKTUR TRANSPORTASI DARAT DAN LAUT KAWASAN STRATEGIS NASIONAL IKN",
-                lastUpdate = "2024-04-24 16:52:36",
-                category = "LOW",
-                location = "Kawasan Strategis Nasional IKN, Kec. Samboja,. Kertamukti No.4, Kec. Ciputat Timur, Jl – Ciputat ",
-                status = "planning",
-                statProject = "",
-                province = "Jawa Barat",
-                idProject = "9531",
-                idRecord = "19029-21181/280224/CDI-HRC"
-            ),
-            onFavoriteClick = {}
-        )
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-private fun PreviewProjectCard2() {
-    AppTheme {
-        ProjectCard(
-            project = DataState(
-                no = 3,
-                project = "SISTEM PENGELOLAAN LINGKUNGAN HIDUP BERKELANJUTAN IKN NUSANTARA",
-                lastUpdate = "2024-04-24 16:52:36",
-                category = "IND",
-                location = "Komplek Jakarta Garden City (JGC), Cakung",
-                status = "Hold Project",
-                statProject = "New",
-                province = "D.K.I Jakarta",
-                idProject = "9532",
-                idRecord = "19029-21181/280224/CDI-HRC"
-            ),
-            onFavoriteClick = {true},
-        )
-    }
-}
 
 
