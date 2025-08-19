@@ -10,11 +10,12 @@ import javax.inject.Inject
 
 class DataUseCase @Inject constructor(
     private val dataRepository: DataRepository,
-    private val dispatcher: CoroutineDispatcher
+    private val dispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(
-        limit: Int = 10
+        limit: Int = 10,
+        filters : Map<String, String>
     ): Flow<PagingData<RecordData>> {
-        return dataRepository.getDataPaging(limit).flowOn(dispatcher)
+        return dataRepository.getDataPaging(limit, filters).flowOn(dispatcher)
     }
 }

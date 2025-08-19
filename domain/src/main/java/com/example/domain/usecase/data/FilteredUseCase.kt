@@ -1,4 +1,4 @@
-package com.example.domain.usecase
+package com.example.domain.usecase.data
 
 import androidx.paging.PagingData
 import com.example.domain.model.FilterDataModel
@@ -9,14 +9,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class FilterDataUseCase @Inject constructor(
-    private val repository: FilterDataRepository,
+class FilteredUseCase @Inject constructor(
+    private val filterDataRepository: FilterDataRepository,
     private val dispatcher: CoroutineDispatcher
 ) {
+
     operator fun invoke(
-        filterData: FilterDataModel? = null,
-        limit: Int = 10
+        limit: Int = 10,
+        filterData: FilterDataModel?
     ): Flow<PagingData<RecordData>> {
-        return repository.getFilterDataPaging(filterData, limit).flowOn(dispatcher)
+        return filterDataRepository.getFilterDataPaging(filterData, limit).flowOn(dispatcher)
     }
 }

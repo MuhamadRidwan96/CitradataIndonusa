@@ -1,6 +1,5 @@
 package com.example.domain.usecase.authentication
 
-import android.util.Log
 import com.example.common.Result
 import com.example.domain.model.RegisterModel
 import com.example.domain.repository.AuthRepository
@@ -20,7 +19,6 @@ class RegisterUseCase @Inject constructor(
         email: String,
         password: String
     ): Flow<Result<RegisterResponse>> {
-        Log.d("USE CASE", "RegisterUseCase invoked: $username, $email, $password")
         return repository.register(RegisterModel(username, email, password))
             .flowOn(dispatcher)
     }

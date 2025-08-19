@@ -32,6 +32,7 @@ class LoginUseCase @Inject constructor(
                             )
                         )
                     }
+
                     else -> Unit
                 }
             }
