@@ -8,4 +8,5 @@ interface UserPreferences {
     suspend fun saveSession(user: UserModel)
     fun getSession(): Flow<UserModel>
     suspend fun logout()
+    suspend fun saveToken(token: String)
 }

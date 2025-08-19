@@ -13,13 +13,14 @@ import com.example.domain.response.ProfileResponse
 import com.example.domain.response.ProvinceResponse
 import com.example.domain.response.RegenciesResponse
 import com.example.domain.response.UpdateProfileResponse
+import okhttp3.ResponseBody
 import retrofit2.Response
 
 interface ApiHelper{
     suspend fun login(requestLogin:LoginModel):Response<LoginResponse>
     suspend fun register(requestRegister: RegisterModel):Response<RegisterResponse>
-    suspend fun searchData(page: Int,limit: Int,search:Map<String,String>):Response<DataResponse>
-    suspend fun getData(page: Int, limit : Int):Response<DataResponse>
+    suspend fun searchData(page: Int,limit: Int,filters:Map<String,String>):Response<DataResponse>
+    suspend fun getData(page: Int, limit : Int):Response<ResponseBody>
     suspend fun getDetailData(idProject:String):Response<ProjectDetailResponse>
     suspend fun getUser():Response<ProfileResponse>
     suspend fun updateProfile():Response<UpdateProfileResponse>

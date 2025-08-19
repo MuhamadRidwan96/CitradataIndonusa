@@ -44,6 +44,12 @@ class UserPreferencesImpl @Inject constructor(
         }
     }
 
+    override suspend fun saveToken(token: String) {
+       dataStore.edit { prefs ->
+           prefs[stringPreferencesKey("Auth-Token")] = token
+       }
+    }
+
     companion object {
         private val TOKEN_KEY = stringPreferencesKey("password")
         private val IS_LOGGED_IN = booleanPreferencesKey("isLogin")

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.example.features.presentation.profile.screen.subscreen.update.ProfileHeader
 
 @Composable
-fun TopAppBarContent(imageVector:ImageVector) {
+fun TopAppBarContent(imageVector:ImageVector, photo:String, email : String, name : String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -30,13 +30,16 @@ fun TopAppBarContent(imageVector:ImageVector) {
             .fillMaxWidth()
             .padding(
                 top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
-                start = 16.dp,
-                end = 16.dp,
+                start = 12.dp,
+                end = 12.dp,
                 bottom = 8.dp
             )
     ) {
-        ProfileHeader(desc = "Jakarta, Indonesia")
-
+        ProfileHeader(
+            photo = photo,
+            email = email,
+            name = name
+        )
         Box(
             modifier = Modifier
                 .size(40.dp)

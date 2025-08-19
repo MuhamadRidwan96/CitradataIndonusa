@@ -13,6 +13,7 @@ import com.example.domain.response.ProvinceResponse
 import com.example.domain.response.RegenciesResponse
 import com.example.domain.response.RegisterResponse
 import com.example.domain.response.UpdateProfileResponse
+import okhttp3.ResponseBody
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -27,11 +28,11 @@ class ApiHelperImpl @Inject constructor(
        return apiService.register(requestRegister)
     }
 
-    override suspend fun searchData(page: Int, limit:Int,search: Map<String, String>): Response<DataResponse> {
-        return apiService.searchData(page,limit,search)
+    override suspend fun searchData(page: Int, limit:Int,filters: Map<String, String>): Response<DataResponse> {
+        return apiService.searchData(page,limit,filters)
     }
 
-    override suspend fun getData(page: Int,limit:Int): Response<DataResponse> {
+    override suspend fun getData(page: Int,limit:Int): Response<ResponseBody> {
        return apiService.getData(page,limit)
     }
 

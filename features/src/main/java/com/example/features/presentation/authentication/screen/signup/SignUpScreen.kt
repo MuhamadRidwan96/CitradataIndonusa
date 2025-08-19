@@ -1,6 +1,5 @@
 package com.example.features.presentation.authentication.screen.signup
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -122,7 +121,7 @@ fun SignUpScreen(
     LaunchedEffect(Unit) {
         viewmodel.signUpEvent.collect { event ->
             when (event) {
-                is SignUpEvent.Success -> {"Success!"}
+                is SignUpEvent.Success -> {" Sign up success!"}
                 is SignUpEvent.ShowSnackBar -> {
                     snackBarHostState.showSnackbar(event.message)
                 }
@@ -255,10 +254,7 @@ fun ButtonSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            onClick = {
-                Log.d("Test button", "Sign button clicked")
-                onSignUpClick()
-                   },
+            onClick = { onSignUpClick() },
         ) {
             Icon(
                 imageVector = Icons.Default.PersonAddAlt1,

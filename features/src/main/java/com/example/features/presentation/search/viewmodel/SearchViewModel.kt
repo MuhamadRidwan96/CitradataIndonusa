@@ -1,13 +1,12 @@
 package com.example.features.presentation.search.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.domain.model.FilterDataModel
 import com.example.domain.response.RecordData
-import com.example.domain.usecase.FilterDataUseCase
+import com.example.domain.usecase.data.FilteredUseCase
 import com.example.features.presentation.search.state.ProjectFilterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val filterDataUseCase: FilterDataUseCase
+    private val filterDataUseCase: FilteredUseCase
 ): ViewModel(){
 
     private val _searchState = MutableStateFlow(ProjectFilterState(isLoading = true))
@@ -51,7 +50,10 @@ class SearchViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val dataPagingFlow : Flow<PagingData<RecordData>> = _filterData
         .flatMapLatest { filter ->
-            filterDataUseCase(filter)
+            filterDataUseCase(
+
+                filterData = filter
+            )
         }
         .cachedIn(viewModelScope)
 
