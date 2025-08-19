@@ -3,12 +3,17 @@ package com.example.domain.di
 import com.example.domain.preferences.UserPreferences
 import com.example.domain.repository.AuthRepository
 import com.example.domain.repository.DataRepository
+import com.example.domain.repository.DetailDataRepository
+import com.example.domain.repository.FilterDataRepository
 import com.example.domain.repository.LocationRepository
 import com.example.domain.usecase.authentication.CheckLoginUseCase
+import com.example.domain.usecase.data.FilteredUseCase
 import com.example.domain.usecase.authentication.GoogleSignInUseCase
 import com.example.domain.usecase.authentication.LoginUseCase
+import com.example.domain.usecase.authentication.ProfileUseCase
 import com.example.domain.usecase.authentication.RegisterUseCase
 import com.example.domain.usecase.data.DataUseCase
+import com.example.domain.usecase.data.DetailDataUseCase
 import com.example.domain.usecase.location.CityUseCase
 import com.example.domain.usecase.location.ProvinceUseCase
 import dagger.Module
@@ -34,14 +39,17 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideRegisterUseCase(repository: AuthRepository): RegisterUseCase{
+    fun provideRegisterUseCase(repository: AuthRepository): RegisterUseCase {
         return RegisterUseCase(repository)
     }
 
     @Provides
     @Singleton
-    fun provideCheckLoginUseCase(userPreferences: UserPreferences,dispatcher: CoroutineDispatcher): CheckLoginUseCase {
-        return CheckLoginUseCase(userPreferences,dispatcher)
+    fun provideCheckLoginUseCase(
+        userPreferences: UserPreferences,
+        dispatcher: CoroutineDispatcher
+    ): CheckLoginUseCase {
+        return CheckLoginUseCase(userPreferences, dispatcher)
     }
 
     @Provides
@@ -71,10 +79,28 @@ object UseCaseModule {
     fun providesDataUseCase(
         repository: DataRepository,
         dispatcher: CoroutineDispatcher
-    ): DataUseCase{
+    ): DataUseCase {
         return DataUseCase(repository, dispatcher)
     }
 
     @Provides
+    @Singleton
+    fun providesDetailUseCase(repository: DetailDataRepository): DetailDataUseCase {
+        return DetailDataUseCase(repository)
+    }
+
+    @Provides
     fun provideDefaultDispatcher(): CoroutineDispatcher = Dispatchers.IO
+
+    @Provides
+    @Singleton
+    fun providesProfileUseCase(userPref: UserPreferences): ProfileUseCase {
+        return ProfileUseCase(userPref)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFilteredUseCase(repository: FilterDataRepository, dispatcher: CoroutineDispatcher): FilteredUseCase{
+        return FilteredUseCase(repository, dispatcher)
+    }
 }

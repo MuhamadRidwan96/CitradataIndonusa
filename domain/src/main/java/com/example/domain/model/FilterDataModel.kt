@@ -3,36 +3,42 @@ package com.example.domain.model
 import com.google.gson.annotations.SerializedName
 
 data class FilterDataModel(
-
-    val startDate: String,
+    @SerializedName("start_date")
+    val startDate: String? = null,
     @SerializedName("end_date")
-    val endDate: String,
+    val endDate: String? = null,
     @SerializedName("idproject")
-    val idProject: String,
+    val idProject: String? = null,
     @SerializedName("project_name")
-    val projectName: String,
+    val projectName: String? = null,
     @SerializedName("idproject_category")
-    val idProjectCategory: String,
+    val idProjectCategory: String? = null,
     @SerializedName("idbuilding_category")
-    val idBuildingCategory: String,
+    val idBuildingCategory: String? = null,
     @SerializedName("address")
-    val address: String,
+    val address: String? = null,
     @SerializedName("idprovince")
-    val idProvince: String,
+    val idProvince: String? = null,
     @SerializedName("idcity")
-    val idCity: String,
+    val idCity: String? = null,
     @SerializedName("iddeveloper")
-    val idDeveloper: String,
+    val idDeveloper: String? = null,
     @SerializedName("idconsultant")
-    val idConsultant: String,
+    val idConsultant: String? = null,
     @SerializedName("idconsultant_category")
-    val idConsultantCategory: String,
+    val idConsultantCategory: String? = null,
     @SerializedName("idcontractor")
-    val idContractor: String,
+    val idContractor: String? = null,
     @SerializedName("idcontractor_category")
-    val idContractorCategory: String,
+    val idContractorCategory: String? = null,
+    @SerializedName("idsector_category")
+    val idSectorCategory: String? = null,
     @SerializedName("idproject_status_category")
-    val idProjectStatusCategory: String,
+    val idProjectStatusCategory: String? = null,
     @SerializedName("with_ppr")
-    val withPpr: String
-)
+    val withPpr: String? = null,
+    @SerializedName("province")
+    val province : String? = null
+){
+    companion object
+}
