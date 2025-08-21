@@ -59,7 +59,7 @@ interface ApiService {
         @Header("Page") page: Int,
         @Header("Limit") limit: Int,
         @Body filter: FilterDataModel? = null
-    ): Response<DataResponse>
+    ): Response<ResponseBody>
 
     @POST("/CitraDataIndonusa/apl/api/master/Province/province")
     suspend fun getProvince(

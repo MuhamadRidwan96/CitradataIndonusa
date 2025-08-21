@@ -60,7 +60,7 @@ class ApiHelperImpl @Inject constructor(
         page: Int,
         limit: Int,
         filteredData: FilterDataModel?
-    ): Response<DataResponse> {
+    ): Response<ResponseBody> {
         return apiService.filterData(page,limit,filteredData)
     }
 

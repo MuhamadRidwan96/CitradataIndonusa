@@ -34,7 +34,7 @@ fun <T> Response<T>.toResult(): Result<T> {
 
 inline fun <reified T> Response<ResponseBody>.toTypedResult(): Result<T> {
     return try {
-        val rawJson = this.body()?.string() ?: return Result.Error(Exception("Empty body"))
+        val rawJson = this.body()?.string() ?: return Result.Error(Exception(Constant.ERROR_NULL))
 
         val jsonObject = JsonParser.parseString(rawJson).asJsonObject
         val success = jsonObject["success"]?.asBoolean == true
