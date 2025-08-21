@@ -7,8 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.data.repositoryImpl.FilterDataRepositoryImpl
+import com.example.data.utils.Constant
 import com.example.data.utils.TokenExpiredException
 import com.example.domain.model.UserProfile
+import com.example.domain.repository.FilterDataRepository
 import com.example.domain.response.RecordData
 import com.example.domain.usecase.authentication.ProfileUseCase
 import com.example.domain.usecase.data.FilteredUseCase
@@ -37,7 +40,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     filteredUseCase: FilteredUseCase,
-    profileUseCase: ProfileUseCase
+    profileUseCase: ProfileUseCase,
+    repository: FilterDataRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -64,6 +68,16 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    init {
+        if (repository is FilterDataRepositoryImpl) {
+            repository.onTokenExpiredCallBack = {
+                viewModelScope.launch {
+                    _tokenExpired.emit(Unit)
+                }
+            }
+        }
+    }
+
 
     fun applyCategories(category: String?) {
         _searchCategory.value = if (category.isNullOrEmpty()) emptyMap() else mapOf(
@@ -85,10 +99,10 @@ class HomeViewModel @Inject constructor(
             val merge = query + category
             filteredUseCase(filterData = merge.toFilterDataModel())
         }.catch { e ->
-            if (e is TokenExpiredException){
-                _tokenExpired.emit(Unit)
-            } else {
-                throw e
+            when(e){
+                is TokenExpiredException -> _tokenExpired.emit(Unit)
+                is Exception -> _dataEvent.send(DataEvent.ShowSnackBar(e.message?: Constant.UNKNOWN_ERROR))
+                else -> throw e
             }
         }.cachedIn(viewModelScope)
 
