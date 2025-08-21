@@ -18,6 +18,5 @@ fun SearchSection(
         modifier = Modifier
             .padding(horizontal = 12.dp)
             .fillMaxWidth()
-
     )
 }
