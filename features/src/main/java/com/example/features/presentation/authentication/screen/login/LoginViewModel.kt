@@ -1,9 +1,7 @@
 package com.example.features.presentation.authentication.screen.login
 
-import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.common.Result
 import com.example.domain.response.AuthResponse
 import com.example.domain.usecase.authentication.CheckLoginUseCase
 import com.example.domain.usecase.authentication.GoogleSignInUseCase
@@ -11,18 +9,22 @@ import com.example.domain.usecase.authentication.LoginUseCase
 import com.example.features.presentation.authentication.state.LoginFormState
 import com.example.features.presentation.authentication.state.LoginProcessState
 import com.example.features.presentation.authentication.state.UiState
+import com.example.features.presentation.authentication.utils.isValidEmail
+import com.example.features.presentation.authentication.utils.isValidPassword
+import com.example.features.presentation.authentication.utils.toUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -38,7 +40,8 @@ class LoginViewModel @Inject constructor(
     private val googleSignInUseCase: GoogleSignInUseCase
 ) : ViewModel() {
 
-    private val _loginEvent = Channel<LoginEvent>()
+    private val _loginEvent =
+        Channel<LoginEvent>(Channel.BUFFERED) // ✅ BUFFERED untuk mencegah kehilangan event
     val loginEvent = _loginEvent.receiveAsFlow()
 
     private val _formState = MutableStateFlow(LoginFormState())
@@ -50,14 +53,12 @@ class LoginViewModel @Inject constructor(
     private val _authState = MutableStateFlow<AuthResponse?>(null)
     val authState = _authState.asStateFlow()
 
-    val isSubmitEnabled: StateFlow<Boolean> = combine(
-        formState.map { it.email },
-        formState.map { it.password }
-    ) { email, password ->
-        isValidEmail(email) && isValidPassword(password)
+    //make more simple with 1 combine
+    val isSubmitEnabled: StateFlow<Boolean> = formState.map { state ->
+        isValidEmail(state.email) && isValidPassword(state.password)
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5_000),
         initialValue = false
     )
 
@@ -84,83 +85,65 @@ class LoginViewModel @Inject constructor(
 
     val login: () -> Unit = login@{
         if (!isSubmitEnabled.value) return@login
-
         viewModelScope.launch {
-            _processState.update { it.copy(isLoading = true) }
 
-            try {
-                loginUseCase(_formState.value.email, _formState.value.password)
-                    .flowOn(Dispatchers.IO)
-                    .toUiState()
-                    .collectLatest { result ->
-                        when (result) {
-                            is UiState.Success -> {
-                                _processState.update {
-                                    it.copy(
-                                        isLoading = false,
-                                        isLoggedIn = true
-                                    )
-                                }
-                                _loginEvent.send(LoginEvent.Success)
-                            }
-
-                            is UiState.Error -> {
-                                _formState.update {
-                                    it.copy(errorMessage = result.message)
-                                }
-                                _loginEvent.send(LoginEvent.ShowSnackBar(result.message))
-                            }
-
-                            else -> Unit
+            loginUseCase(_formState.value.email, _formState.value.password)
+                .flowOn(Dispatchers.IO)
+                .toUiState()
+                .onStart {
+                    setLoading(true)
+                }
+                .onCompletion {
+                    delay(2000)
+                    setLoading(false)
+                }
+                .collectLatest { result ->
+                    when (result) {
+                        is UiState.Success -> {
+                            _processState.update { it.copy(isLoggedIn = true) }
+                            _loginEvent.send(LoginEvent.Success)
                         }
+
+                        is UiState.Error -> {
+                            _formState.update { it.copy(errorMessage = result.message) }
+                            _loginEvent.send(LoginEvent.ShowSnackBar(result.message))
+                        }
+
+                        else -> Unit
                     }
-            } catch (e: Exception) {
-                _loginEvent.send(LoginEvent.ShowSnackBar("Terjadi kesalahan : ${e.message}"))
-
-            } finally {
-                _processState.update { it.copy(isLoading = false) }
-            }
+                }
         }
     }
 
-    private fun isValidEmail(email: String): Boolean {
-        return email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    }
-
-    private fun isValidPassword(password: String): Boolean {
-        return password.length >= 6
-    }
-
-    fun <T> Flow<Result<T>>.toUiState(): Flow<UiState<T>> = map { result ->
-        when (result) {
-            is Result.Success -> UiState.Success(result.data)
-            is Result.Error -> UiState.Error(result.exception.message ?: "Unknown error")
-            is Result.Loading -> UiState.Loading
-        }
-    }
 
     fun checkLogin() {
         viewModelScope.launch {
             val isLoggedIn = withContext(Dispatchers.IO) { checkLoginUseCase() }
             _processState.update {
-                it.copy(
-                    isLoggedIn = isLoggedIn,
-                    isReady = true
-                )
+                it.copy(isLoggedIn = isLoggedIn, isReady = true)
             }
         }
     }
 
     val signWithGoogle: () -> Unit = {
         viewModelScope.launch {
-            googleSignInUseCase()
-                .flowOn(Dispatchers.IO)
-                .collect {
-                    _authState.value = it
-                }
+            try {
+
+
+                googleSignInUseCase()
+                    .flowOn(Dispatchers.IO)
+                    .collect { _authState.value = it }
+            } catch (e: Exception) {
+                _loginEvent.send(LoginEvent.ShowSnackBar("Google Sign-In gagal: ${e.message}"))
+            }
         }
     }
+
+    private fun setLoading(isLoading: Boolean) {
+        _processState.update { it.copy(isLoading = isLoading) }
+    }
 }
+
 
 sealed class LoginEvent {
     data object Success : LoginEvent()
