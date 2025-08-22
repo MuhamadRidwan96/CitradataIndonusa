@@ -39,7 +39,7 @@ fun CompactSearchBar(
 
     val colors = MaterialTheme.colorScheme
 
-    Row (
+    Row(
         modifier = modifier
             .fillMaxWidth()
             .height(36.dp)
@@ -72,7 +72,10 @@ fun CompactSearchBar(
                 value = query,
                 onValueChange = updatedOnQueryChange,
                 singleLine = true,
-                textStyle = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, color = colors.onSurface),
+                textStyle = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = 12.sp,
+                    color = colors.onSurface
+                ),
                 cursorBrush = SolidColor(colors.primary),
                 modifier = Modifier
                     .fillMaxWidth()

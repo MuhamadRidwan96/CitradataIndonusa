@@ -20,7 +20,7 @@ fun IconText(
     text: String,
     modifier: Modifier = Modifier
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalAgitrrangement = Arrangement.spacedBy(4.dp)) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         Icon(
             painter = painterResource(id = icon),
             contentDescription = null,
