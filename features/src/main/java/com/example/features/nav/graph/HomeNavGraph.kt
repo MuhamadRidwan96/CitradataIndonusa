@@ -35,7 +35,7 @@ fun HomeNavGraph(
             navController = navController
         )
         searchDestination(rootNavController = rootNavController)
-        favoriteDestination()
+        favoriteDestination(navController = navController)
         profileDestination(rootNavController = rootNavController)
 
         // Nested navigation graphs
@@ -62,20 +62,23 @@ private fun NavGraphBuilder.homeDestination(
     }
 }
 
+private fun NavGraphBuilder.favoriteDestination(navController: NavHostController) {
+    composable(route = BottomNavItem.Favorite.route) {
+        FavoriteScreen(
+            onNavigateToDetail = { projectId ->
+                navController.navigate(DetailsDestination.createRoute(projectId))
+            }
+        )
+    }
+}
+
+
 private fun NavGraphBuilder.searchDestination(rootNavController: NavHostController) {
     composable(route = BottomNavItem.Search.route) {
         SearchScreen(navController = rootNavController)
     }
 }
 
-private fun NavGraphBuilder.favoriteDestination() {
-    composable(route = BottomNavItem.Favorite.route) {
-        FavoriteScreen(
-            name = "Favorites",
-            onClick = { /* TODO: Implement favorite action */ }
-        )
-    }
-}
 
 private fun NavGraphBuilder.profileDestination(rootNavController: NavHostController) {
     composable(route = BottomNavItem.Profile.route) {

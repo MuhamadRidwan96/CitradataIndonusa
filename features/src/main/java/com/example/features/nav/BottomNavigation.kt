@@ -5,21 +5,25 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.features.nav.graph.Graph
 
 
@@ -40,9 +44,9 @@ fun FloatingBottomNavigationWithIndicator(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(70.dp),
+            .height(60.dp),
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.background,
+        color = MaterialTheme.colorScheme.surface,
         tonalElevation = 16.dp,
         shadowElevation = 8.dp
     ) {
@@ -75,19 +79,17 @@ fun MainBottomNavigation(
             NavigationBarItem(
                 selected = selected,
                 icon = {
-                    Icon(
-                        navigate.icon,
+                   AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(navigate.icon)
+                            .size(32)
+                            .crossfade(true)
+                            .build(),
                         contentDescription = navigate.title,
-                        tint = if (selected) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.outline
-                    )
-                },
-                label = {
-                    Text(
-                        navigate.title,
-                        color = if (selected) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.outline
-                    )
+                        modifier = Modifier
+                            .size(38.dp)
+                            .padding(8.dp),
+                        contentScale = ContentScale.Fit)
                 },
                 onClick = {
                     if (currentRoute != navigate.route) {
@@ -97,7 +99,6 @@ fun MainBottomNavigation(
                         }
                     }
                 },
-                alwaysShowLabel = true,
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                 )
