@@ -1,5 +1,9 @@
 package com.example.data.di
 
+import android.app.Application
+import androidx.room.Room
+import com.example.data.local.dao.AppDatabase
+import com.example.data.local.dao.FavoriteDAO
 import com.example.data.remote.api.ApiHelper
 import com.example.data.remote.api.ApiHelperImpl
 import com.example.data.remote.api.ApiService
@@ -7,11 +11,13 @@ import com.example.data.remote.google.GoogleAuthManager
 import com.example.data.repositoryImpl.AuthenticationRepositoryImpl
 import com.example.data.repositoryImpl.DataRepositoryImpl
 import com.example.data.repositoryImpl.DetailDataRepositoryImpl
+import com.example.data.repositoryImpl.FavoriteRepositoryImpl
 import com.example.data.repositoryImpl.FilterDataRepositoryImpl
 import com.example.data.repositoryImpl.LocationRepositoryImpl
 import com.example.domain.repository.AuthRepository
 import com.example.domain.repository.DataRepository
 import com.example.domain.repository.DetailDataRepository
+import com.example.domain.repository.FavoriteRepository
 import com.example.domain.repository.FilterDataRepository
 import com.example.domain.repository.LocationRepository
 import dagger.Module
@@ -67,7 +73,26 @@ object DataModule {
         return DetailDataRepositoryImpl(apiHelper)
     }
 
+    @Singleton
+    @Provides
+    fun provideFavoriteRepository(dao: FavoriteDAO): FavoriteRepository{
+        return FavoriteRepositoryImpl(dao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatabase(app: Application): AppDatabase{
+        return Room.databaseBuilder(
+            app,
+            AppDatabase::class.java,
+            "my_database"
+        ).build()
+    }
 
 
-
+    @Provides
+    @Singleton
+    fun provideFavoriteDao(db: AppDatabase): FavoriteDAO{
+    return db.favoriteDao()
+    }
 }

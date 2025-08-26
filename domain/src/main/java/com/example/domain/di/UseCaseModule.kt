@@ -4,6 +4,7 @@ import com.example.domain.preferences.UserPreferences
 import com.example.domain.repository.AuthRepository
 import com.example.domain.repository.DataRepository
 import com.example.domain.repository.DetailDataRepository
+import com.example.domain.repository.FavoriteRepository
 import com.example.domain.repository.FilterDataRepository
 import com.example.domain.repository.LocationRepository
 import com.example.domain.usecase.authentication.CheckLoginUseCase
@@ -16,6 +17,10 @@ import com.example.domain.usecase.data.DataUseCase
 import com.example.domain.usecase.data.DetailDataUseCase
 import com.example.domain.usecase.location.CityUseCase
 import com.example.domain.usecase.location.ProvinceUseCase
+import com.example.domain.usecase.room.DeleteFavoriteUseCase
+import com.example.domain.usecase.room.FavoriteUseCase
+import com.example.domain.usecase.room.GetAllFavoriteUseCase
+import com.example.domain.usecase.room.InsertFavoriteUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -102,5 +107,29 @@ object UseCaseModule {
     @Singleton
     fun provideFilteredUseCase(repository: FilterDataRepository, dispatcher: CoroutineDispatcher): FilteredUseCase{
         return FilteredUseCase(repository, dispatcher)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAllFavoriteUseCase(repository: FavoriteRepository): GetAllFavoriteUseCase{
+        return GetAllFavoriteUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInsertFavoriteUseCase(repository: FavoriteRepository): InsertFavoriteUseCase{
+        return InsertFavoriteUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteFavoriteUseCase(repository: FavoriteRepository): DeleteFavoriteUseCase{
+        return DeleteFavoriteUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideIsFavoriteUseCase(repository: FavoriteRepository): FavoriteUseCase{
+        return FavoriteUseCase(repository)
     }
 }
