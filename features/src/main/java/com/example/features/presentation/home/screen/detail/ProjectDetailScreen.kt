@@ -36,7 +36,10 @@ fun ProjectDetailScreen(
     }
 
     Scaffold(
-        topBar = { MyTopAppBar(onBackClick = { onBackClick() }) },
+        topBar = { MyTopAppBar(
+            onBackClick = { onBackClick() },
+            text = "Back"
+        ) },
         content = { paddingValues ->
             when {
                 dataState.isLoading -> {

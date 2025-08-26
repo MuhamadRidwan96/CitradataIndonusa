@@ -59,7 +59,7 @@ fun EntityCard(
             )
             IconText(R.drawable.ic_phone, phone)
             IconText(R.drawable.ic_mail, email)
-            IconText(R.drawable.ic_web, web)
+            IconText(R.drawable.link_24px, web)
             IconText(R.drawable.ic_fax, fax)
 
             if (teamMembers.isNotEmpty()) {

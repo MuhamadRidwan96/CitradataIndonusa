@@ -15,8 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -42,15 +42,18 @@ import androidx.compose.ui.unit.sp
 import com.example.core_ui.R
 import com.example.core_ui.component.IconText
 import com.example.core_ui.component.StatusChip
+import com.example.data.local.entity.FavoriteProjectEntity
 import com.example.features.presentation.home.state.DataState
 import com.example.features.presentation.home.utils.formatToFullDate
+import com.example.features.presentation.home.utils.toFavoriteProjectEntity
 
 
 @Composable
 fun ProjectCard(
     project: DataState,
     onClick: () -> Unit,
-    onFavoriteClick: (Boolean) -> Unit,
+    isFavorite : Boolean,
+    onToggleFavorite : (FavoriteProjectEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val cardConfiguration = rememberCardConfiguration(project.statProject)
@@ -63,8 +66,9 @@ fun ProjectCard(
         ProjectCardContent(
             project = project,
             onClick = onClick,
-            onFavoriteClick = onFavoriteClick,
-            cardConfiguration = cardConfiguration
+            isFavorite = isFavorite,
+            onToggleFavorite =onToggleFavorite,
+            cardConfiguration = cardConfiguration,
         )
 
         cardConfiguration.statusColor?.let { color ->
@@ -83,7 +87,8 @@ fun ProjectCard(
 private fun ProjectCardContent(
     project: DataState,
     onClick: () -> Unit,
-    onFavoriteClick: (Boolean) -> Unit,
+    isFavorite : Boolean,
+    onToggleFavorite : (FavoriteProjectEntity) -> Unit,
     cardConfiguration: CardConfiguration
 ) {
     Card(
@@ -117,15 +122,15 @@ private fun ProjectCardContent(
                 date = formatToFullDate(dates),
                 location = project.location,
                 province = project.province,
-                idProject = project.idProject
+                idProject = project.idProject.toString()
             )
 
             HorizontalDivider(modifier = Modifier.height(0.5.dp))
 
             BottomCard(
                 idRecord = project.idRecord,
-                isFavorite = project.isFavorite,
-                onFavoriteClick = { onFavoriteClick(false) }
+                isFavorite = isFavorite,
+                onFavoriteClick = { onToggleFavorite(project.toFavoriteProjectEntity()) }
             )
         }
     }
@@ -262,7 +267,7 @@ private fun ProjectMetadata(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         RowLocation(location, province)
-        IconText(R.drawable.ic_schedule, date)
+        IconText(R.drawable.ic_calendar, date)
         TextComponent(text = stringResource(R.string.id_project)) {
             Text(
                 text = idProject,
@@ -294,7 +299,7 @@ private fun RowLocation(location: String, province: String) {
         Icon(
             painter = painterResource(R.drawable.ic_location),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
                 .size(16.dp)
                 .alignBy(FirstBaseline)
@@ -333,7 +338,7 @@ private fun FavoriteButton(
     IconButton(onClick = onClick) {
         val colorScheme = MaterialTheme.colorScheme
         Icon(
-            imageVector = if (isFavorite) Icons.Filled.Folder else Icons.Outlined.Folder,
+            imageVector = if (isFavorite) Icons.Filled.Bookmark else Icons.Outlined.Bookmark,
             contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
             tint = if (isFavorite) colorScheme.primary else colorScheme.outlineVariant
         )

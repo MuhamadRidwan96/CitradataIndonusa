@@ -1,5 +1,6 @@
 package com.example.features.presentation.home.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 fun LoadingItem() {
     Box(
         modifier = Modifier
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
             .fillMaxSize()
             .padding(24.dp),
         contentAlignment = Alignment.Center

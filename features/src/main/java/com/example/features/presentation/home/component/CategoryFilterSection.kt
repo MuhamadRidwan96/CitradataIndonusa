@@ -1,30 +1,26 @@
 package com.example.features.presentation.home.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Apartment
-import androidx.compose.material.icons.filled.Factory
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.House
-import androidx.compose.material.icons.filled.Store
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.example.core_ui.R
 import com.example.core_ui.component.FilterCategory
 import com.example.core_ui.component.FilterCategoryRow
 
 @Composable
 fun CategoryFilterSection(
     selectedCategory: Int,
-    onCategorySelected: (Int) -> Unit
+    onCategorySelected: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val categories = remember {
         listOf(
-            FilterCategory(5, "Highrise & Commercial", "HRC", Icons.Default.Apartment),
-            FilterCategory(6, "Middle Project", "MDL", Icons.Default.Home),
-            FilterCategory(7, "Low Project", "LOW", Icons.Default.House),
-            FilterCategory(8, "Industrial & Infrastructure", "IND", Icons.Default.Factory),
-            FilterCategory(9, "Fitting Out & Interior", "FTO", Icons.Default.Store)
+            FilterCategory(5, "Highrise & Commercial", "HRC",R.drawable.building_2 ),
+            FilterCategory(6, "Middle Projects", "MDL",R.drawable.building),
+            FilterCategory(7, "Lower Projects", "LOW", R.drawable.house),
+            FilterCategory(8, "Industrial & Infrastructure", "IND", R.drawable.factory),
+            FilterCategory(9, "Fitting Out & Interior", "FTO", R.drawable.armchair)
         )
     }
 
@@ -34,7 +30,7 @@ fun CategoryFilterSection(
         onCategoryProjectSelected = { categoryId ->
             onCategorySelected(categoryId)
         },
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     )
 }
 

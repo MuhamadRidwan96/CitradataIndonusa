@@ -10,13 +10,14 @@ import com.example.core_ui.component.CompactSearchBar
 @Composable
 fun SearchSection(
     query: String,
-    onQueryChange: (String) -> Unit
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     CompactSearchBar(
         query = query,
         onQueryChange = onQueryChange,
-        modifier = Modifier
-            .padding(horizontal = 12.dp)
+        modifier = modifier
             .fillMaxWidth()
+            .padding(horizontal = 16.dp)
     )
 }

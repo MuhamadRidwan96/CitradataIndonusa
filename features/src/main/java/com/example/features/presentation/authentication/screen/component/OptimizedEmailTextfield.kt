@@ -2,7 +2,7 @@ package com.example.features.presentation.authentication.screen.component
 
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -26,7 +26,7 @@ fun OptimizedEmailTextField(
     val keyboardActions = remember(nextFocusRequester) {
         KeyboardActions(onNext = { nextFocusRequester.requestFocus() })
     }
-    val icons = remember { Icons.Default.Email }
+    val icons = remember { Icons.Default.MailOutline}
 
     EmailTextField(
         value = value,
