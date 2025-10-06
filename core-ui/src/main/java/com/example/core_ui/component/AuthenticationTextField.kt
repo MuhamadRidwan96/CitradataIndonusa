@@ -37,7 +37,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 val LocalTextFieldDefaults = staticCompositionLocalOf {
     TextFieldDefault()
@@ -241,7 +240,7 @@ private fun TextFieldLeadingIcon(
 private fun TextFieldLabel(text: String) {
     Text(
         text = text,
-        fontSize = 12.sp,
+        style = MaterialTheme.typography.bodyMedium,
         fontFamily = FontFamily.SansSerif
     )
 }

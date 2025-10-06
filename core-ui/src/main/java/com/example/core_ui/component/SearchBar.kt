@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,14 +25,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.core_ui.R
 
 @Composable
 fun CompactSearchBar(
     modifier: Modifier = Modifier,
     query: String,
     onQueryChange: (String) -> Unit = {},
+    onClear :() -> Unit
 ) {
     val updatedOnQueryChange by rememberUpdatedState(onQueryChange)
 
@@ -50,10 +52,9 @@ fun CompactSearchBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = Icons.Default.Search,
+            painter = painterResource(R.drawable.search),
             contentDescription = null,
             modifier = Modifier.size(16.dp),
-            tint = colors.onSurface.copy(alpha = 0.9f)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -61,7 +62,7 @@ fun CompactSearchBar(
         Box(modifier = Modifier.weight(1f)) {
             if (query.isEmpty()) {
                 Text(
-                    text = "Search Project name...",
+                    text = "Search project name...",
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                     color = colors.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier.align(Alignment.CenterStart)
@@ -94,7 +95,9 @@ fun CompactSearchBar(
                 Icon(
                     imageVector = Icons.Default.Clear,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(16.dp).clickable{
+                        onClear()
+                    },
                     tint = colors.onSurface.copy(alpha = 0.9f)
 
                 )

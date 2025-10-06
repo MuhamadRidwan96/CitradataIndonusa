@@ -12,18 +12,17 @@ import androidx.compose.runtime.Composable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarWithBack(
-    title:String,
-    onBackClick:() -> Unit
-){
+    title: String,
+    onBackClick: () -> Unit
+) {
     TopAppBar(
         title = { Text(title) },
-        navigationIcon = { IconButton(onBackClick) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                contentDescription = ""
-            )
-        } },
-
-    )
-
+        navigationIcon = {
+            IconButton(onBackClick) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = ""
+                )
+            }
+        })
 }

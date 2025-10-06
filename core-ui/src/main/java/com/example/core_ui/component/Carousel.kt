@@ -12,18 +12,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,14 +31,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import coil.compose.AsyncImage
-import com.example.core_ui.R
+import coil.request.ImageRequest
 import kotlinx.coroutines.delay
 
 @Composable
@@ -52,7 +49,7 @@ fun Carousel(
 ) {
     val pagerState = rememberPagerState(pageCount = { items.size })
 
-    // Auto-scroll dengan snapshotFlow untuk menghindari memory leak
+    // Auto-scroll dengan sna   pshotFlow untuk menghindari memory leak
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
             .collect {
@@ -65,18 +62,18 @@ fun Carousel(
             }
     }
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(200.dp)
     ) {
 
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(160.dp),
-            pageSpacing = 6.dp, // Menambahkan space antar halaman
+                .aspectRatio(16f / 9f),
+            pageSpacing = 8.dp, // Menambahkan space antar halaman
             contentPadding = PaddingValues(horizontal = 16.dp) // Membuat efek margin di kiri & kanan
         ) { page ->
             CarouselItemView(
@@ -87,7 +84,8 @@ fun Carousel(
         DotsIndicator(
             pagerState = pagerState,
             count = items.size,
-            modifier = Modifier.padding(vertical = 16.dp)
+            modifier = Modifier.padding(vertical = 8.dp)
+                .align(Alignment.BottomCenter)
         )
     }
 }
@@ -98,12 +96,16 @@ fun CarouselItemView(item: CarouselItem) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(2f)
+            .aspectRatio(16f / 9f)
             .clip(RoundedCornerShape(12.dp))
     ) {
         // Gambar Background
         AsyncImage(
-            model = item.imageRes,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(item.imageRes)
+                .size(200)
+                .crossfade(true)
+                .build(),
             contentDescription = "Background Image",
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize()
@@ -120,35 +122,8 @@ fun CarouselItemView(item: CarouselItem) {
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(12.dp)
+                .padding(bottom = 16.dp, start = 16.dp)
         ) {
-            // Row untuk Status dan Tanggal
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Status Text
-                Text(
-                    text = item.status,
-                    fontSize = 10.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-
-                // Date Text
-                Text(
-                    text = item.date,
-                    fontSize = 10.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Title Text
             Text(
                 text = item.title,
                 fontSize = 16.sp,
@@ -157,40 +132,10 @@ fun CarouselItemView(item: CarouselItem) {
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Location and Category Rows
-            IconTextRows(iconResId = R.drawable.ic_location, text = item.location)
-            Spacer(modifier = Modifier.height(4.dp))
-            IconTextRows(iconResId = R.drawable.ic_category, text = item.category)
         }
-
     }
 }
 
-@Composable
-fun IconTextRows(
-    iconResId: Int,
-    text: String,
-    iconTint: Color = Color.White,
-    textColor: Color = Color.White
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            painter = painterResource(iconResId),
-            contentDescription = null,
-            tint = iconTint,
-            modifier = Modifier.size(12.dp)
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(
-            text = text,
-            fontSize = 10.sp,
-            color = textColor
-        )
-    }
-}
 
 @Composable
 fun DotsIndicator(pagerState: PagerState, count: Int, modifier: Modifier = Modifier) {

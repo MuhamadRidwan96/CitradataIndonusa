@@ -9,33 +9,28 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.core_ui.AppTheme
 import com.example.core_ui.R
+import com.example.core_ui.model.Feature
+import com.example.core_ui.model.SubscriptionPlan
 
 @Composable
 fun SubscriptionCard(
@@ -132,32 +127,6 @@ fun SubscriptionCard(
     }
 }
 
-@Composable
-fun BenefitCard(benefit: BenefitPlan) {
-    val planStyle = MaterialTheme.typography.titleLarge.copy(
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurface,
-    )
-
-    val descStyle = MaterialTheme.typography.titleMedium.copy(
-        color = Color.Gray
-    )
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = benefit.icon,
-            contentDescription = null,
-            modifier = Modifier
-                .size(26.dp, 26.dp)
-                .align(Alignment.Top),
-            tint = MaterialTheme.colorScheme.primary
-        )
-        Spacer(modifier = Modifier.size(8.dp))
-        Column {
-            Text(benefit.planName, style = planStyle)
-            Text(benefit.description, style = descStyle)
-        }
-    }
-}
 
 @Composable
 private fun FeatureItem(feature: Feature) {
@@ -172,106 +141,6 @@ private fun FeatureItem(feature: Feature) {
     }
 }
 
-@Composable
-private fun PlanDivider() {
-    HorizontalDivider(
-        thickness = 0.5.dp,
-        color = MaterialTheme.colorScheme.outlineVariant
-    )
-}
 
-@Preview(showBackground = true)
-@Composable
-fun Preview() {
-    AppTheme {
-        CompareFeatures()
-    }
-}
-
-@Composable
-fun CompareFeatures() {
-    val planNames = listOf("Free", "Basic", "Premium")
-    val features = rememberComparePlans()
-
-    val planStyle = MaterialTheme.typography.titleMedium.copy(
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.secondary
-    )
-
-    Column(modifier = Modifier.padding(16.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("Features", style = planStyle, modifier = Modifier.weight(1.5f))
-            planNames.forEach {
-                Text(it, style = planStyle, modifier = Modifier.weight(1f))
-            }
-        }
-        PlanDivider()
-
-        features.forEach { compareFeature ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            )
-            {
-                Text(compareFeature.name, style = planStyle, modifier = Modifier.weight(1.5f))
-                planNames.forEach { plan ->
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        if (plan in compareFeature.availableIn) {
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle, // Atau icon centang lain
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                }
-            }
-            PlanDivider()
-        }
-    }
-}
-
-@Composable
-fun rememberComparePlans(): List<CompareFeature> = remember {
-    listOf(
-        CompareFeature("Ad-free experience", listOf("Basic", "Premium")),
-        CompareFeature("Unlimited access", listOf("Premium")),
-        CompareFeature("Download content", listOf("Basic", "Premium")),
-        CompareFeature("Priority support", listOf("Premium")),
-        CompareFeature("Exclusive content", listOf("Premium"))
-    )
-}
-
-data class SubscriptionPlan(
-    val planName: String,
-    val price: String,
-    val description: String,
-    val perMonth: String,
-    val features: List<Feature>,
-    val isEnabled: Boolean,
-    val isMostPopular: Boolean = false // default false
-)
-
-data class BenefitPlan(
-    val planName: String,
-    val description: String,
-    val icon: ImageVector
-)
-
-data class Feature(
-    val name: String,
-    val included: Boolean
-
-)
-
-data class CompareFeature(
-    val name: String,
-    val availableIn: List<String>
-)
 
 
