@@ -2,16 +2,20 @@ package com.example.features.presentation.authentication.screen.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.common.Result
 import com.example.domain.response.AuthResponse
 import com.example.domain.usecase.authentication.CheckLoginUseCase
 import com.example.domain.usecase.authentication.GoogleSignInUseCase
 import com.example.domain.usecase.authentication.LoginUseCase
+import com.example.domain.usecase.authentication.SaveTokenUseCase
+import com.example.domain.utils.decodeJWTPayload
 import com.example.features.presentation.authentication.state.LoginFormState
 import com.example.features.presentation.authentication.state.LoginProcessState
 import com.example.features.presentation.authentication.state.UiState
 import com.example.features.presentation.authentication.utils.isValidEmail
 import com.example.features.presentation.authentication.utils.isValidPassword
 import com.example.features.presentation.authentication.utils.toUiState
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -29,7 +33,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -37,7 +43,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val checkLoginUseCase: CheckLoginUseCase,
-    private val googleSignInUseCase: GoogleSignInUseCase
+    private val googleSignInUseCase: GoogleSignInUseCase,
+    private val saveTokenUseCase: SaveTokenUseCase
 ) : ViewModel() {
 
     private val _loginEvent =
@@ -86,20 +93,26 @@ class LoginViewModel @Inject constructor(
     val login: () -> Unit = login@{
         if (!isSubmitEnabled.value) return@login
         viewModelScope.launch {
-
+            delay(500)
             loginUseCase(_formState.value.email, _formState.value.password)
                 .flowOn(Dispatchers.IO)
                 .toUiState()
-                .onStart {
-                    setLoading(true)
-                }
-                .onCompletion {
-                    delay(2000)
-                    setLoading(false)
-                }
+                .onStart { setLoading(true) }
+                .onCompletion { setLoading(false) }
                 .collectLatest { result ->
                     when (result) {
                         is UiState.Success -> {
+
+                            val token = result.data.data.token
+                            val payload = decodeJWTPayload(token)
+                            val userId = payload?.optString("iduser","")
+
+                            if (userId != null) {
+                                Timber.tag("AuthViewModel").d("✅ userId dari JWT: $userId")
+                                syncFcmToken(userId)
+                            } else {
+                                Timber.tag("AuthViewModel").w("⚠️ userId tidak ditemukan di JWT")
+                            }
                             _processState.update { it.copy(isLoggedIn = true) }
                             _loginEvent.send(LoginEvent.Success)
                         }
@@ -141,6 +154,29 @@ class LoginViewModel @Inject constructor(
 
     private fun setLoading(isLoading: Boolean) {
         _processState.update { it.copy(isLoading = isLoading) }
+    }
+
+    private fun syncFcmToken(userId: String) {
+        viewModelScope.launch {
+            val fcmToken = FirebaseMessaging.getInstance().token.await()
+            Timber.tag("AuthViewModel").d("✅ FCM Token setelah login: $fcmToken")
+            saveTokenUseCase(userId, fcmToken).collect { result ->
+                when (result) {
+                    is Result.Success -> {
+                        Timber.tag("AuthViewModel").d("✅ Token berhasil dikirim ke server")
+                    }
+
+                    is Result.Loading -> {
+                        Timber.tag("AuthViewModel").d("⏳ Mengirim token...")
+                    }
+
+                    is Result.Error -> {
+                        Timber.tag("AuthViewModel").e(result.exception, "❌ Gagal kirim token")
+                    }
+                }
+
+            }
+        }
     }
 }
 

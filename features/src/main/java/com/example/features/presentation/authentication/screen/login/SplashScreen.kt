@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.feature_login.R
+import com.example.core_ui.R
 import kotlinx.coroutines.delay
 
 
@@ -48,11 +48,11 @@ fun SplashScreen(
     ) {
 
         Image(
-            painter = painterResource(R.drawable.logo_dummy),
+            painter = painterResource(R.drawable.logo),
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
-                .size(150.dp)
+                .size(250.dp)
                 .alpha(alpha)
         )
     }

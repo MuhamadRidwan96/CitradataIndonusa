@@ -1,5 +1,6 @@
 package com.example.features.presentation.profile.screen.subscreen.update
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Autorenew
@@ -23,9 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -35,10 +33,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import com.example.core_ui.R
 import com.example.core_ui.component.LabeledTextField
-import com.example.data.utils.Constant
-import com.example.feature_login.R
 
 @Composable
 fun UpdateProfileComponent() {
@@ -54,12 +50,7 @@ fun UpdateProfileComponent() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-    /*    ProfileHeader(
 
-            email= stringResource(R.string.share),
-            photo = TODO(),
-            name = TODO()
-        )*/
         Spacer(modifier = Modifier.height(24.dp))
 
         ProfileTextField(
@@ -95,44 +86,35 @@ fun UpdateProfileComponent() {
     }
 }
 
-    @Composable
-    fun ProfileHeader(photo:String, email : String, name: String) {
+@Composable
+fun ProfileHeader(hello: String, name: String, modifier: Modifier = Modifier) {
 
-        val fullUrl = if (photo.isBlank()){null} else {
-            Constant.BASE_URL+photo
-        }
-        val updateStyle = MaterialTheme.typography.titleMedium.copy(
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.secondary,
-        )
 
-        val descStyle = MaterialTheme.typography.bodySmall.copy(
-            color = Color.Gray
-        )
+    val updateStyle = MaterialTheme.typography.titleLarge.copy(
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface,
+    )
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            AsyncImage(
-                model = fullUrl ,
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(0.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier.fillMaxWidth()
+        ) {
+            Text(text = hello, style = updateStyle)
+            Text(text = name, style = updateStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Image(
+                painter = painterResource(R.drawable.waving_hand),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(46.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(id = com.example.core_ui.R.drawable.ic_account),
-                error = painterResource(id = com.example.core_ui.R.drawable.ic_account)
+                    .size(42.dp)
+                    .padding(8.dp),
+                contentScale = ContentScale.Fit,
             )
-
-            Column(modifier = Modifier.padding(start = 16.dp)) {
-                Text(text = name, style = updateStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(
-                    text = email,
-                    style = descStyle,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
         }
     }
+}
+
 
 @Composable
 private fun ProfileTextField(

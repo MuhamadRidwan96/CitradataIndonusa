@@ -15,7 +15,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.core_ui.R
 import com.example.features.presentation.authentication.state.LoginFormState
 
@@ -34,14 +33,14 @@ fun LoginFormSection(
     ) {
         Text(
             text = stringResource(R.string.welcome),
-            fontSize = 32.sp,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
             fontFamily = FontFamily.SansSerif
         )
         Text(
             text = stringResource(R.string.sign),
-            fontSize = 12.sp,
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
             fontFamily = FontFamily.SansSerif
         )
