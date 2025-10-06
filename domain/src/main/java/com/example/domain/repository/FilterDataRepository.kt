@@ -8,6 +8,6 @@ import com.example.domain.response.RecordData
 import kotlinx.coroutines.flow.Flow
 
 interface FilterDataRepository {
-    fun filterData(page:Int,limit: Int, filterData: FilterDataModel?): Flow<Result<DataResponse>>
+    fun filterData(page:Int,limit: Int, filterData: FilterDataModel?): Flow<Result<DataResponse<RecordData>>>
     fun getFilterDataPaging(filterData: FilterDataModel?, limit: Int = 10): Flow<PagingData<RecordData>>
 }

@@ -7,16 +7,22 @@ import com.example.domain.repository.DetailDataRepository
 import com.example.domain.repository.FavoriteRepository
 import com.example.domain.repository.FilterDataRepository
 import com.example.domain.repository.LocationRepository
+import com.example.domain.repository.NotificationRepository
+import com.example.domain.repository.SaveTokenRepository
 import com.example.domain.usecase.authentication.CheckLoginUseCase
 import com.example.domain.usecase.data.FilteredUseCase
 import com.example.domain.usecase.authentication.GoogleSignInUseCase
 import com.example.domain.usecase.authentication.LoginUseCase
 import com.example.domain.usecase.authentication.ProfileUseCase
 import com.example.domain.usecase.authentication.RegisterUseCase
+import com.example.domain.usecase.authentication.SaveTokenUseCase
 import com.example.domain.usecase.data.DataUseCase
 import com.example.domain.usecase.data.DetailDataUseCase
 import com.example.domain.usecase.location.CityUseCase
 import com.example.domain.usecase.location.ProvinceUseCase
+import com.example.domain.usecase.notification.GetNotificationCountUseCase
+import com.example.domain.usecase.notification.ResetNotificationCountUseCase
+import com.example.domain.usecase.notification.UpdateNotificationCountUseCase
 import com.example.domain.usecase.room.DeleteFavoriteUseCase
 import com.example.domain.usecase.room.FavoriteUseCase
 import com.example.domain.usecase.room.GetAllFavoriteUseCase
@@ -105,31 +111,58 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideFilteredUseCase(repository: FilterDataRepository, dispatcher: CoroutineDispatcher): FilteredUseCase{
+    fun provideFilteredUseCase(
+        repository: FilterDataRepository,
+        dispatcher: CoroutineDispatcher
+    ): FilteredUseCase {
         return FilteredUseCase(repository, dispatcher)
     }
 
     @Provides
     @Singleton
-    fun provideGetAllFavoriteUseCase(repository: FavoriteRepository): GetAllFavoriteUseCase{
+    fun provideGetAllFavoriteUseCase(repository: FavoriteRepository): GetAllFavoriteUseCase {
         return GetAllFavoriteUseCase(repository)
     }
 
     @Provides
     @Singleton
-    fun provideInsertFavoriteUseCase(repository: FavoriteRepository): InsertFavoriteUseCase{
+    fun provideInsertFavoriteUseCase(repository: FavoriteRepository): InsertFavoriteUseCase {
         return InsertFavoriteUseCase(repository)
     }
 
     @Provides
     @Singleton
-    fun provideDeleteFavoriteUseCase(repository: FavoriteRepository): DeleteFavoriteUseCase{
+    fun provideDeleteFavoriteUseCase(repository: FavoriteRepository): DeleteFavoriteUseCase {
         return DeleteFavoriteUseCase(repository)
     }
 
     @Provides
     @Singleton
-    fun provideIsFavoriteUseCase(repository: FavoriteRepository): FavoriteUseCase{
+    fun provideIsFavoriteUseCase(repository: FavoriteRepository): FavoriteUseCase {
         return FavoriteUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveTokenUseCase(repository: SaveTokenRepository): SaveTokenUseCase {
+        return SaveTokenUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetNotificationCountUseCase(repository: NotificationRepository): GetNotificationCountUseCase {
+        return GetNotificationCountUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideResetNotificationCountUseCase(repository: NotificationRepository): ResetNotificationCountUseCase {
+        return ResetNotificationCountUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateNotificationCountUseCase(repository: NotificationRepository): UpdateNotificationCountUseCase {
+        return UpdateNotificationCountUseCase(repository)
     }
 }

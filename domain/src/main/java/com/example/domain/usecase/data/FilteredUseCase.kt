@@ -13,7 +13,6 @@ class FilteredUseCase @Inject constructor(
     private val filterDataRepository: FilterDataRepository,
     private val dispatcher: CoroutineDispatcher
 ) {
-
     operator fun invoke(
         limit: Int = 10,
         filterData: FilterDataModel?

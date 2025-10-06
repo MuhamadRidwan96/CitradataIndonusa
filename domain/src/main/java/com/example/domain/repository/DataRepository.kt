@@ -7,8 +7,8 @@ import com.example.domain.response.RecordData
 import kotlinx.coroutines.flow.Flow
 
 interface DataRepository {
-    suspend fun getData(page: Int, limit: Int): Flow<Result<DataResponse>>
-    suspend fun searchData(page:Int, limit:Int, filters:Map<String, String>) : Result<DataResponse>
+    suspend fun getData(page: Int, limit: Int): Flow<Result<DataResponse<RecordData>>>
+    suspend fun searchData(page:Int, limit:Int, filters:Map<String, String>) : Result<DataResponse<RecordData>>
     fun getDataPaging(limit : Int = 10, filters:Map<String, String>): Flow<PagingData<RecordData>>
 
 }

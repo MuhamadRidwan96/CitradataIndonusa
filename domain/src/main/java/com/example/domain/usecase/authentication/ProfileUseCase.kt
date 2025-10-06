@@ -1,44 +1,30 @@
 package com.example.domain.usecase.authentication
 
-import android.util.Base64
 import com.example.domain.model.UserProfile
 import com.example.domain.preferences.UserPreferences
+import com.example.domain.utils.decodeJWTPayload
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import org.json.JSONObject
 import javax.inject.Inject
 
-class ProfileUseCase @Inject constructor(private val userPref : UserPreferences) {
-    operator fun invoke(): Flow<UserProfile?>{
+class ProfileUseCase @Inject constructor(private val userPref: UserPreferences) {
+    operator fun invoke(): Flow<UserProfile?> {
 
         return userPref.getSession().map { session ->
             if (session.token.isBlank()) return@map null
-            val payload = decodeJWTPayload(session.token)?: return@map null
+            val payload = decodeJWTPayload(session.token) ?: return@map null
 
+            val fullName = payload.optString("name", "")
+            val firstName = fullName.split(" ").firstOrNull() ?: ""
 
             UserProfile(
-                name = payload.optString("name", ""),
+                name = "$firstName!",
                 email = payload.optString("email", ""),
                 photo = payload.optString("photo", ""),
-                idrole = payload.optString("idrole",""),
-                role_name = payload.optString("role_name",""),
+                idrole = payload.optString("idrole", ""),
+                roleName = payload.optString("role_name", ""),
+                iduser = payload.optString("iduser", "")
             )
-        }
-    }
-
-    fun decodeJWTPayload(token: String): JSONObject? {
-        return try {
-            val parts = token.split(".")
-            if (parts.size == 3) {
-                val payload = String(
-                    Base64.decode(parts[1], Base64.URL_SAFE)
-                )
-                JSONObject(payload)
-            } else null
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
         }
     }
 }
