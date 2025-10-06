@@ -1,3 +1,5 @@
+package com.example.features.presentation.home.component
+
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.IconText
 import com.example.domain.response.TeamMember
-import com.example.features.presentation.home.component.TitleSection
 import kotlin.collections.forEach
 
 @Composable
@@ -47,6 +48,7 @@ fun EntityCard(
         Column(modifier = modifier.padding(16.dp)) {
 
             TitleSection(icon, section)
+
             Text(
                 text = name,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -71,6 +73,7 @@ fun EntityCard(
                     color = Color.Gray
                 )
                 Spacer(modifier.height(4.dp))
+
                 teamMembers.forEach { member ->
                     TeamMemberComponent(member)
                     Spacer(modifier.height(8.dp))
@@ -87,6 +90,7 @@ fun EntityCard(
 
 @Composable
 private fun TeamMemberComponent(teamMember: TeamMember) {
+
     Text(
         text = teamMember.structureName,
         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),

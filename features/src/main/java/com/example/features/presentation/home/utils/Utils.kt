@@ -12,7 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
+import com.example.data.local.entity.FavoriteProjectEntity
+import com.example.domain.model.FavoriteProject
 import com.example.domain.model.FilterDataModel
+import com.example.features.presentation.home.state.DataState
+import com.example.features.presentation.search.state.ProjectFilterState
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -70,7 +74,7 @@ fun BulletList(lines: List<String>) {
     }
 }
 
-fun Map<String, String>.toFilterDataModel(): FilterDataModel{
+fun Map<String, String>.toFilterDataModel(): FilterDataModel {
     return FilterDataModel(
         startDate = this["start_date"] ?: "",
         endDate = this["end_date"] ?: "",
@@ -89,7 +93,59 @@ fun Map<String, String>.toFilterDataModel(): FilterDataModel{
         idProjectStatusCategory = this["idproject_status_category"] ?: "",
         withPpr = this["with_ppr"] ?: "",
         idSectorCategory = this["idsector_category"] ?: "",
-        province = this["province"]?:"",
+        province = this["province"] ?: "",
+    )
+}
+
+fun DataState.toFavoriteProjectEntity(): FavoriteProjectEntity {
+    return FavoriteProjectEntity(
+        idProject = this.idProject.toInt(),
+        lastUpdate = this.lastUpdate,
+        idRecord = this.idRecord,
+        project = this.project,
+        statProject = this.statProject,
+        category = this.category,
+        status = this.status,
+        location = this.location,
+        province = this.province
+    )
+}
+
+fun ProjectFilterState.toFilterDataModel(): FilterDataModel {
+    return FilterDataModel(
+        startDate = if (startDate.isEmpty()) "" else startDate,
+        endDate = if (endDate.isEmpty()) "" else endDate,
+        idProject = if (idProject.isEmpty()) "" else idProject,
+        projectName = if (projectName.isEmpty()) "" else projectName,
+        idProjectCategory = (idProjectCategory ?: "").toString(),
+        idBuildingCategory = (idBuildingCategory ?: "").toString(),
+        address = if (address.isEmpty()) "" else address,
+        idProvince = idProvince ?: "",
+        idCity = idCity ?: "",
+        idDeveloper = (idDeveloper ?: "").toString(),
+        idConsultant = if (idConsultant.isEmpty()) "" else idConsultant,
+        idConsultantCategory = idConsultantCategory,
+        idContractor = idContractor,
+        idContractorCategory = idContractorCategory,
+        idSectorCategory = idSectorCategory,
+        idProjectStatusCategory = (idProjectStatusCategory ?: "").toString(),
+        withPpr = if (withPpr) "PPR" else "",
+        province = provinceName
+    )
+}
+
+fun FavoriteProject.toDataState(no: Int = 0): DataState {
+    return DataState(
+        no = no,
+        idProject = this.idProject,
+        lastUpdate = this.lastUpdate,
+        idRecord = this.idRecord,
+        project = this.project,
+        statProject = this.statProject,
+        category = this.category,
+        status = this.status,
+        location = this.location,
+        province = this.province,
     )
 }
 

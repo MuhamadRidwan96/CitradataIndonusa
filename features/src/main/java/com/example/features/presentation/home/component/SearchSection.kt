@@ -18,6 +18,7 @@ fun SearchSection(
         onQueryChange = onQueryChange,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+            onClear = {onQueryChange("")},
     )
 }

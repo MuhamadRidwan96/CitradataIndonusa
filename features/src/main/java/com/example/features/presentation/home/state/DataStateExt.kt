@@ -8,7 +8,7 @@ fun RecordData.toDataState(isFavorite: Boolean = false,no :Int = 0):DataState{
         no = no,
         lastUpdate = this.lastUpdate,
         idRecord = this.idRecord,
-        idProject = this.idProject,
+        idProject = this.idProject.toInt(),
         project = this.project,
         statProject = this.statProject,
         category = this.category,

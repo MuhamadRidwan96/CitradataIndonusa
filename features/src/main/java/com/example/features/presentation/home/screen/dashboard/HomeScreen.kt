@@ -4,13 +4,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBar
@@ -34,10 +36,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.core_ui.R
 import com.example.data.utils.TokenExpiredException
-import com.example.feature_login.R
-import com.example.features.presentation.home.screen.DataEvent
-import com.example.features.presentation.home.screen.HomeViewModel
 import com.example.features.presentation.home.component.CarouselDummy
 import com.example.features.presentation.home.component.CategoryFilterSection
 import com.example.features.presentation.home.component.ErrorBottomSheet
@@ -47,8 +47,10 @@ import com.example.features.presentation.home.component.ProjectCard
 import com.example.features.presentation.home.component.SearchSection
 import com.example.features.presentation.home.component.TopAppBarContent
 import com.example.features.presentation.home.component.getCategoryCode
+import com.example.features.presentation.home.screen.DataEvent
+import com.example.features.presentation.home.screen.HomeViewModel
+import com.example.features.presentation.home.screen.NotificationViewModel
 import com.example.features.presentation.home.state.toDataState
-import com.example.features.presentation.profile.LogOutViewModel
 import kotlinx.coroutines.launch
 
 
@@ -56,7 +58,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     viewmodel: HomeViewModel = hiltViewModel(),
-    logoutViewmodel: LogOutViewModel = hiltViewModel(),
+    notificationViewModel: NotificationViewModel = hiltViewModel(),
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onNavigateToLogin: () -> Unit,
     onNavigateToDetail: (String) -> Unit
@@ -72,6 +74,7 @@ fun HomeScreen(
     var scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val favorites by viewmodel.favoriteProjects.collectAsState()
+    val count by notificationViewModel.count.collectAsState()
 
     LaunchedEffect(pagingItems.loadState) {
         val error = pagingItems.loadState.refresh as? LoadState.Error
@@ -86,14 +89,15 @@ fun HomeScreen(
             sheetState = sheetState,
             onDismiss = {
                 coroutineScope.launch {
-                    onNavigateToLogin()
-                    logoutViewmodel.logout()
+                    sheetState.hide()
                     showErrorSheet = false
-
+                    onNavigateToLogin()
+                    viewmodel.onLogoutClicked()
                 }
             }
         )
     }
+
 
     // Listen to UI Events
     LaunchedEffect(Unit) {
@@ -102,6 +106,7 @@ fun HomeScreen(
                 is DataEvent.ShowSnackBar -> {
                     snackBarHostState.showSnackbar(event.message)
                 }
+
                 is DataEvent.Success -> {}
             }
         }
@@ -111,28 +116,35 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     TopAppBarContent(
-                        imageVector = Icons.Default.Notifications,
-                        photo = profile?.photo ?: "",
-                        email = profile?.email ?: "",
-                        name = profile?.name ?: ""
+                        name = profile?.name ?: "",
+                        hello = stringResource(R.string.hello),
+                        count = count > 0,
+                        onClick = {notificationViewModel.reset()},
                     )
                 },
                 scrollBehavior = scrollBehavior,
+                modifier = Modifier.fillMaxWidth()
             )
         },
         snackbarHost = {
             SnackbarHost(
-                snackBarHostState,
-                modifier = Modifier
-                    .padding(bottom = 56.dp, start = 16.dp, end = 16.dp)
-            )
-        }
+                hostState = snackBarHostState,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+            ) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    shape = RoundedCornerShape(12.dp),
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+            }
+        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+                .padding(paddingValues)
         ) {
 
             SearchSection(
@@ -140,43 +152,44 @@ fun HomeScreen(
                 onQueryChange = {
                     searchQuery = it
                     viewmodel.applyProjectName(
-                        mapOf("project_name" to it)
+                        mapOf("idproject" to it)
                     )
                 },
-                modifier = Modifier.padding(top = 12.dp)
+                modifier = Modifier.padding(top = 6.dp,bottom = 14.dp)
             )
 
             LazyColumn(
                 contentPadding = PaddingValues(
                     bottom = paddingValues.calculateBottomPadding() + 50.dp,
-                    top = 12.dp
+                    top = 32.dp
                 ),
                 modifier = Modifier
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
-                state = listState
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
 
-                ) {
+            ) {
 
-                item {  CarouselDummy(modifier = Modifier.padding(bottom = 8.dp)) }
+                item(contentType = "Carousel") { CarouselDummy(modifier = Modifier.padding(bottom = 14.dp)) }
 
-                item {
+                item(contentType = "Category") {
                     CategoryFilterSection(
                         selectedCategory = selectedCategory,
                         onCategorySelected = { category ->
                             selectedCategory = category
                             viewmodel.applyCategories(getCategoryCode(category))
                         },
-                        modifier = Modifier.padding(bottom = 8.dp, start = 8.dp, end = 8.dp, top = 8.dp)
+                        modifier = Modifier.padding(bottom = 14.dp)
                     )
                 }
 
-                items(pagingItems.itemCount) { index: Int ->
+                items(pagingItems.itemCount, contentType = { "Data" }) { index: Int ->
                     val recordData = pagingItems[index]
                     recordData?.let {
                         val no = index + 1
                         val dataState = it.toDataState(uiState.isFavorite, no)
-                        val isFav = favorites.any{fav -> fav.idProject == it.idProject.toInt()}
+                        val isFav = favorites.any { fav -> fav.idProject == it.idProject.toInt() }
                         ProjectCard(
                             project = dataState,
                             onClick = { onNavigateToDetail(dataState.idProject.toString()) },
@@ -220,14 +233,12 @@ fun HomeScreen(
                     }
                 }
             }
-            if (pagingItems.loadState.refresh is LoadState.Loading){
+            if (pagingItems.loadState.refresh is LoadState.Loading) {
                 LoadingItem()
             }
         }
     }
 }
-
-
 
 
 

@@ -1,6 +1,6 @@
 package com.example.features.presentation.home.screen.detail
 
-import EntityCard
+import com.example.features.presentation.home.component.EntityCard
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -62,12 +62,16 @@ fun ProjectDetailScreen(
                             bottom = paddingValues.calculateBottomPadding() + 70.dp
                         )
                     ) {
-                        item { MainDetailProjectContent(status = dataState) }
-                        item { SpecificationTechnicalComponent(status = dataState) }
-                        item { ProgressProjectComponent(status = dataState) }
+                        item(contentType = "project") { MainDetailProjectContent(status = dataState) }
+                        item(contentType = "specification") { SpecificationTechnicalComponent(status = dataState) }
+                        item(contentType = "progress"){ ProgressProjectComponent(status = dataState) }
 
                         //Developer
-                        items(dataState.developer) { dev ->
+                        items(
+                            items = dataState.developer,
+                            key = {dev -> dev.name},
+                            contentType = { "developer" }
+                        ) { dev ->
                             EntityCard(
                                 icon = EntityType.DEVELOPER.icon,
                                 section = stringResource(EntityType.DEVELOPER.label),
@@ -83,7 +87,7 @@ fun ProjectDetailScreen(
                         }
 
                         //Contractor
-                        items(dataState.contractor) { contractor ->
+                        items(items = dataState.contractor, key = {con -> con.name}, contentType = {"contractor"}) { contractor ->
                             EntityCard(
                                 icon = EntityType.CONTRACTOR.icon,
                                 section = stringResource(EntityType.CONTRACTOR.label),
@@ -99,7 +103,7 @@ fun ProjectDetailScreen(
                         }
 
                         //Consultant
-                        items(dataState.consultant) { consultant ->
+                        items(items = dataState.consultant, key = {cons -> cons.name}, contentType = {"consultant"}) { consultant ->
                             EntityCard(
                                 icon = EntityType.CONSULTANT.icon,
                                 section = stringResource(EntityType.CONSULTANT.label),

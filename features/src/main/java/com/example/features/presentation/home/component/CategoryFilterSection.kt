@@ -27,10 +27,11 @@ fun CategoryFilterSection(
     FilterCategoryRow(
         categories = categories,
         selectedCategoryProjectId = selectedCategory,
-        onCategoryProjectSelected = { categoryId ->
+        onCategoryProjectSelected = { categoryId,name->
             onCategorySelected(categoryId)
         },
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        icon = R.drawable.fire,
     )
 }
 
@@ -44,3 +45,4 @@ fun getCategoryCode(categoryId: Int): String {
         else -> ""
     }
 }
+

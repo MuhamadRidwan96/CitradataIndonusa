@@ -56,7 +56,10 @@ fun ProjectCard(
     onToggleFavorite : (FavoriteProjectEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val cardConfiguration = rememberCardConfiguration(project.statProject)
+    val cleanStat = cleanStatus(project.statProject)
+    val cardConfiguration = rememberCardConfiguration(cleanStat)
+
+
 
     Box(
         modifier = modifier
@@ -73,11 +76,11 @@ fun ProjectCard(
 
         cardConfiguration.statusColor?.let { color ->
             StatusBadge(
-                text = project.statProject,
+                text = cleanStat,
                 backgroundColor = color,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .offset(x = (-12).dp, y = (-12).dp)
+                    .offset(x = (-8).dp, y = (-16).dp)
             )
         }
     }
@@ -111,7 +114,7 @@ private fun ProjectCardContent(
         ) {
             ProjectHeader(
                 projectStatus = project.status,
-                textCategory = project.category,
+                textCategory = project.category.toString(),
                 number = project.no
             )
             ProjectTitle(title = project.project)
@@ -145,14 +148,15 @@ private data class CardConfiguration(
 
 @Composable
 private fun rememberCardConfiguration(statProject: String): CardConfiguration {
-    return remember(statProject) {
-        when (statProject) {
+    val status = cleanStatus(statProject)
+    return remember(status) {
+        when (status) {
             "New" -> CardConfiguration(
                 topPadding = 12.dp,
                 border = BorderStroke(
                     2.dp,
                     Color.Unspecified
-                ), // Will be resolved at composition time
+                ),
                 statusColor = Color.Unspecified
             )
 
@@ -170,20 +174,20 @@ private fun rememberCardConfiguration(statProject: String): CardConfiguration {
         }
     }.let { config ->
         // Resolve colors at composition time
-        val colorScheme = MaterialTheme.colorScheme
+        val colors = MaterialTheme.colorScheme
         config.copy(
             border = config.border?.copy(
                 brush = SolidColor(
-                    when (statProject) {
-                        "New" -> colorScheme.primary
-                        "Update" -> colorScheme.scrim
+                    when (status) {
+                        "New" -> colors.surfaceContainerHigh
+                        "Update" -> colors.surfaceContainerHighest
                         else -> Color.Transparent
                     }
                 )
             ),
-            statusColor = when (statProject) {
-                "New" -> colorScheme.primary
-                "Update" -> colorScheme.scrim
+            statusColor = when (status) {
+                "New" -> colors.surfaceContainerHigh
+                "Update" -> colors.surfaceContainerHighest
                 else -> config.statusColor
             }
         )
@@ -199,11 +203,18 @@ private fun StatusBadge(
     Text(
         text = text,
         color = Color.White,
+        fontWeight = FontWeight.Bold,
         style = MaterialTheme.typography.labelMedium,
         modifier = modifier
-            .background(backgroundColor, shape = RoundedCornerShape(50))
+            .background(backgroundColor, shape = RoundedCornerShape(38))
             .padding(horizontal = 10.dp, vertical = 4.dp)
     )
+}
+
+fun cleanStatus(raw:String): String{
+    return raw
+        .replace(Regex("<.*?>"), "")
+        .trim()
 }
 
 @Composable
@@ -235,11 +246,10 @@ private fun HeaderText(text: String) {
     Text(
         text = text,
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.onTertiary, RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
             .padding(horizontal = 16.dp, vertical = 4.dp),
-        fontSize = 12.sp,
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onBackground
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }
 
@@ -272,7 +282,7 @@ private fun ProjectMetadata(
             Text(
                 text = idProject,
                 color = Color.Gray,
-                fontSize = 10.sp,
+                style = MaterialTheme.typography.labelMedium ,
                 fontWeight = FontWeight.Bold
             )
         }

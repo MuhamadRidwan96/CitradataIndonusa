@@ -1,59 +1,43 @@
 package com.example.features.presentation.home.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.example.core_ui.component.NotificationWithBadge
 import com.example.features.presentation.profile.screen.subscreen.update.ProfileHeader
 
 @Composable
 fun TopAppBarContent(
-    imageVector: ImageVector,
-    photo: String,
-    email: String,
+    hello: String,
     name: String,
+    count: Boolean,
+    onClick: () -> Unit
 ) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(start = 0.dp, end = 16.dp)
+            .background(color = MaterialTheme.colorScheme.surface)
     ) {
         ProfileHeader(
-            photo = photo,
-            email = email,
-            name = name
+            name = name,
+            hello = hello,
+            modifier = Modifier.weight(0.5f)
         )
-        Box(
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .size(40.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                    shape = CircleShape
-                )
-                .clickable { },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = imageVector,
-                contentDescription = "Settings",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp)
-            )
-        }
+
+        NotificationWithBadge(
+            count = count,
+            onClick = onClick
+        )
     }
 }
+
+
