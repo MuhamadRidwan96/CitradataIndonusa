@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.common.Result
 import com.example.data.utils.Constant
+import com.example.data.utils.DataNotFoundException
 import com.example.data.utils.TokenExpiredException
 import com.example.domain.model.FilterDataModel
 import com.example.domain.repository.FilterDataRepository
@@ -15,7 +16,8 @@ class FilterPagingSource @Inject constructor(
     private val repository: FilterDataRepository,
     private val filterData: FilterDataModel?,
     private val limit: Int = 10,
-    private val onTokenExpired: () -> Unit
+    private val onTokenExpired: () -> Unit,
+    private val onDataNotFound : () -> Unit
 ) : PagingSource<Int, RecordData>() {
     override fun getRefreshKey(state: PagingState<Int, RecordData>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -35,6 +37,11 @@ class FilterPagingSource @Inject constructor(
             when (result) {
                 is Result.Success -> {
                     val responseData = result.data
+                    // cek apabila data kosong
+                    if (!responseData.success  || responseData.data.isNullOrEmpty()){
+                        return LoadResult.Error(DataNotFoundException("Data Not Found."))
+
+                    }
                     val data = responseData.data ?: emptyList()
 
                     // Determine next key based on whether there are more items
@@ -61,6 +68,7 @@ class FilterPagingSource @Inject constructor(
         } catch (e: Exception) {
             if (e is TokenExpiredException) {
                 onTokenExpired() // kirim sinyal ke viewmodel
+                onDataNotFound()
             }
             LoadResult.Error(e)
 
@@ -72,9 +80,16 @@ class FilterPagingSource @Inject constructor(
             is TokenExpiredException -> {
                 onTokenExpired()
                 LoadResult.Error(exception) }
+
+            is DataNotFoundException -> {
+                onDataNotFound()
+                LoadResult.Error(exception)
+            }
             else -> {
                 LoadResult.Error(exception)
             }
         }
     }
 }
+
+

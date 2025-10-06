@@ -20,7 +20,7 @@ class DataRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) :
 
     lateinit var onTokenExpiredCallBack: () -> Unit
 
-    override suspend fun getData(page: Int, limit: Int): Flow<Result<DataResponse>> = flow {
+    override suspend fun getData(page: Int, limit: Int): Flow<Result<DataResponse<RecordData>>> = flow {
         val response = apiHelper.getData(page, limit)
         emit(response.toTypedResult())
     }
@@ -29,7 +29,7 @@ class DataRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) :
         page: Int,
         limit: Int,
         filters: Map<String, String>
-    ): Result<DataResponse> {
+    ): Result<DataResponse<RecordData>> {
         val response = apiHelper.searchData(page, limit, filters)
         return response.toResult()
     }

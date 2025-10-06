@@ -10,6 +10,7 @@ import com.example.domain.response.LoginResponse
 import com.example.domain.response.ProfileResponse
 import com.example.domain.response.ProjectDetailResponse
 import com.example.domain.response.ProvinceResponse
+import com.example.domain.response.RecordData
 import com.example.domain.response.RegenciesResponse
 import com.example.domain.response.RegisterResponse
 import com.example.domain.response.UpdateProfileResponse
@@ -28,7 +29,7 @@ class ApiHelperImpl @Inject constructor(
        return apiService.register(requestRegister)
     }
 
-    override suspend fun searchData(page: Int, limit:Int,filters: Map<String, String>): Response<DataResponse> {
+    override suspend fun searchData(page: Int, limit:Int,filters: Map<String, String>): Response<DataResponse<RecordData>> {
         return apiService.searchData(page,limit,filters)
     }
 
@@ -62,6 +63,13 @@ class ApiHelperImpl @Inject constructor(
         filteredData: FilterDataModel?
     ): Response<ResponseBody> {
         return apiService.filterData(page,limit,filteredData)
+    }
+
+    override suspend fun saveToken(
+        userId: String,
+        token: String
+    ): Response<ResponseBody> {
+        return apiService.saveToken(userId,token)
     }
 
 

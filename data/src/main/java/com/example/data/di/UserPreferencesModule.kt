@@ -22,15 +22,16 @@ object UserPreferencesModule {
 
     @Provides
     @Singleton
-    fun provideUserPreferences(dataStore: DataStore<Preferences>): UserPreferences {
-        return UserPreferencesImpl(dataStore)
-    }
+    fun provideDataStore(
+        @ApplicationContext context: Context
+    ): DataStore<Preferences> = context.dataStore
 
     @Provides
-    @Singleton()
-    fun provideDataStore(@ApplicationContext context: Context):DataStore<Preferences>{
-        return context.dataStore
-    }
+    @Singleton
+    fun provideUserPreferences(
+        dataStore: DataStore<Preferences>
+    ): UserPreferences = UserPreferencesImpl(dataStore)
+
 
     @Provides
     @Singleton

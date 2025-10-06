@@ -1,10 +1,6 @@
 package com.example.data.remote.firebase
 
-import com.example.domain.model.UserModels
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
-
+/*
 class FireStoreService @Inject constructor(){
 
     private val db = FirebaseFirestore.getInstance()
@@ -22,4 +18,4 @@ class FireStoreService @Inject constructor(){
             .await() // gunakan kotlinx-coroutines-play-services
     }
 
-}
+}*/

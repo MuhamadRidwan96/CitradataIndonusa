@@ -3,7 +3,9 @@ package com.example.data.di
 import android.app.Application
 import androidx.room.Room
 import com.example.data.local.dao.AppDatabase
+import com.example.data.local.dao.AppDatabase1
 import com.example.data.local.dao.FavoriteDAO
+import com.example.data.local.dao.NotificationDao
 import com.example.data.remote.api.ApiHelper
 import com.example.data.remote.api.ApiHelperImpl
 import com.example.data.remote.api.ApiService
@@ -14,12 +16,16 @@ import com.example.data.repositoryImpl.DetailDataRepositoryImpl
 import com.example.data.repositoryImpl.FavoriteRepositoryImpl
 import com.example.data.repositoryImpl.FilterDataRepositoryImpl
 import com.example.data.repositoryImpl.LocationRepositoryImpl
+import com.example.data.repositoryImpl.NotificationRepositoryImpl
+import com.example.data.repositoryImpl.SaveTokenRepositoryImpl
 import com.example.domain.repository.AuthRepository
 import com.example.domain.repository.DataRepository
 import com.example.domain.repository.DetailDataRepository
 import com.example.domain.repository.FavoriteRepository
 import com.example.domain.repository.FilterDataRepository
 import com.example.domain.repository.LocationRepository
+import com.example.domain.repository.NotificationRepository
+import com.example.domain.repository.SaveTokenRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,7 +55,7 @@ object DataModule {
     @Singleton
     fun provideLocationRepository(
         apiHelper: ApiHelper
-    ): LocationRepository{
+    ): LocationRepository {
         return LocationRepositoryImpl(apiHelper)
     }
 
@@ -57,31 +63,38 @@ object DataModule {
     @Singleton
     fun provideFilterDataRepository(
         apiHelper: ApiHelper
-    ): FilterDataRepository{
+    ): FilterDataRepository {
         return FilterDataRepositoryImpl(apiHelper)
     }
 
     @Provides
     @Singleton
-    fun provideDataRepository(apiHelper: ApiHelper): DataRepository{
+    fun provideDataRepository(apiHelper: ApiHelper): DataRepository {
         return DataRepositoryImpl(apiHelper)
     }
 
     @Singleton
     @Provides
-    fun providesDetailRepository(apiHelper: ApiHelper): DetailDataRepository{
+    fun providesDetailRepository(apiHelper: ApiHelper): DetailDataRepository {
         return DetailDataRepositoryImpl(apiHelper)
     }
 
     @Singleton
     @Provides
-    fun provideFavoriteRepository(dao: FavoriteDAO): FavoriteRepository{
+    fun provideFavoriteRepository(dao: FavoriteDAO): FavoriteRepository {
         return FavoriteRepositoryImpl(dao)
+    }
+
+
+    @Singleton
+    @Provides
+    fun provideSaveTokenRepository(apiHelper: ApiHelper): SaveTokenRepository{
+        return SaveTokenRepositoryImpl(apiHelper)
     }
 
     @Provides
     @Singleton
-    fun provideDatabase(app: Application): AppDatabase{
+    fun provideDatabase(app: Application): AppDatabase {
         return Room.databaseBuilder(
             app,
             AppDatabase::class.java,
@@ -92,7 +105,25 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideFavoriteDao(db: AppDatabase): FavoriteDAO{
-    return db.favoriteDao()
+    fun provideFavoriteDao(db: AppDatabase): FavoriteDAO {
+        return db.favoriteDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatabase1(app: Application): AppDatabase1 {
+        return Room.databaseBuilder(app, AppDatabase1::class.java, "my_db_notification").build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationDao(db: AppDatabase1): NotificationDao{
+        return db.notificationDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationRepository(): NotificationRepository{
+        return NotificationRepositoryImpl()
     }
 }

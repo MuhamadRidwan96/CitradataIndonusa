@@ -18,12 +18,13 @@ import kotlinx.coroutines.flow.flow
 class FilterDataRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) :
     FilterDataRepository {
     lateinit var onTokenExpiredCallBack: () -> Unit
+    lateinit var onDataNotFoundCallBack: () -> Unit
 
     override fun filterData(
         page: Int,
         limit: Int,
         filterData: FilterDataModel?
-    ): Flow<Result<DataResponse>> = flow {
+    ): Flow<Result<DataResponse<RecordData>>> = flow {
         val response = apiHelper.filterData(
             page = page,
             limit = limit,
@@ -48,6 +49,7 @@ class FilterDataRepositoryImpl @Inject constructor(private val apiHelper: ApiHel
                     filterData = filterData,
                     limit = limit,
                     onTokenExpired = { onTokenExpiredCallBack.invoke() },
+                    onDataNotFound = { onDataNotFoundCallBack.invoke() },
                 )
             }
         ).flow
