@@ -1,6 +1,8 @@
 package com.example.features.nav.graph
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -19,9 +21,11 @@ import com.example.features.presentation.search.SearchScreen
 
 @Composable
 fun HomeNavGraph(
+    modifier: Modifier = Modifier,
     navController: NavHostController,
     rootNavController: NavHostController,
-    modifier: Modifier = Modifier
+    projectId: String ? = null,
+
 ) {
     NavHost(
         modifier = modifier,
@@ -30,16 +34,23 @@ fun HomeNavGraph(
         startDestination = BottomNavItem.Home.route
     ) {
         // Bottom navigation destinations
-        homeDestination(
-            rootNavController = rootNavController,
-            navController = navController
-        )
-        searchDestination(rootNavController = rootNavController)
+        homeDestination(rootNavController = rootNavController, navController = navController)
+        searchDestination(rootNavController = rootNavController, navController = navController)
         favoriteDestination(navController = navController)
         profileDestination(rootNavController = rootNavController)
 
         // Nested navigation graphs
         detailsNavGraph(navController)
+
+    }
+
+    LaunchedEffect(projectId) {
+        if (!projectId.isNullOrBlank()) {
+            navController.navigate(DetailsDestination.createRoute(projectId)){
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
     }
 }
 
@@ -73,9 +84,22 @@ private fun NavGraphBuilder.favoriteDestination(navController: NavHostController
 }
 
 
-private fun NavGraphBuilder.searchDestination(rootNavController: NavHostController) {
+private fun NavGraphBuilder.searchDestination(
+    rootNavController: NavHostController,
+    navController: NavHostController
+) {
     composable(route = BottomNavItem.Search.route) {
-        SearchScreen(navController = rootNavController)
+        SearchScreen(
+            onNavigateToDetail = { projectId ->
+                navController.navigate(DetailsDestination.createRoute(projectId))
+            },
+            onNavigateToLogin = {
+                rootNavController.navigate(Graph.AUTHENTICATION) {
+                    popUpTo(Graph.HOME) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        )
     }
 }
 
@@ -89,10 +113,10 @@ private fun NavGraphBuilder.profileDestination(rootNavController: NavHostControl
 private fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.DETAILS,
-        startDestination = DetailsDestination.route
+        startDestination = DetailsDestination.ROUTE
     ) {
         composable(
-            route = DetailsDestination.route,
+            route = DetailsDestination.ROUTE,
             arguments = listOf(
                 navArgument(DetailsDestination.PROJECT_ID_ARG) {
                     type = NavType.StringType
@@ -104,7 +128,7 @@ private fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
 
             ProjectDetailScreen(
                 projectId = projectId,
-                onBackClick = {navController.popBackStack()},
+                onBackClick = { navController.popBackStack() },
             )
         }
     }
@@ -113,8 +137,8 @@ private fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
 // Navigation destination definitions
 object DetailsDestination {
     const val PROJECT_ID_ARG = "projectId"
-    const val route = "details/{$PROJECT_ID_ARG}"
+    const val ROUTE = "details/{$PROJECT_ID_ARG}"
 
-    fun createRoute(projectId: String): String = "details/$projectId"
+    fun createRoute(projectId: String?): String = "details/${Uri.encode(projectId)}"
 }
 

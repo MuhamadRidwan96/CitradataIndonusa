@@ -1,6 +1,7 @@
 package com.example.features.nav.graph
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,7 +16,7 @@ import com.example.features.presentation.search.subscreen.ContractorScreen
 import com.example.features.presentation.search.subscreen.DeveloperScreen
 
 @Composable
-fun RootNavigationGraph(navController: NavHostController) {
+fun RootNavigationGraph(modifier: Modifier = Modifier,navController: NavHostController,  projectId: String?) {
 
     NavHost(
         navController = navController,
@@ -24,9 +25,7 @@ fun RootNavigationGraph(navController: NavHostController) {
     ) {
         splashNavGraph(navController = navController)
         authNavGraph(navController = navController)
-        composable(Graph.HOME) {
-            MainScreen(navController)
-        }
+        composable(Graph.HOME) { MainScreen(modifier,navController,projectId) }
         composable(ProfileRoutes.MEMBERSHIP) { MyMembershipScreen(navController = navController) }
         composable(ProfileRoutes.CONTACT) { ContactUsScreen(navController = navController) }
         composable(ProfileRoutes.PRIVACY) { PrivacyPolicyScreen(navController = navController) }
