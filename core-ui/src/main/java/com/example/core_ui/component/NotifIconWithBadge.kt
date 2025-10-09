@@ -17,7 +17,7 @@ import com.example.core_ui.R
 
 @Composable
 fun NotificationWithBadge(
-    count: Boolean,
+    count: Int,
     onClick: () -> Unit
 ) {
     Box(
@@ -38,7 +38,7 @@ fun NotificationWithBadge(
             modifier = Modifier.size(20.dp)
         )
 
-        if (count) {
+        if (count > 0) {
             NotificationBadge(
                 modifier = Modifier
                     .align(Alignment.TopEnd)

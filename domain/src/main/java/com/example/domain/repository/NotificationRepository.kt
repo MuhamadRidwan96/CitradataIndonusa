@@ -1,9 +1,12 @@
 package com.example.domain.repository
 
-import kotlinx.coroutines.flow.StateFlow
+import com.example.domain.model.NotificationModel
+import kotlinx.coroutines.flow.Flow
 
 interface NotificationRepository {
-    val notificationCount: StateFlow<Int>
-    fun increaseCount()
-    fun resetCount()
+    fun getAllNotifications(): Flow<List<NotificationModel>>
+    fun getUnreadCount(): Flow<Int>
+    suspend fun insert(notification: NotificationModel)
+    suspend fun markAllAsRead(id:Int)
+    suspend fun delete(id: Int)
 }

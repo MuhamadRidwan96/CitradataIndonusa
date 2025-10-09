@@ -6,5 +6,5 @@ import javax.inject.Inject
 class ResetNotificationCountUseCase @Inject constructor(
     private val repository: NotificationRepository) {
 
-    operator fun invoke() = repository.resetCount()
+    suspend operator fun invoke(id:Int) = repository.markAllAsRead(id)
 }

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NotificationDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(notification: NotificationEntity)
 
@@ -18,6 +19,11 @@ interface NotificationDao {
     @Query("SELECT COUNT(*) FROM notification WHERE isRead = 0")
     fun getUnreadCount(): Flow<Int>
 
-    @Query("UPDATE notification SET isRead = 1")
-    suspend fun markAllAsRead()
+    @Query("UPDATE notification SET isRead = 1 WHERE id = :id")
+    suspend fun markAllAsRead(id:Int)
+
+    @Query("DELETE FROM notification WHERE id = :id")
+    suspend fun deleteNotification(id:Int)
+
+
 }

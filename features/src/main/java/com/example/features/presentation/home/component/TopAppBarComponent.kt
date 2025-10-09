@@ -16,7 +16,7 @@ import com.example.features.presentation.profile.screen.subscreen.update.Profile
 fun TopAppBarContent(
     hello: String,
     name: String,
-    count: Boolean,
+    count: Int,
     onClick: () -> Unit
 ) {
 
