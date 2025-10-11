@@ -91,4 +91,13 @@
     <string name="pilih_provinsi">Pilih Provinsi</string>
     <string name="pilih_kota">Pilih Kota</string>
     <string name="masukan_alamat">Masukan Alamat</string>
+    <string name="cari">Cari</string>
+    <string name="anjuran_cari">Please, insert filter!</string>
+    <string name="end_session">Sesi anda telah berakhir, silahkan login kembali!</string>
+    <string name="data_not_found">Data Not Found!</string>
+    <string name="hello">Hello, </string>
+    <string name="greeting">Find an amazing project for the future!</string>
+    <string name="default_notification_channel_id">default_channel</string>
+    <string name="latest">Latest Project</string>
+
 </resources>
