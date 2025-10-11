@@ -64,8 +64,7 @@ fun FilterCategoryRow(
                 text = stringResource(R.string.cat_project),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.Bold
             )
         }
 

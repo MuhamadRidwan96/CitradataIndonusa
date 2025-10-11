@@ -112,7 +112,7 @@ fun SubscriptionCard(
         if (plan.isMostPopular) {
             Text(
                 text = "Most Popular",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
