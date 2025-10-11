@@ -29,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,9 +76,16 @@ class HomeViewModel @Inject constructor(
 
     var userProfile by mutableStateOf<UserProfile?>(null)
 
+    private val _isInitialized = MutableStateFlow(false)
+    val isInitialized = _isInitialized.asStateFlow()
+
 
     init {
         observeFavorites()
+        viewModelScope.launch {
+            delay(700)
+            _isInitialized.value = true
+        }
     }
 
     private fun observeFavorites() {

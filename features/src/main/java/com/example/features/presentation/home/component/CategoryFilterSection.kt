@@ -16,6 +16,7 @@ fun CategoryFilterSection(
 ) {
     val categories = remember {
         listOf(
+            FilterCategory(1, "All Categories", "ALL", R.drawable.command),
             FilterCategory(5, "Highrise & Commercial", "HRC",R.drawable.building_2 ),
             FilterCategory(6, "Middle Projects", "MDL",R.drawable.building),
             FilterCategory(7, "Lower Projects", "LOW", R.drawable.house),
@@ -31,7 +32,7 @@ fun CategoryFilterSection(
             onCategorySelected(categoryId)
         },
         modifier = modifier.fillMaxWidth(),
-        icon = R.drawable.fire,
+        icon = R.drawable.chart_column_stacked
     )
 }
 
@@ -42,6 +43,7 @@ fun getCategoryCode(categoryId: Int): String {
         7 -> "7"
         8 -> "8"
         9 -> "9"
+        1 -> ""
         else -> ""
     }
 }

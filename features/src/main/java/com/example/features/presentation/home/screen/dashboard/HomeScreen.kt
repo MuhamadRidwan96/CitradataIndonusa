@@ -1,6 +1,7 @@
 package com.example.features.presentation.home.screen.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -37,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.core_ui.R
+import com.example.core_ui.component.TextTitle
 import com.example.data.utils.TokenExpiredException
 import com.example.features.presentation.home.component.CarouselDummy
 import com.example.features.presentation.home.component.CategoryFilterSection
@@ -61,7 +65,8 @@ fun HomeScreen(
     notificationViewModel: NotificationViewModel = hiltViewModel(),
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onNavigateToLogin: () -> Unit,
-    onNavigateToDetail: (String) -> Unit
+    onNavigateToDetail: (String) -> Unit,
+    onNavigateToNotification: () -> Unit
 ) {
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
     val pagingItems = viewmodel.currentPagingData.collectAsLazyPagingItems()
@@ -74,7 +79,8 @@ fun HomeScreen(
     var scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val favorites by viewmodel.favoriteProjects.collectAsState()
-    val count by notificationViewModel.count.collectAsState()
+    val count by notificationViewModel.unreadCount.collectAsState()
+    val isInitialized by viewmodel.isInitialized.collectAsStateWithLifecycle()
 
     LaunchedEffect(pagingItems.loadState) {
         val error = pagingItems.loadState.refresh as? LoadState.Error
@@ -118,8 +124,10 @@ fun HomeScreen(
                     TopAppBarContent(
                         name = profile?.name ?: "",
                         hello = stringResource(R.string.hello),
-                        count = count > 0,
-                        onClick = {notificationViewModel.reset()},
+                        count = count,
+                        onClick = {
+                            onNavigateToNotification()
+                        },
                     )
                 },
                 scrollBehavior = scrollBehavior,
@@ -141,100 +149,124 @@ fun HomeScreen(
             }
         },
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
 
-            SearchSection(
-                query = searchQuery,
-                onQueryChange = {
-                    searchQuery = it
-                    viewmodel.applyProjectName(
-                        mapOf("idproject" to it)
-                    )
-                },
-                modifier = Modifier.padding(top = 6.dp,bottom = 14.dp)
-            )
-
-            LazyColumn(
-                contentPadding = PaddingValues(
-                    bottom = paddingValues.calculateBottomPadding() + 50.dp,
-                    top = 32.dp
-                ),
+        if (!isInitialized) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
-                state = listState,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-
+                    .padding(paddingValues)
             ) {
 
-                item(contentType = "Carousel") { CarouselDummy(modifier = Modifier.padding(bottom = 14.dp)) }
+                SearchSection(
+                    query = searchQuery,
+                    onQueryChange = {
+                        searchQuery = it
+                        viewmodel.applyProjectName(
+                            mapOf("project_name" to it)
+                        )
+                    },
+                    modifier = Modifier.padding(top = 6.dp, bottom = 14.dp)
+                )
 
-                item(contentType = "Category") {
-                    CategoryFilterSection(
-                        selectedCategory = selectedCategory,
-                        onCategorySelected = { category ->
-                            selectedCategory = category
-                            viewmodel.applyCategories(getCategoryCode(category))
-                        },
-                        modifier = Modifier.padding(bottom = 14.dp)
-                    )
-                }
+                LazyColumn(
+                    contentPadding = PaddingValues(
+                        bottom = paddingValues.calculateBottomPadding() + 50.dp,
+                        top = 32.dp
+                    ),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    state = listState,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
 
-                items(pagingItems.itemCount, contentType = { "Data" }) { index: Int ->
-                    val recordData = pagingItems[index]
-                    recordData?.let {
-                        val no = index + 1
-                        val dataState = it.toDataState(uiState.isFavorite, no)
-                        val isFav = favorites.any { fav -> fav.idProject == it.idProject.toInt() }
-                        ProjectCard(
-                            project = dataState,
-                            onClick = { onNavigateToDetail(dataState.idProject.toString()) },
-                            isFavorite = isFav,
-                            onToggleFavorite = { favEntity ->
-                                viewmodel.toggleFavorite(favEntity)
-                            },
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+
+                    item(contentType = "Carousel") {
+                        CarouselDummy(
+                            modifier = Modifier.padding(
+                                bottom = 14.dp
+                            )
                         )
                     }
-                }
-                pagingItems.apply {
-                    when {
-                        loadState.refresh is LoadState.Loading -> {
-                            item { LoadingItem() }
-                        }
 
-                        loadState.append is LoadState.Loading -> {
-                            item { LoadingItem() }
-                        }
+                    item(contentType = "Category") {
+                        CategoryFilterSection(
+                            selectedCategory = selectedCategory,
+                            onCategorySelected = { category ->
+                                selectedCategory = category
+                                viewmodel.applyCategories(getCategoryCode(category))
+                            },
+                            modifier = Modifier.padding(bottom = 14.dp)
+                        )
+                    }
 
-                        loadState.refresh is LoadState.Error -> {
-                            val e = (loadState.refresh as LoadState.Error).error
-                            if (e !is TokenExpiredException) {
-                                coroutineScope.launch {
-                                    snackBarHostState.showSnackbar(
-                                        e.message ?: "Gagal memuat data!"
-                                    )
+                    item(contentType = "Latest"){
+                        TextTitle(
+                            icon = R.drawable.fire,
+                            title = stringResource(R.string.latest)
+                        )
+                    }
+
+                    items(pagingItems.itemCount, contentType = { "Data" }) { index: Int ->
+                        val recordData = pagingItems[index]
+                        recordData?.let {
+                            val no = index + 1
+                            val dataState = it.toDataState(uiState.isFavorite, no)
+                            val isFav =
+                                favorites.any { fav -> fav.idProject == it.idProject.toInt() }
+                            ProjectCard(
+                                project = dataState,
+                                onClick = { onNavigateToDetail(dataState.idProject.toString()) },
+                                isFavorite = isFav,
+                                onToggleFavorite = { favEntity ->
+                                    viewmodel.toggleFavorite(favEntity)
+                                },
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
+                    }
+                    pagingItems.apply {
+                        when {
+                            loadState.refresh is LoadState.Loading -> {
+                                item { LoadingItem() }
+                            }
+
+                            loadState.append is LoadState.Loading -> {
+                                item { LoadingItem() }
+                            }
+
+                            loadState.refresh is LoadState.Error -> {
+                                val e = (loadState.refresh as LoadState.Error).error
+                                if (e !is TokenExpiredException) {
+                                    coroutineScope.launch {
+                                        snackBarHostState.showSnackbar(
+                                            e.message ?: "Gagal memuat data!"
+                                        )
+                                    }
                                 }
                             }
-                        }
 
-                        loadState.append is LoadState.Error -> {
-                            val e = (loadState.append as LoadState.Error).error
-                            if (e !is TokenExpiredException) {
-                                item {
-                                    PagingErrorItem("Tidak ada data berikutnya!")
+                            loadState.append is LoadState.Error -> {
+                                val e = (loadState.append as LoadState.Error).error
+                                if (e !is TokenExpiredException) {
+                                    item {
+                                        PagingErrorItem("Tidak ada data berikutnya!")
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            if (pagingItems.loadState.refresh is LoadState.Loading) {
-                LoadingItem()
+                if (pagingItems.loadState.refresh is LoadState.Loading) {
+                    LoadingItem()
+                }
             }
         }
     }
