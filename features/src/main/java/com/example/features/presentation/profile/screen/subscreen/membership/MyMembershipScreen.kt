@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -28,17 +27,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.core_ui.AppTheme
 import com.example.core_ui.component.BenefitCard
 import com.example.core_ui.component.CompareFeatures
 import com.example.core_ui.component.SubscriptionCard
 import com.example.core_ui.component.TopAppBarWithBack
 import com.example.feature_login.R
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.lazy.items
 
 @Composable
 fun MyMembershipScreen(navController: NavHostController) {
@@ -206,14 +204,6 @@ fun CompareContent() {
         contentPadding = PaddingValues(top = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) { item { CompareFeatures() } }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun TestPreview(){
-    AppTheme {
-        PlansSection()
-    }
 }
 
 

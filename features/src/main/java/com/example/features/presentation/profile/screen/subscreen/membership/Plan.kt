@@ -7,9 +7,9 @@ import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.example.core_ui.component.BenefitPlan
-import com.example.core_ui.component.Feature
-import com.example.core_ui.component.SubscriptionPlan
+import com.example.core_ui.model.BenefitPlan
+import com.example.core_ui.model.Feature
+import com.example.core_ui.model.SubscriptionPlan
 
 @Composable
 fun rememberSubscriptionPlans(): List<SubscriptionPlan> = remember {
