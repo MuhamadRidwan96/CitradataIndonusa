@@ -15,8 +15,10 @@ import com.example.features.nav.BottomNavItem
 import com.example.features.presentation.favorite.FavoriteScreen
 import com.example.features.presentation.home.screen.dashboard.HomeScreen
 import com.example.features.presentation.home.screen.detail.ProjectDetailScreen
+import com.example.features.presentation.home.screen.notification.NotificationScreen
 import com.example.features.presentation.profile.screen.main.ProfileScreen
 import com.example.features.presentation.search.SearchScreen
+import timber.log.Timber
 
 
 @Composable
@@ -24,9 +26,9 @@ fun HomeNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     rootNavController: NavHostController,
-    projectId: String ? = null,
+    projectId: String? = null,
 
-) {
+    ) {
     NavHost(
         modifier = modifier,
         navController = navController,
@@ -41,12 +43,13 @@ fun HomeNavGraph(
 
         // Nested navigation graphs
         detailsNavGraph(navController)
+        notificationDestination(navController)
 
     }
 
     LaunchedEffect(projectId) {
         if (!projectId.isNullOrBlank()) {
-            navController.navigate(DetailsDestination.createRoute(projectId)){
+            navController.navigate(DetailsDestination.createRoute(projectId)) {
                 launchSingleTop = true
                 restoreState = true
             }
@@ -68,6 +71,9 @@ private fun NavGraphBuilder.homeDestination(
             },
             onNavigateToDetail = { projectId ->
                 navController.navigate(DetailsDestination.createRoute(projectId))
+            },
+            onNavigateToNotification = {
+                navController.navigate(NotificationDestination.createRoute())
             }
         )
     }
@@ -110,6 +116,24 @@ private fun NavGraphBuilder.profileDestination(rootNavController: NavHostControl
     }
 }
 
+
+private fun NavGraphBuilder.notificationDestination(navController: NavHostController) {
+    navigation(
+        route = Graph.NOTIFICATION,
+        startDestination = NotificationDestination.ROUTE
+    ) {
+        composable(route = NotificationDestination.ROUTE) {
+            NotificationScreen(onBackClick = { navController.popBackStack() })
+            Timber.tag("notifikasi graph",)
+        }
+    }
+}
+
+object NotificationDestination {
+    const val ROUTE = "notification"
+    fun createRoute(): String = "notification"
+}
+
 private fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.DETAILS,
@@ -141,4 +165,6 @@ object DetailsDestination {
 
     fun createRoute(projectId: String?): String = "details/${Uri.encode(projectId)}"
 }
+
+
 

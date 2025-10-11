@@ -67,7 +67,7 @@ fun MainBottomNavigation(
                             painter = painterResource(navigate.icon),
                             contentDescription = navigate.title,
                             modifier = Modifier.size(18.dp),
-                            tint = if (selected) MaterialTheme.colorScheme.primary
+                            tint = if (selected) MaterialTheme.colorScheme.onPrimary
                             else MaterialTheme.colorScheme.onSurface
                         )
                     },
@@ -90,7 +90,7 @@ fun MainBottomNavigation(
                     },
                     alwaysShowLabel = true ,
                     colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                        indicatorColor = MaterialTheme.colorScheme.primary
                     )
                 )
             }
