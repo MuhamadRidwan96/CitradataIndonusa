@@ -18,13 +18,14 @@ import com.example.features.presentation.search.viewmodel.SearchViewModel
 
 @Composable
 fun ChipsRow(
+    modifier: Modifier = Modifier,
     searchState: ProjectFilterState,
     viewModel: SearchViewModel,
     cityVM: CityViewModel,
     provinceVM : ProvinceViewModel
 ) {
     LazyRow(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {

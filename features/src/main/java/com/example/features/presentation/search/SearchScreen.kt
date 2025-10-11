@@ -3,6 +3,7 @@ package com.example.features.presentation.search
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.core_ui.R
@@ -78,14 +80,16 @@ fun SearchScreen(
     val sheet = rememberModalBottomSheetState()
     var showSheet by remember { mutableStateOf(false) }
     var showDataNotFound by remember { mutableStateOf(false) }
+    val isInitialized by viewModel.isInitialized.collectAsStateWithLifecycle()
 
     LaunchedEffect(lazyPagingItems.loadState) {
         val refresh = lazyPagingItems.loadState.refresh
         val append = lazyPagingItems.loadState.append
         val prepend = lazyPagingItems.loadState.prepend
 
-        val error =
-            listOf(refresh, append, prepend).find { it is LoadState.Error } as? LoadState.Error
+        val error = listOf(refresh, append, prepend).find {
+            it is LoadState.Error } as? LoadState.Error
+
         if (error != null) {
             when (error.error) {
                 is TokenExpiredException -> {
@@ -166,134 +170,148 @@ fun SearchScreen(
             }
         },
     ) { paddingValues ->
+        if (!isInitialized) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
 
-        if (showBottomSheet) {
-            SearchBottomSheet(
-                onDismiss = { showBottomSheet = false },
-                sheetState = sheetState,
-                viewModel = viewModel,
-                provinceVM = provinceVM,
-                cityVM = cityVM,
-            )
-        }
+        } else {
 
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            SearchScreenMain(
-                query = query,
-                onQueryChange = {projectName ->
-                    query = projectName
-                    viewModel.updateDraft { it.copy(projectName = projectName) }
-                    viewModel.applyFilters()
-                },
-                onBottomSheet = { showBottomSheet = true },
-            )
+            if (showBottomSheet) {
+                SearchBottomSheet(
+                    onDismiss = { showBottomSheet = false },
+                    sheetState = sheetState,
+                    viewModel = viewModel,
+                    provinceVM = provinceVM,
+                    cityVM = cityVM,
+                )
+            }
 
-            ChipsRow(
-                searchState = searchState,
-                viewModel = viewModel,
-                cityVM = cityVM,
-                provinceVM = provinceVM
-            )
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
 
-            val filterApplied = searchState.hasFilter()
-            when {
-                showDataNotFound -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        LabelBackground(
-                            icon = R.drawable.folder_x,
-                            title = stringResource(R.string.data_not_found)
-                        )
-                    }
-                }
+            ) {
+                SearchScreenMain(
+                    query = query,
+                    onQueryChange = { projectName ->
+                        query = projectName
+                        viewModel.updateDraft { it.copy(projectName = projectName) }
+                        viewModel.applyFilters()
+                    },
+                    onBottomSheet = { showBottomSheet = true },
+                )
 
-                filterApplied && hasSearch -> {
-                    // ✅ Ada data -> tampilkan LazyColumn
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(lazyPagingItems.itemCount) { index ->
-                            val recordData = lazyPagingItems[index]
-                            recordData?.let {
-                                val no = index + 1
-                                val state = it.toDataState(searchState.isFavorite, no)
-                                val fav =
-                                    favorites.any { fav -> fav.idProject == it.idProject.toInt() }
+                ChipsRow(
+                    searchState = searchState,
+                    viewModel = viewModel,
+                    cityVM = cityVM,
+                    provinceVM = provinceVM
+                )
 
-                                ProjectCard(
-                                    project = state,
-                                    onClick = { onNavigateToDetail(state.idProject.toString()) },
-                                    isFavorite = fav,
-                                    onToggleFavorite = { favEntity ->
-                                        viewModel.toggleFavorite(favEntity)
-                                    }
-                                )
-                            }
+                val filterApplied = searchState.hasFilter()
+                when {
+                    showDataNotFound -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            LabelBackground(
+                                icon = R.drawable.folder_x,
+                                title = stringResource(R.string.data_not_found)
+                            )
                         }
+                    }
 
-                        lazyPagingItems.apply {
-                            when {
-                                loadState.refresh is LoadState.Loading -> {
-                                    item {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillParentMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) { CircularProgressIndicator() }
-                                    }
+                    filterApplied && hasSearch -> {
+                        // ✅ Ada data -> tampilkan LazyColumn
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(
+                                top = 14.dp
+                            )
+                        ) {
+                            items(lazyPagingItems.itemCount) { index ->
+                                val recordData = lazyPagingItems[index]
+                                recordData?.let {
+                                    val no = index + 1
+                                    val state = it.toDataState(searchState.isFavorite, no)
+                                    val fav =
+                                        favorites.any { fav -> fav.idProject == it.idProject.toInt() }
+
+                                    ProjectCard(
+                                        project = state,
+                                        onClick = { onNavigateToDetail(state.idProject.toString()) },
+                                        isFavorite = fav,
+                                        onToggleFavorite = { favEntity ->
+                                            viewModel.toggleFavorite(favEntity)
+                                        }
+                                    )
                                 }
+                            }
 
-                                loadState.append is LoadState.Loading -> {
-                                    item {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(16.dp)
-                                                .wrapContentSize(Alignment.Center)
-                                        )
+                            lazyPagingItems.apply {
+                                when {
+                                    loadState.refresh is LoadState.Loading -> {
+                                        item {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillParentMaxSize(),
+                                                contentAlignment = Alignment.Center
+                                            ) { CircularProgressIndicator() }
+                                        }
                                     }
-                                }
 
-                                loadState.refresh is LoadState.Error -> {
-                                    val e = (loadState.refresh as LoadState.Error).error
-                                    if (e !is TokenExpiredException) {
-                                        coroutineScope.launch {
-                                            snackBarHostState.showSnackbar(
-                                                e.message ?: Constant.FAILED_PARSE
+                                    loadState.append is LoadState.Loading -> {
+                                        item {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(16.dp)
+                                                    .wrapContentSize(Alignment.Center)
                                             )
                                         }
                                     }
-                                }
 
-                                loadState.append is LoadState.Error -> {
-                                    item {
-                                        PagingErrorItem("Tidak ada data berikutnya!")
+                                    loadState.refresh is LoadState.Error -> {
+                                        val e = (loadState.refresh as LoadState.Error).error
+                                        if (e !is TokenExpiredException) {
+                                            coroutineScope.launch {
+                                                snackBarHostState.showSnackbar(
+                                                    e.message ?: Constant.FAILED_PARSE
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    loadState.append is LoadState.Error -> {
+                                        item {
+                                            PagingErrorItem("Tidak ada data berikutnya!")
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                else -> {
+                    else -> {
 
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        LabelBackground(
-                            icon = R.drawable.funnel_plus,
-                            title = stringResource(R.string.anjuran_cari)
-                        )
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            LabelBackground(
+                                icon = R.drawable.funnel_plus,
+                                title = stringResource(R.string.anjuran_cari)
+                            )
+                        }
                     }
                 }
             }

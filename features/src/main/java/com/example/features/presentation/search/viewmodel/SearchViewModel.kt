@@ -71,8 +71,14 @@ class SearchViewModel @Inject constructor(
     private val _favorite = MutableStateFlow<List<FavoriteProject>>(emptyList())
     val favorite: StateFlow<List<FavoriteProject>> = _favorite
 
+    private val _isInitialized = MutableStateFlow(false)
+    val isInitialized = _isInitialized.asStateFlow()
+
     init {
         observeFavorite()
+        viewModelScope.launch {
+            _isInitialized.value = true
+        }
     }
 
     private fun observeFavorite() {

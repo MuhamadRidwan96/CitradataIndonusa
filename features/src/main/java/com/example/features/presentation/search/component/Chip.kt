@@ -1,5 +1,6 @@
 package com.example.features.presentation.search.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -25,7 +26,11 @@ fun Chip(label: @Composable () -> Unit, onClick: () -> Unit) {
         modifier = Modifier
             .height(32.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
-        shape = RoundedCornerShape(14.dp)
+        shape = RoundedCornerShape(14.dp),
+        border = BorderStroke(
+            width = 1.3.dp,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
+        )
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
