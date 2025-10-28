@@ -13,6 +13,7 @@ import com.example.domain.response.ProfileResponse
 import com.example.domain.response.ProvinceResponse
 import com.example.domain.response.RecordData
 import com.example.domain.response.RegenciesResponse
+import com.example.domain.response.StatisticsResponse
 import com.example.domain.response.UpdateProfileResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -29,6 +30,7 @@ interface ApiHelper{
     suspend fun getCity(city: CityModel): Response<RegenciesResponse>
     suspend fun filterData(page: Int, limit: Int,filteredData: FilterDataModel?): Response<ResponseBody>
     suspend fun saveToken(userId:String,token: String) : Response<ResponseBody>
+    suspend fun getStatistic(): Response<StatisticsResponse>
 
 }
 

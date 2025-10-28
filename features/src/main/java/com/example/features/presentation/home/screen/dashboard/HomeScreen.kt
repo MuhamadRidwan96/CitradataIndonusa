@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,17 +42,16 @@ import com.example.core_ui.R
 import com.example.core_ui.component.TextTitle
 import com.example.data.utils.TokenExpiredException
 import com.example.features.presentation.home.component.CarouselDummy
-import com.example.features.presentation.home.component.CategoryFilterSection
 import com.example.features.presentation.home.component.ErrorBottomSheet
-import com.example.features.presentation.home.component.LoadingItem
 import com.example.features.presentation.home.component.PagingErrorItem
 import com.example.features.presentation.home.component.ProjectCard
 import com.example.features.presentation.home.component.SearchSection
+import com.example.features.presentation.home.component.StatisticScreen
 import com.example.features.presentation.home.component.TopAppBarContent
-import com.example.features.presentation.home.component.getCategoryCode
 import com.example.features.presentation.home.screen.DataEvent
 import com.example.features.presentation.home.screen.HomeViewModel
 import com.example.features.presentation.home.screen.NotificationViewModel
+import com.example.features.presentation.home.screen.StatisticViewModel
 import com.example.features.presentation.home.state.toDataState
 import kotlinx.coroutines.launch
 
@@ -63,6 +61,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     viewmodel: HomeViewModel = hiltViewModel(),
     notificationViewModel: NotificationViewModel = hiltViewModel(),
+    statisticViewModel: StatisticViewModel = hiltViewModel(),
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onNavigateToLogin: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
@@ -75,7 +74,6 @@ fun HomeScreen(
     val coroutineScope = rememberCoroutineScope()
     var showErrorSheet by remember { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
-    var selectedCategory by rememberSaveable { mutableIntStateOf(4) }
     var scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val favorites by viewmodel.favoriteProjects.collectAsState()
@@ -118,6 +116,7 @@ fun HomeScreen(
         }
     }
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
@@ -125,13 +124,11 @@ fun HomeScreen(
                         name = profile?.name ?: "",
                         hello = stringResource(R.string.hello),
                         count = count,
-                        onClick = {
-                            onNavigateToNotification()
-                        },
+                        onClick = { onNavigateToNotification() },
                     )
                 },
                 scrollBehavior = scrollBehavior,
-                modifier = Modifier.fillMaxWidth()
+
             )
         },
         snackbarHost = {
@@ -160,8 +157,8 @@ fun HomeScreen(
         } else {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
                     .padding(paddingValues)
+                    .fillMaxSize()
             ) {
 
                 SearchSection(
@@ -172,42 +169,38 @@ fun HomeScreen(
                             mapOf("project_name" to it)
                         )
                     },
-                    modifier = Modifier.padding(top = 6.dp, bottom = 14.dp)
+                    modifier = Modifier
+                        .padding(top = 6.dp, bottom = 16.dp)
+                        .fillMaxWidth()
                 )
 
                 LazyColumn(
+                    state = listState,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(
                         bottom = paddingValues.calculateBottomPadding() + 50.dp,
-                        top = 32.dp
                     ),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .nestedScroll(scrollBehavior.nestedScrollConnection),
-                    state = listState,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.fillMaxSize()
 
                 ) {
-
                     item(contentType = "Carousel") {
-                        CarouselDummy(
-                            modifier = Modifier.padding(
-                                bottom = 14.dp
-                            )
+                        CarouselDummy()
+                    }
+
+                    item(contentType = "Statistic") {
+                        TextTitle(
+                            icon = R.drawable.chart_column_stacked,
+                            title = stringResource(R.string.statistic)
                         )
                     }
 
-                    item(contentType = "Category") {
-                        CategoryFilterSection(
-                            selectedCategory = selectedCategory,
-                            onCategorySelected = { category ->
-                                selectedCategory = category
-                                viewmodel.applyCategories(getCategoryCode(category))
-                            },
-                            modifier = Modifier.padding(bottom = 14.dp)
+                    item(contentType = "Statistic") {
+                        StatisticScreen(
+                            viewModel = statisticViewModel
                         )
                     }
 
-                    item(contentType = "Latest"){
+                    item(contentType = "Latest") {
                         TextTitle(
                             icon = R.drawable.fire,
                             title = stringResource(R.string.latest)
@@ -235,11 +228,11 @@ fun HomeScreen(
                     pagingItems.apply {
                         when {
                             loadState.refresh is LoadState.Loading -> {
-                                item { LoadingItem() }
+                            //    item { LoadingItem() }
                             }
 
                             loadState.append is LoadState.Loading -> {
-                                item { LoadingItem() }
+                              //  item { LoadingItem() }
                             }
 
                             loadState.refresh is LoadState.Error -> {
@@ -264,9 +257,9 @@ fun HomeScreen(
                         }
                     }
                 }
-                if (pagingItems.loadState.refresh is LoadState.Loading) {
-                    LoadingItem()
-                }
+              /*  if (pagingItems.loadState.refresh is LoadState.Loading) {
+                   // LoadingItem()
+                }*/
             }
         }
     }

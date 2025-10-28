@@ -13,6 +13,7 @@ import com.example.domain.model.ProvinceModel
 import com.example.domain.model.RegisterModel
 import com.example.domain.response.ProfileResponse
 import com.example.domain.response.RecordData
+import com.example.domain.response.StatisticsResponse
 import com.example.domain.response.UpdateProfileResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -80,5 +81,8 @@ interface ApiService {
         @Field("user_id") userId:String,
         @Field("token")  token: String
     ) : Response<ResponseBody>
+
+    @POST("CitraDataIndonusa/apl/api/master/statistic")
+    suspend fun getStatistic(): Response<StatisticsResponse>
 
 }

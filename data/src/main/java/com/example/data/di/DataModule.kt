@@ -3,7 +3,6 @@ package com.example.data.di
 import android.app.Application
 import androidx.room.Room
 import com.example.data.local.dao.AppDatabase
-import com.example.data.local.dao.AppDatabase1
 import com.example.data.local.dao.FavoriteDAO
 import com.example.data.local.dao.NotificationDao
 import com.example.data.remote.api.ApiHelper
@@ -18,6 +17,7 @@ import com.example.data.repositoryImpl.FilterDataRepositoryImpl
 import com.example.data.repositoryImpl.LocationRepositoryImpl
 import com.example.data.repositoryImpl.NotificationRepositoryImpl
 import com.example.data.repositoryImpl.SaveTokenRepositoryImpl
+import com.example.data.repositoryImpl.StatisticRepositoryImpl
 import com.example.domain.repository.AuthRepository
 import com.example.domain.repository.DataRepository
 import com.example.domain.repository.DetailDataRepository
@@ -26,6 +26,7 @@ import com.example.domain.repository.FilterDataRepository
 import com.example.domain.repository.LocationRepository
 import com.example.domain.repository.NotificationRepository
 import com.example.domain.repository.SaveTokenRepository
+import com.example.domain.repository.StatisticRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -88,7 +89,7 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideSaveTokenRepository(apiHelper: ApiHelper): SaveTokenRepository{
+    fun provideSaveTokenRepository(apiHelper: ApiHelper): SaveTokenRepository {
         return SaveTokenRepositoryImpl(apiHelper)
     }
 
@@ -99,7 +100,7 @@ object DataModule {
             app,
             AppDatabase::class.java,
             "my_database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
 
@@ -111,19 +112,19 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideDatabase1(app: Application): AppDatabase1 {
-        return Room.databaseBuilder(app, AppDatabase1::class.java, "my_db_notification").build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideNotificationDao(db: AppDatabase1): NotificationDao{
+    fun provideNotificationDao(db: AppDatabase): NotificationDao {
         return db.notificationDao()
     }
 
     @Provides
     @Singleton
-    fun provideNotificationRepository(): NotificationRepository{
-        return NotificationRepositoryImpl()
+    fun provideNotificationRepository(dao: NotificationDao): NotificationRepository {
+        return NotificationRepositoryImpl(dao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatisticRepository(apiHelper: ApiHelper) : StatisticRepository{
+        return StatisticRepositoryImpl(apiHelper)
     }
 }

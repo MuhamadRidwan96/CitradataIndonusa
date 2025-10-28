@@ -98,7 +98,7 @@ private fun ProjectCardContent(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(14.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         border = cardConfiguration.border,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onSecondary)

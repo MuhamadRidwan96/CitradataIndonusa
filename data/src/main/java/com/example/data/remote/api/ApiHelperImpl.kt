@@ -13,6 +13,7 @@ import com.example.domain.response.ProvinceResponse
 import com.example.domain.response.RecordData
 import com.example.domain.response.RegenciesResponse
 import com.example.domain.response.RegisterResponse
+import com.example.domain.response.StatisticsResponse
 import com.example.domain.response.UpdateProfileResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -70,6 +71,10 @@ class ApiHelperImpl @Inject constructor(
         token: String
     ): Response<ResponseBody> {
         return apiService.saveToken(userId,token)
+    }
+
+    override suspend fun getStatistic(): Response<StatisticsResponse> {
+        return apiService.getStatistic()
     }
 
 

@@ -9,6 +9,7 @@ import com.example.domain.repository.FilterDataRepository
 import com.example.domain.repository.LocationRepository
 import com.example.domain.repository.NotificationRepository
 import com.example.domain.repository.SaveTokenRepository
+import com.example.domain.repository.StatisticRepository
 import com.example.domain.usecase.authentication.CheckLoginUseCase
 import com.example.domain.usecase.data.FilteredUseCase
 import com.example.domain.usecase.authentication.GoogleSignInUseCase
@@ -20,6 +21,8 @@ import com.example.domain.usecase.data.DataUseCase
 import com.example.domain.usecase.data.DetailDataUseCase
 import com.example.domain.usecase.location.CityUseCase
 import com.example.domain.usecase.location.ProvinceUseCase
+import com.example.domain.usecase.notification.DeleteNotificationUseCase
+import com.example.domain.usecase.notification.GetAllNotificationUseCase
 import com.example.domain.usecase.notification.GetNotificationCountUseCase
 import com.example.domain.usecase.notification.ResetNotificationCountUseCase
 import com.example.domain.usecase.notification.UpdateNotificationCountUseCase
@@ -27,6 +30,7 @@ import com.example.domain.usecase.room.DeleteFavoriteUseCase
 import com.example.domain.usecase.room.FavoriteUseCase
 import com.example.domain.usecase.room.GetAllFavoriteUseCase
 import com.example.domain.usecase.room.InsertFavoriteUseCase
+import com.example.domain.usecase.statistic.StatisticUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -164,5 +168,23 @@ object UseCaseModule {
     @Singleton
     fun provideUpdateNotificationCountUseCase(repository: NotificationRepository): UpdateNotificationCountUseCase {
         return UpdateNotificationCountUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAllNotificationUseCase(repository: NotificationRepository): GetAllNotificationUseCase{
+        return GetAllNotificationUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteUseCase(repository: NotificationRepository) : DeleteNotificationUseCase{
+        return DeleteNotificationUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatisticUseCase(repository: StatisticRepository, dispatcher: CoroutineDispatcher) : StatisticUseCase{
+        return StatisticUseCase(repository, dispatcher)
     }
 }

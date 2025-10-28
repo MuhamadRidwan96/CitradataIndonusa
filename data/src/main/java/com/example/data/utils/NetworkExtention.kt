@@ -1,11 +1,14 @@
 package com.example.data.utils
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import com.example.common.Result
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import okhttp3.ResponseBody
 import retrofit2.Response
+import kotlin.random.Random
 
 class TokenExpiredException(message: String) : Exception(message)
 class DataNotFoundException(message: String) : Exception(message)
@@ -62,5 +65,10 @@ inline fun <reified T> Response<ResponseBody>.toTypedResult(): Result<T> {
     } catch (_: Exception) {
         Result.Error(Exception("Failed to parse response"))
     }
+}
+
+fun randomComposeColor() : Color {
+    val colors = listOf(Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Cyan, Color.Magenta)
+    return lerp(colors.random(), Color.White, Random.nextFloat() * 0.3f)
 }
 

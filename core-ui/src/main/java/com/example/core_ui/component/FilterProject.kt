@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +45,7 @@ fun FilterCategoryRow(
     selectedCategoryProjectId: Int?,
     onCategoryProjectSelected: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
-    @DrawableRes icon :Int,
+    @DrawableRes icon: Int,
 ) {
     Column(
         modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -69,18 +70,19 @@ fun FilterCategoryRow(
         }
 
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(categories) { category ->
                 val isSelected = category.id == selectedCategoryProjectId
                 Card(
-                    modifier = Modifier
-                        .height(110.dp)
-                        .width(78.dp),
+                    modifier = modifier
+                        .height(100.dp)
+                        .width(75.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
+                    shape = RoundedCornerShape(12.dp),
                     elevation = CardDefaults.cardElevation(2.dp)
 
                 ) {
@@ -90,7 +92,7 @@ fun FilterCategoryRow(
                         verticalArrangement = Arrangement.Center,
                         modifier = Modifier
                             .fillMaxSize()
-                            .clickable { onCategoryProjectSelected(category.id,category.label) }
+                            .clickable { onCategoryProjectSelected(category.id, category.label) }
                             .padding(8.dp)
                     ) {
 
@@ -107,17 +109,23 @@ fun FilterCategoryRow(
 
                             )
                         Text(
-                            text = category.label,
-                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                            fontSize = 10.sp,
+                            text = category.label.uppercase(),
+                            color = if (isSelected) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.outline,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                lineHeight = 12.sp,
+                                letterSpacing = 0.8.sp,
+                                textAlign = TextAlign.Center,
+                                fontFamily = FontFamily.SansSerif
+                            ),
                             textAlign = TextAlign.Center,
-                            lineHeight = 13.sp,
                             maxLines = 2,
-                            fontFamily = FontFamily.SansSerif,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(top = 6.dp)
-
                         )
+
 
                         if (isSelected) {
                             Box(

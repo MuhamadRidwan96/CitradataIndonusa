@@ -1,6 +1,5 @@
 package com.example.features.presentation.home.component
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -9,7 +8,7 @@ import com.example.core_ui.component.Carousel
 import com.example.core_ui.component.CarouselItem
 
 @Composable
-fun CarouselDummy(modifier: Modifier = Modifier){
+fun CarouselDummy(modifier: Modifier = Modifier) {
 
     val dummyItems = remember {
         listOf(
@@ -40,9 +39,6 @@ fun CarouselDummy(modifier: Modifier = Modifier){
         )
     }
 
-    // Limit carousel height to prevent excessive rendering
-    Carousel(
-        items = dummyItems,
-        modifier =modifier.fillMaxWidth()
-    )
+        // Limit carousel height to prevent excessive rendering
+        Carousel(items = dummyItems)
 }

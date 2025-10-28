@@ -63,7 +63,6 @@ class DetailViewmodel @Inject constructor(
 
                         else -> Unit
                     }
-                }
-        }
+                } }
     }
 }

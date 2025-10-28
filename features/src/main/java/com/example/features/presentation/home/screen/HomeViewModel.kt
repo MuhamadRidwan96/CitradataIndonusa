@@ -83,7 +83,7 @@ class HomeViewModel @Inject constructor(
     init {
         observeFavorites()
         viewModelScope.launch {
-            delay(700)
+            delay(1000)
             _isInitialized.value = true
         }
     }
@@ -138,16 +138,17 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun applyCategories(category: String?) {
+ /*   fun applyCategories(category: String?) {
             _searchCategory.value = if (category.isNullOrEmpty()) emptyMap() else mapOf(
                 "idproject_category" to category)
-    }
+    }*/
 
     fun applyProjectName(names: Map<String, String>) {
         _searchQuery.value = if (names.isEmpty()) emptyMap() else names
     }
 
     val currentPagingData: Flow<PagingData<RecordData>> =
+
         combine(
             _searchQuery.debounce(300).distinctUntilChanged(),
             _searchCategory.debounce(50).distinctUntilChanged()
@@ -155,6 +156,7 @@ class HomeViewModel @Inject constructor(
             query to category
         }.flatMapLatest { (query, category) ->
             val merge = query + category
+            delay(1300)
             filteredUseCase(filterData = merge.toFilterDataModel())
         }.catch { e ->
             when (e) {
