@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -29,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -42,6 +42,7 @@ import com.example.core_ui.R
 import com.example.core_ui.component.TextTitle
 import com.example.data.utils.TokenExpiredException
 import com.example.features.presentation.home.component.CarouselDummy
+import com.example.features.presentation.home.component.DashboardShimmer
 import com.example.features.presentation.home.component.ErrorBottomSheet
 import com.example.features.presentation.home.component.PagingErrorItem
 import com.example.features.presentation.home.component.ProjectCard
@@ -65,7 +66,8 @@ fun HomeScreen(
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onNavigateToLogin: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
-    onNavigateToNotification: () -> Unit
+    onNavigateToNotification: () -> Unit,
+    onScrollChange:(Boolean) -> Unit
 ) {
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
     val pagingItems = viewmodel.currentPagingData.collectAsLazyPagingItems()
@@ -75,10 +77,19 @@ fun HomeScreen(
     var showErrorSheet by remember { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+        val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val favorites by viewmodel.favoriteProjects.collectAsState()
     val count by notificationViewModel.unreadCount.collectAsState()
     val isInitialized by viewmodel.isInitialized.collectAsStateWithLifecycle()
+
+    var triggeredApi by remember { mutableStateOf(false) }
+
+    LaunchedEffect(listState.firstVisibleItemIndex) {
+        if(!triggeredApi && listState.firstVisibleItemIndex > 2 ){
+            triggeredApi = true
+            viewmodel.currentPagingData
+        }
+    }
 
     LaunchedEffect(pagingItems.loadState) {
         val error = pagingItems.loadState.refresh as? LoadState.Error
@@ -100,6 +111,20 @@ fun HomeScreen(
                 }
             }
         )
+    }
+
+    //Detect direction scroll
+    LaunchedEffect(listState) {
+        var lastOffset = 0
+        val threshold = 10
+        snapshotFlow { listState.firstVisibleItemScrollOffset }
+            .collect { offset ->
+                val diff = offset - lastOffset
+                if (kotlin.math.abs(diff) > threshold) {
+                    onScrollChange(diff > 0)
+                    lastOffset = offset
+                }
+            }
     }
 
 
@@ -152,7 +177,7 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                DashboardShimmer()
             }
         } else {
             Column(
@@ -207,7 +232,7 @@ fun HomeScreen(
                         )
                     }
 
-                    items(pagingItems.itemCount, contentType = { "Data" }) { index: Int ->
+                    items(count = pagingItems.itemCount, key = {index -> pagingItems[index]?.idProject ?: index}, contentType = { "Data" }) { index: Int ->
                         val recordData = pagingItems[index]
                         recordData?.let {
                             val no = index + 1

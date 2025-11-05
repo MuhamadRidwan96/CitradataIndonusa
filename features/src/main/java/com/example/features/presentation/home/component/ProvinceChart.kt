@@ -19,10 +19,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ProvinceChart(provinceData: Map<String, Int>) {
+fun ProvinceChart(
+    modifier: Modifier = Modifier,
+    provinceData: Map<String, Int>) {
 
     val sorted = provinceData.entries.sortedByDescending { it.value }.take(7)
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth()) {
         sorted.forEach { (province, count) ->
             Row(
                 modifier = Modifier

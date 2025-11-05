@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -89,24 +90,24 @@ fun UpdateProfileComponent() {
 @Composable
 fun ProfileHeader(hello: String, name: String, modifier: Modifier = Modifier) {
 
-
     val updateStyle = MaterialTheme.typography.titleLarge.copy(
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface,
+        fontFamily = FontFamily.SansSerif
     )
 
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(0.dp)) {
+    Column( verticalArrangement = Arrangement.spacedBy(0.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = modifier.fillMaxWidth()
+
         ) {
             Text(text = hello, style = updateStyle)
             Text(text = name, style = updateStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Image(
                 painter = painterResource(R.drawable.waving_hand),
                 contentDescription = null,
-                modifier = Modifier
+                modifier = modifier
                     .size(42.dp)
                     .padding(8.dp),
                 contentScale = ContentScale.Fit,

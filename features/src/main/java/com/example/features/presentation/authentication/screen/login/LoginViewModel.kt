@@ -34,7 +34,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -105,7 +104,7 @@ class LoginViewModel @Inject constructor(
 
                             val token = result.data.data.token
                             val payload = decodeJWTPayload(token)
-                            val userId = payload?.optString("iduser","")
+                            val userId = payload?.optString("iduser", "")
 
                             if (userId != null) {
                                 Timber.tag("AuthViewModel").d("✅ userId dari JWT: $userId")
@@ -131,11 +130,13 @@ class LoginViewModel @Inject constructor(
 
     fun checkLogin() {
         viewModelScope.launch {
-            val isLoggedIn = withContext(Dispatchers.IO) { checkLoginUseCase() }
-            _processState.update {
-                it.copy(isLoggedIn = isLoggedIn, isReady = true)
-            }
+            val isLoggedIn = checkLoginUseCase()
+            _processState.update { it.copy(
+                isLoggedIn = isLoggedIn,
+                isReady = true
+            ) }
         }
+
     }
 
     val signWithGoogle: () -> Unit = {

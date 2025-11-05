@@ -59,12 +59,10 @@ fun ProjectCard(
     val cleanStat = cleanStatus(project.statProject)
     val cardConfiguration = rememberCardConfiguration(cleanStat)
 
-
-
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = cardConfiguration.topPadding, bottom = 12.dp)
+            .padding(top = cardConfiguration.topPadding, bottom = 8.dp)
     ) {
         ProjectCardContent(
             project = project,

@@ -83,13 +83,13 @@ class HomeViewModel @Inject constructor(
     init {
         observeFavorites()
         viewModelScope.launch {
-            delay(1000)
+            delay(1500)
             _isInitialized.value = true
         }
     }
 
     private fun observeFavorites() {
-        viewModelScope.launch(Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             getAllFavoriteUseCase().collect { fav ->
                 _favoriteProjects.value = fav
             }
@@ -137,18 +137,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
- /*   fun applyCategories(category: String?) {
-            _searchCategory.value = if (category.isNullOrEmpty()) emptyMap() else mapOf(
-                "idproject_category" to category)
-    }*/
-
     fun applyProjectName(names: Map<String, String>) {
         _searchQuery.value = if (names.isEmpty()) emptyMap() else names
     }
 
     val currentPagingData: Flow<PagingData<RecordData>> =
-
         combine(
             _searchQuery.debounce(300).distinctUntilChanged(),
             _searchCategory.debounce(50).distinctUntilChanged()
@@ -159,21 +152,23 @@ class HomeViewModel @Inject constructor(
             delay(1300)
             filteredUseCase(filterData = merge.toFilterDataModel())
         }.catch { e ->
-            when (e) {
-                is TokenExpiredException -> _tokenExpired.emit(Unit)
-                is Exception -> _dataEvent.send(
-                    DataEvent.ShowSnackBar(
-                        e.message ?: Constant.UNKNOWN_ERROR
-                    )
-                )
-
-                else -> throw e
-            }
+            handleError(e)
         }.cachedIn(viewModelScope)
 
-    fun onLogoutClicked(){
-        viewModelScope.launch(Dispatchers.IO){
-          logoutUseCase()
+    private fun handleError(e: Throwable) {
+        viewModelScope.launch {
+            when (e) {
+                is TokenExpiredException -> _tokenExpired.emit(Unit)
+                else -> _dataEvent.send(
+                    DataEvent.ShowSnackBar(e.message ?: Constant.UNKNOWN_ERROR)
+                )
+            }
+        }
+    }
+
+    fun onLogoutClicked() {
+        viewModelScope.launch(Dispatchers.Default) {
+            logoutUseCase()
         }
     }
 }

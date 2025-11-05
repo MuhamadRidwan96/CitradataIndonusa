@@ -64,8 +64,8 @@ fun StatisticCard(
 
     Card(
         modifier = modifier
-            .height(140.dp)
-            .width(100.dp),
+            .height(160.dp)
+            .width(120.dp),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
         ),
@@ -94,7 +94,7 @@ fun StatisticCard(
                         imageVector = icon,
                         contentDescription = null,
                         tint = accentColor,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             } else {
@@ -108,9 +108,9 @@ fun StatisticCard(
                 Text(
                     text = animatedCount.toString(),
                     color = textColor,
-                    fontWeight = FontWeight.Black,
+                    fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.headlineLarge,
                 )
 
                 Text("project",style = MaterialTheme.typography.bodySmall, color = Color.Gray)
@@ -167,7 +167,7 @@ fun Preview1(){
     AppTheme {
         StatisticCard(
             title = "HRC",
-            count = 450,
+            count = 9450,
             icon = Icons.Default.Business,
             backgroundColor = MaterialTheme.colorScheme.surface,
             textColor = MaterialTheme.colorScheme.onSurface,

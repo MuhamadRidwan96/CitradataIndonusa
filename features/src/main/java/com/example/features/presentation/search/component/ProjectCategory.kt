@@ -10,9 +10,10 @@ import com.example.core_ui.component.FilterCategoryRow
 
 @Composable
 fun ProjectCategory(
+    modifier: Modifier = Modifier,
     categorySelected: Int?,
-    onCategorySelected: (Int, String) -> Unit,
-    modifier: Modifier = Modifier
+    onCategorySelected: (Int, String) -> Unit
+
 ) {
     val listCategory = remember {
         listOf(

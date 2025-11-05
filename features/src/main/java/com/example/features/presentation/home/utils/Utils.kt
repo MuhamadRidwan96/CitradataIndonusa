@@ -97,6 +97,7 @@ fun Map<String, String>.toFilterDataModel(): FilterDataModel {
     )
 }
 
+
 fun DataState.toFavoriteProjectEntity(): FavoriteProjectEntity {
     return FavoriteProjectEntity(
         idProject = this.idProject.toInt(),

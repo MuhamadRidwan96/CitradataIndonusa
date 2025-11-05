@@ -33,30 +33,39 @@ import com.example.features.presentation.home.screen.StatisticViewModel
 
 @Composable
 fun DonutChartScreen(
+    modifier: Modifier = Modifier,
     viewModel: StatisticViewModel = hiltViewModel()
 ) {
     val status by viewModel.byStatus.collectAsState()
 
     Card(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(14.dp),
         elevation = CardDefaults.elevatedCardElevation(4.dp),
 
         ) {
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
+        Text(
+            "Status project",
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(start = 8.dp, top = 6.dp)
+        )
 
-                DonutChart(data = status)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
 
-                Spacer(modifier = Modifier.height(16.dp))
+            DonutChart(data = status)
 
-                Legend(
-                    chartData = status
-                )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Legend(
+                chartData = status
+            )
         }
     }
 }
@@ -99,5 +108,4 @@ fun Legend(chartData: List<DonutData>) {
         }
     }
 }
-
 
