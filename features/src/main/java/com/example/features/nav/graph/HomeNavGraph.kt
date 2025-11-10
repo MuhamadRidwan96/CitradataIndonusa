@@ -27,6 +27,7 @@ fun HomeNavGraph(
     navController: NavHostController,
     rootNavController: NavHostController,
     projectId: String? = null,
+    onScrollChange: (Boolean) -> Unit
 
     ) {
     NavHost(
@@ -36,7 +37,7 @@ fun HomeNavGraph(
         startDestination = BottomNavItem.Home.route
     ) {
         // Bottom navigation destinations
-        homeDestination(rootNavController = rootNavController, navController = navController)
+        homeDestination(rootNavController = rootNavController, navController = navController, onScrollChange)
         searchDestination(rootNavController = rootNavController, navController = navController)
         favoriteDestination(navController = navController)
         profileDestination(rootNavController = rootNavController)
@@ -59,7 +60,8 @@ fun HomeNavGraph(
 
 private fun NavGraphBuilder.homeDestination(
     rootNavController: NavHostController,
-    navController: NavHostController
+    navController: NavHostController,
+    onScrollChange: (Boolean) -> Unit
 ) {
     composable(route = BottomNavItem.Home.route) {
         HomeScreen(
@@ -74,7 +76,8 @@ private fun NavGraphBuilder.homeDestination(
             },
             onNavigateToNotification = {
                 navController.navigate(NotificationDestination.createRoute())
-            }
+            },
+            onScrollChange = onScrollChange
         )
     }
 }

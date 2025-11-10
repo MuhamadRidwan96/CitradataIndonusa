@@ -55,7 +55,7 @@ fun MainBottomNavigation(
         NavigationBar(
             containerColor = Color.Transparent,
             tonalElevation = 0.dp, // 🔑 Hilangkan karena sudah ada di Surface
-            modifier = Modifier.height(60.dp),
+            modifier = Modifier.height(65.dp),
             windowInsets = WindowInsets(0.dp)// 🔑 Kembali ke default
         ) {
             items.forEach { navigate ->
@@ -71,7 +71,7 @@ fun MainBottomNavigation(
                             else MaterialTheme.colorScheme.onSurface
                         )
                     },
-                    label = {
+                 label = {
                         Text(
                             navigate.title,
                             color = if (selected) MaterialTheme.colorScheme.primary
