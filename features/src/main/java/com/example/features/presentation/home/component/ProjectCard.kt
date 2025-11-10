@@ -56,7 +56,7 @@ fun ProjectCard(
     onToggleFavorite : (FavoriteProjectEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val cleanStat = cleanStatus(project.statProject)
+    val cleanStat = cleanStatus(project.statProject ?: "")
     val cardConfiguration = rememberCardConfiguration(cleanStat)
 
     Box(
@@ -99,7 +99,7 @@ private fun ProjectCardContent(
         shape = RoundedCornerShape(14.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         border = cardConfiguration.border,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onSecondary)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier.padding(
@@ -111,25 +111,25 @@ private fun ProjectCardContent(
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             ProjectHeader(
-                projectStatus = project.status,
-                textCategory = project.category.toString(),
-                number = project.no
+                projectStatus = project.status ?: "",
+                textCategory = project.category ?: "",
+                number = project.no  ?: 0
             )
-            ProjectTitle(title = project.project)
+            ProjectTitle(title = project.project ?: "")
 
 
-            val dates = project.lastUpdate
+            val dates = project.lastUpdate ?: ""
             ProjectMetadata(
                 date = formatToFullDate(dates),
-                location = project.location,
-                province = project.province,
+                location = project.location ?: "" ,
+                province = project.province ?: "",
                 idProject = project.idProject.toString()
             )
 
             HorizontalDivider(modifier = Modifier.height(0.5.dp))
 
             BottomCard(
-                idRecord = project.idRecord,
+                idRecord = project.idRecord ?: "",
                 isFavorite = isFavorite,
                 onFavoriteClick = { onToggleFavorite(project.toFavoriteProjectEntity()) }
             )

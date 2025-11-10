@@ -149,7 +149,6 @@ class HomeViewModel @Inject constructor(
             query to category
         }.flatMapLatest { (query, category) ->
             val merge = query + category
-            delay(1300)
             filteredUseCase(filterData = merge.toFilterDataModel())
         }.catch { e ->
             handleError(e)
@@ -170,6 +169,10 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             logoutUseCase()
         }
+    }
+
+    fun refreshPaging(){
+        _searchQuery.value = _searchQuery.value.toMap()
     }
 }
 

@@ -7,5 +7,6 @@ data class StatisticsDataState(
     val byProvince: Map<String, Int> = emptyMap(),
     val categoryTrends: Map<String, Int> = emptyMap(),
     val isLoading: Boolean = false,
+    val isLoaded : Boolean = false,
     val error : String? =  null
 )

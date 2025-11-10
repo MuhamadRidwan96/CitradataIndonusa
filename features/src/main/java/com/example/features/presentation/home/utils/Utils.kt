@@ -100,15 +100,15 @@ fun Map<String, String>.toFilterDataModel(): FilterDataModel {
 
 fun DataState.toFavoriteProjectEntity(): FavoriteProjectEntity {
     return FavoriteProjectEntity(
-        idProject = this.idProject.toInt(),
-        lastUpdate = this.lastUpdate,
-        idRecord = this.idRecord,
-        project = this.project,
-        statProject = this.statProject,
-        category = this.category,
-        status = this.status,
-        location = this.location,
-        province = this.province
+        idProject = this.idProject ?: 0,
+        lastUpdate = this.lastUpdate ?: "",
+        idRecord = this.idRecord ?: "",
+        project = this.project ?: "",
+        statProject = this.statProject ?: "",
+        category = this.category ?: "",
+        status = this.status ?: "",
+        location = this.location ?: "",
+        province = this.province ?: ""
     )
 }
 

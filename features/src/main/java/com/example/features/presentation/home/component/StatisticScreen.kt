@@ -17,11 +17,9 @@ import androidx.compose.material.icons.filled.Domain
 import androidx.compose.material.icons.filled.Factory
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,10 +47,9 @@ fun StatisticScreen(
             columns = StaggeredGridCells.Fixed(2), // 2 kolom
             modifier = modifier
                 .fillMaxWidth()
-                .heightIn(max = 400.dp),
+                .heightIn(max = 335.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalItemSpacing = 12.dp,
-            userScrollEnabled = false,
             contentPadding = PaddingValues(bottom = 12.dp)
         ) {
             items(state.byCategory.entries.toList()) { (category, count) ->
@@ -74,12 +71,6 @@ fun StatisticScreen(
                 )
             }
         }
-        Text(
-            text = "By Provinces",
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold
-        )
     }
 }
 

@@ -32,7 +32,7 @@ fun DashboardShimmer() {
             .shimmer(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Spacer(modifier = Modifier.height(92.dp))
+        Spacer(modifier = Modifier.height(96.dp))
         //SearchBar
         Box(
             modifier = Modifier
@@ -72,7 +72,7 @@ fun DashboardShimmer() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(140.dp)
+                .height(180.dp)
                 .background(
                     baseColor,
                     RoundedCornerShape(16.dp)

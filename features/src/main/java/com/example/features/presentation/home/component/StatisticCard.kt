@@ -1,9 +1,6 @@
 package com.example.features.presentation.home.component
 
 import android.content.res.Configuration
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,24 +49,15 @@ fun StatisticCard(
     showTrend: Boolean = false,
     trendValue: Int = 0
 ) {
-    val animatedCount by animateIntAsState(
-        targetValue = count,
-        animationSpec = tween(
-            durationMillis = 800,
-            easing = FastOutSlowInEasing
-        ),
-        label = "countAnimation"
-    )
+
 
     Card(
         modifier = modifier
             .height(160.dp)
             .width(120.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
-        ),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
         shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -106,14 +93,14 @@ fun StatisticCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = animatedCount.toString(),
+                    text = count.toString(),
                     color = textColor,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.headlineLarge,
                 )
 
-                Text("project",style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text("project", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
 
                 // Trend indicator (optional)
                 if (showTrend && trendValue != 0) {
@@ -163,7 +150,7 @@ fun StatisticCard(
     name = "dark theme"
 )
 @Composable
-fun Preview1(){
+fun Preview1() {
     AppTheme {
         StatisticCard(
             title = "HRC",

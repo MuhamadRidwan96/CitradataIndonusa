@@ -31,10 +31,6 @@ class StatisticViewModel @Inject constructor(
     private val _byStatus = MutableStateFlow<List<DonutData>>(emptyList())
     val byStatus = _byStatus.asStateFlow()
 
-    init {
-        fetchStatistic()
-    }
-
     fun fetchStatistic() {
         viewModelScope.launch {
             if (_statisticState.value.isLoading || _statisticState.value.totalProjects > 0) return@launch // ✅ cegah re-request
@@ -72,11 +68,13 @@ class StatisticViewModel @Inject constructor(
                             _statisticState.update {
                                 it.copy(
                                     isLoading = false,
+                                    isLoaded = true,
                                     totalProjects = data.totalProjects,
                                     byCategory = data.byCategory,
                                     byStatus = data.byStatus,
                                     byProvince = data.byProvince,
-                                    categoryTrends = trends
+                                    categoryTrends = trends,
+
                                 )
                             }
                         }
@@ -85,6 +83,7 @@ class StatisticViewModel @Inject constructor(
                             _statisticState.update {
                                 it.copy(
                                     isLoading = false,
+                                    isLoaded = false,
                                     error = result.exception.message ?: "Unknown Error!"
                                 )
                             }

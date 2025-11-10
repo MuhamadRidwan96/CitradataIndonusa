@@ -67,35 +67,41 @@ fun HomeScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
     onNavigateToNotification: () -> Unit,
-    onScrollChange:(Boolean) -> Unit
+    onScrollChange: (Boolean) -> Unit
 ) {
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
     val pagingItems = viewmodel.currentPagingData.collectAsLazyPagingItems()
     val profile = viewmodel.userProfile
+
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
     var showErrorSheet by remember { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-        val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+
     val favorites by viewmodel.favoriteProjects.collectAsState()
     val count by notificationViewModel.unreadCount.collectAsState()
     val isInitialized by viewmodel.isInitialized.collectAsStateWithLifecycle()
-
-    var triggeredApi by remember { mutableStateOf(false) }
-
-    LaunchedEffect(listState.firstVisibleItemIndex) {
-        if(!triggeredApi && listState.firstVisibleItemIndex > 2 ){
-            triggeredApi = true
-            viewmodel.currentPagingData
-        }
-    }
+    val statisticState by statisticViewModel.statisticState.collectAsStateWithLifecycle()
 
     LaunchedEffect(pagingItems.loadState) {
         val error = pagingItems.loadState.refresh as? LoadState.Error
         if (error?.error is TokenExpiredException) {
             showErrorSheet = true
         }
+    }
+
+    //Run Statistic
+    LaunchedEffect(Unit) {
+        statisticViewModel.fetchStatistic()
+    }
+
+    LaunchedEffect(statisticState.isLoaded) {
+        if (statisticState.isLoaded) {
+            viewmodel.refreshPaging()
+        }
+
     }
 
     if (showErrorSheet) {
@@ -154,7 +160,7 @@ fun HomeScreen(
                 },
                 scrollBehavior = scrollBehavior,
 
-            )
+                )
         },
         snackbarHost = {
             SnackbarHost(
@@ -232,7 +238,10 @@ fun HomeScreen(
                         )
                     }
 
-                    items(count = pagingItems.itemCount, key = {index -> pagingItems[index]?.idProject ?: index}, contentType = { "Data" }) { index: Int ->
+                    items(
+                        count = pagingItems.itemCount,
+                        key = { index -> pagingItems[index]?.idProject ?: index },
+                        contentType = { "Data" }) { index: Int ->
                         val recordData = pagingItems[index]
                         recordData?.let {
                             val no = index + 1
@@ -253,11 +262,11 @@ fun HomeScreen(
                     pagingItems.apply {
                         when {
                             loadState.refresh is LoadState.Loading -> {
-                            //    item { LoadingItem() }
+                                //    item { LoadingItem() }
                             }
 
                             loadState.append is LoadState.Loading -> {
-                              //  item { LoadingItem() }
+                                //  item { LoadingItem() }
                             }
 
                             loadState.refresh is LoadState.Error -> {
@@ -282,9 +291,9 @@ fun HomeScreen(
                         }
                     }
                 }
-              /*  if (pagingItems.loadState.refresh is LoadState.Loading) {
-                   // LoadingItem()
-                }*/
+                /*  if (pagingItems.loadState.refresh is LoadState.Loading) {
+                     // LoadingItem()
+                  }*/
             }
         }
     }
