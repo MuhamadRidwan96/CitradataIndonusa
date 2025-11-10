@@ -41,7 +41,7 @@ class FilterDataRepositoryImpl @Inject constructor(private val apiHelper: ApiHel
             config = PagingConfig(
                 pageSize = limit,
                 enablePlaceholders = false,
-                initialLoadSize = limit * 2
+                initialLoadSize = limit * 1
             ),
             pagingSourceFactory = {
                 FilterPagingSource(

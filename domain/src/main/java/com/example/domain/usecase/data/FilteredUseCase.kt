@@ -14,7 +14,7 @@ class FilteredUseCase @Inject constructor(
     private val dispatcher: CoroutineDispatcher
 ) {
     operator fun invoke(
-        limit: Int = 10,
+        limit: Int = 20,
         filterData: FilterDataModel?
     ): Flow<PagingData<RecordData>> {
         return filterDataRepository.getFilterDataPaging(filterData, limit).flowOn(dispatcher)
