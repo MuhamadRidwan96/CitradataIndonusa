@@ -1,5 +1,6 @@
 package com.example.domain.usecase.authentication
 
+import com.example.domain.di.IoDispatcher
 import com.example.domain.preferences.UserPreferences
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
@@ -9,7 +10,7 @@ import javax.inject.Inject
 
 class CheckLoginUseCase @Inject constructor(
     private val userPreferences: UserPreferences,
-    private val dispatcher: CoroutineDispatcher
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) {
 
     suspend operator fun invoke(): Boolean {

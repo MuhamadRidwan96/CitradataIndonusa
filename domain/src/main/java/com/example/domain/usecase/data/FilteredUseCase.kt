@@ -1,6 +1,7 @@
 package com.example.domain.usecase.data
 
 import androidx.paging.PagingData
+import com.example.domain.di.IoDispatcher
 import com.example.domain.model.FilterDataModel
 import com.example.domain.repository.FilterDataRepository
 import com.example.domain.response.RecordData
@@ -11,7 +12,7 @@ import javax.inject.Inject
 
 class FilteredUseCase @Inject constructor(
     private val filterDataRepository: FilterDataRepository,
-    private val dispatcher: CoroutineDispatcher
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) {
     operator fun invoke(
         limit: Int = 20,

@@ -8,10 +8,10 @@ import com.example.domain.repository.FavoriteRepository
 import com.example.domain.repository.FilterDataRepository
 import com.example.domain.repository.LocationRepository
 import com.example.domain.repository.NotificationRepository
+import com.example.domain.repository.ProfileRepository
 import com.example.domain.repository.SaveTokenRepository
 import com.example.domain.repository.StatisticRepository
 import com.example.domain.usecase.authentication.CheckLoginUseCase
-import com.example.domain.usecase.data.FilteredUseCase
 import com.example.domain.usecase.authentication.GoogleSignInUseCase
 import com.example.domain.usecase.authentication.LoginUseCase
 import com.example.domain.usecase.authentication.ProfileUseCase
@@ -19,6 +19,7 @@ import com.example.domain.usecase.authentication.RegisterUseCase
 import com.example.domain.usecase.authentication.SaveTokenUseCase
 import com.example.domain.usecase.data.DataUseCase
 import com.example.domain.usecase.data.DetailDataUseCase
+import com.example.domain.usecase.data.FilteredUseCase
 import com.example.domain.usecase.location.CityUseCase
 import com.example.domain.usecase.location.ProvinceUseCase
 import com.example.domain.usecase.notification.DeleteNotificationUseCase
@@ -26,6 +27,7 @@ import com.example.domain.usecase.notification.GetAllNotificationUseCase
 import com.example.domain.usecase.notification.GetNotificationCountUseCase
 import com.example.domain.usecase.notification.ResetNotificationCountUseCase
 import com.example.domain.usecase.notification.UpdateNotificationCountUseCase
+import com.example.domain.usecase.profile.ApiProfileUseCase
 import com.example.domain.usecase.room.DeleteFavoriteUseCase
 import com.example.domain.usecase.room.FavoriteUseCase
 import com.example.domain.usecase.room.GetAllFavoriteUseCase
@@ -36,7 +38,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
@@ -54,15 +55,15 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideRegisterUseCase(repository: AuthRepository): RegisterUseCase {
-        return RegisterUseCase(repository)
+    fun provideRegisterUseCase(repository: AuthRepository,@IoDispatcher dispatcher: CoroutineDispatcher): RegisterUseCase {
+        return RegisterUseCase(repository, dispatcher)
     }
 
     @Provides
     @Singleton
     fun provideCheckLoginUseCase(
         userPreferences: UserPreferences,
-        dispatcher: CoroutineDispatcher
+        @IoDispatcher dispatcher: CoroutineDispatcher
     ): CheckLoginUseCase {
         return CheckLoginUseCase(userPreferences, dispatcher)
     }
@@ -76,36 +77,35 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun provideProvinceUseCase(
-        repository: LocationRepository
+        repository: LocationRepository,
+        @IoDispatcher dispatcher: CoroutineDispatcher
     ): ProvinceUseCase {
-        return ProvinceUseCase(repository)
+        return ProvinceUseCase(repository, dispatcher)
     }
 
     @Provides
     @Singleton
     fun provideCityUseCase(
-        repository: LocationRepository
+        repository: LocationRepository,
+        @IoDispatcher dispatcher: CoroutineDispatcher
     ): CityUseCase {
-        return CityUseCase(repository)
+        return CityUseCase(repository, dispatcher)
     }
 
     @Provides
     @Singleton
     fun providesDataUseCase(
         repository: DataRepository,
-        dispatcher: CoroutineDispatcher
+        @IoDispatcher dispatcher: CoroutineDispatcher
     ): DataUseCase {
         return DataUseCase(repository, dispatcher)
     }
 
     @Provides
     @Singleton
-    fun providesDetailUseCase(repository: DetailDataRepository): DetailDataUseCase {
-        return DetailDataUseCase(repository)
+    fun providesDetailUseCase(repository: DetailDataRepository, @IoDispatcher dispatcher: CoroutineDispatcher): DetailDataUseCase {
+        return DetailDataUseCase(repository, dispatcher)
     }
-
-    @Provides
-    fun provideDefaultDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
     @Singleton
@@ -117,15 +117,15 @@ object UseCaseModule {
     @Singleton
     fun provideFilteredUseCase(
         repository: FilterDataRepository,
-        dispatcher: CoroutineDispatcher
+        @IoDispatcher dispatcher: CoroutineDispatcher
     ): FilteredUseCase {
         return FilteredUseCase(repository, dispatcher)
     }
 
     @Provides
     @Singleton
-    fun provideGetAllFavoriteUseCase(repository: FavoriteRepository): GetAllFavoriteUseCase {
-        return GetAllFavoriteUseCase(repository)
+    fun provideGetAllFavoriteUseCase(repository: FavoriteRepository, @IoDispatcher dispatcher: CoroutineDispatcher): GetAllFavoriteUseCase {
+        return GetAllFavoriteUseCase(repository, dispatcher)
     }
 
     @Provides
@@ -172,19 +172,31 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideGetAllNotificationUseCase(repository: NotificationRepository): GetAllNotificationUseCase{
+    fun provideGetAllNotificationUseCase(repository: NotificationRepository): GetAllNotificationUseCase {
         return GetAllNotificationUseCase(repository)
     }
 
     @Provides
     @Singleton
-    fun provideDeleteUseCase(repository: NotificationRepository) : DeleteNotificationUseCase{
+    fun provideDeleteUseCase(repository: NotificationRepository): DeleteNotificationUseCase {
         return DeleteNotificationUseCase(repository)
     }
 
     @Provides
     @Singleton
-    fun provideStatisticUseCase(repository: StatisticRepository, dispatcher: CoroutineDispatcher) : StatisticUseCase{
+    fun provideStatisticUseCase(
+        repository: StatisticRepository,
+        @IoDispatcher dispatcher: CoroutineDispatcher
+    ): StatisticUseCase {
         return StatisticUseCase(repository, dispatcher)
+    }
+
+    @Provides
+    @Singleton
+    fun providesApiProfileUseCase(
+        repository: ProfileRepository,
+        @IoDispatcher dispatcher: CoroutineDispatcher
+    ): ApiProfileUseCase {
+        return ApiProfileUseCase(repository, dispatcher)
     }
 }

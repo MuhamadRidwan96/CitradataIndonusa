@@ -1,6 +1,7 @@
 package com.example.domain.usecase.data
 
 import androidx.paging.PagingData
+import com.example.domain.di.IoDispatcher
 import com.example.domain.repository.DataRepository
 import com.example.domain.response.RecordData
 import kotlinx.coroutines.CoroutineDispatcher
@@ -10,7 +11,7 @@ import javax.inject.Inject
 
 class DataUseCase @Inject constructor(
     private val dataRepository: DataRepository,
-    private val dispatcher: CoroutineDispatcher,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(
         limit: Int = 10,
