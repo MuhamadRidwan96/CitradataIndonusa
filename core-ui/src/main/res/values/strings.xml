@@ -85,7 +85,7 @@
     <string name="kategori_terpilih">Kategori terpilih</string>
     <string name="pilih_kategori_bangunan">Building Category</string>
     <string name="search">Search</string>
-    <string name="searh_disc"><![CDATA[Project search & discovery]]></string>
+    <string name="searh_disc"><![CDATA[Search & discovery]]></string>
     <string name="search_category">Search category</string>
     <string name="building_category">Building Category</string>
     <string name="pilih_provinsi">Pilih Provinsi</string>
@@ -99,5 +99,6 @@
     <string name="greeting">Find an amazing project for the future!</string>
     <string name="default_notification_channel_id">default_channel</string>
     <string name="latest">Latest Project</string>
+    <string name="statistic">Statistic Project</string>
 
 </resources>

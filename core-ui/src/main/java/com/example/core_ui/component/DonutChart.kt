@@ -16,15 +16,17 @@ import com.example.domain.model.DonutData
 
 @Composable
 fun DonutChart(
+    modifier: Modifier = Modifier,
     data: List<DonutData>,
-    animationDuration: Int = 2000,
-    strokeWidth: Float = 35f //thickness donut
+    animationDuration: Int = 1500,
+    strokeWidth: Float = 40f //thickness donut
 
 ) {
 
     val total = data.sumOf { it.value.toDouble() }.toFloat()
 
     val animatedProgress = remember { Animatable(0f) }
+
     LaunchedEffect(Unit) {
         animatedProgress.animateTo(
             targetValue = 1f,
@@ -33,8 +35,8 @@ fun DonutChart(
     }
 
     Canvas(
-        modifier = Modifier
-            .size(100.dp)
+        modifier = modifier
+            .size(110.dp)
             .padding(16.dp)
     ) {
         var startAngle = -90f

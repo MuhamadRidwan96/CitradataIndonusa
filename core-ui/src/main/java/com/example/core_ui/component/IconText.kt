@@ -23,21 +23,21 @@ fun IconText(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Icon(
             painter = painterResource(id = icon),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = modifier
-                .size(14.dp)
+                .size(18.dp)
                 .alignBy(FirstBaseline)
         )
         Text(
             text = text,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 3,
+            maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
     }
