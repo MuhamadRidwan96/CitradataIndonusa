@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -18,20 +20,19 @@ import androidx.compose.material.icons.filled.Factory
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.features.presentation.home.screen.StatisticViewModel
+import com.example.domain.model.DonutData
+import com.example.features.presentation.home.state.StatisticsDataState
 
 @Composable
 fun StatisticScreen(
     modifier: Modifier = Modifier,
-    viewModel: StatisticViewModel = hiltViewModel(),
+    statistic: StatisticsDataState,
+    status: List<DonutData>
 
-    ) {
-    val state by viewModel.statisticState.collectAsStateWithLifecycle()
+) {
 
     Column(
         modifier = modifier
@@ -41,7 +42,9 @@ fun StatisticScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        DonutChartScreen()
+        DonutChartScreen(status = status)
+
+        Spacer(modifier = modifier.height(10.dp))
 
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2), // 2 kolom
@@ -52,20 +55,22 @@ fun StatisticScreen(
             verticalItemSpacing = 12.dp,
             contentPadding = PaddingValues(bottom = 12.dp)
         ) {
-            items(state.byCategory.entries.toList()) { (category, count) ->
+            items(statistic.byCategory.entries.toList(), key = { it.key }) { (category, count) ->
 
-                val trend = state.categoryTrends[category] ?: 0
+                val trend = statistic.categoryTrends[category] ?: 0
+                val categoryIcons = remember {
+                    mapOf(
+                        "HRC" to Icons.Default.Domain,
+                        "MDL" to Icons.Default.Apartment,
+                        "IND" to Icons.Default.Factory,
+                        "LOW" to Icons.Default.Construction
+                    )
+                }
 
                 StatisticCard(
                     title = category,
                     count = count,
-                    icon = when (category) {
-                        "HRC" -> Icons.Default.Domain
-                        "MDL" -> Icons.Default.Apartment
-                        "IND" -> Icons.Default.Factory
-                        "LOW" -> Icons.Default.Construction
-                        else -> Icons.Default.Info
-                    },
+                    icon = categoryIcons[category]?: Icons.Default.Info,
                     showTrend = true,
                     trendValue = trend
                 )

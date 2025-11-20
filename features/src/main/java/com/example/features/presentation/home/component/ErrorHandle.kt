@@ -23,19 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-@Composable
-fun LoadingItem() {
-    Box(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
-            .fillMaxSize()
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ErrorBottomSheet(

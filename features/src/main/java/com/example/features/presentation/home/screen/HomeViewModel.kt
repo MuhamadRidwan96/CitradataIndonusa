@@ -1,17 +1,19 @@
 package com.example.features.presentation.home.screen
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.common.Result
 import com.example.data.local.entity.FavoriteProjectEntity
+import com.example.data.local.mapToDonut
 import com.example.data.local.toDomain
 import com.example.data.repositoryImpl.FilterDataRepositoryImpl
 import com.example.data.utils.Constant
 import com.example.data.utils.TokenExpiredException
+import com.example.domain.di.IoDispatcher
+import com.example.domain.model.DonutData
 import com.example.domain.model.FavoriteProject
 import com.example.domain.model.UserProfile
 import com.example.domain.repository.FilterDataRepository
@@ -22,14 +24,17 @@ import com.example.domain.usecase.data.FilteredUseCase
 import com.example.domain.usecase.room.DeleteFavoriteUseCase
 import com.example.domain.usecase.room.GetAllFavoriteUseCase
 import com.example.domain.usecase.room.InsertFavoriteUseCase
+import com.example.domain.usecase.statistic.StatisticUseCase
 import com.example.features.presentation.home.state.HomeUiState
+import com.example.features.presentation.home.state.StatisticsDataState
 import com.example.features.presentation.home.utils.toFilterDataModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,19 +46,25 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     filteredUseCase: FilteredUseCase,
-    profileUseCase: ProfileUseCase,
+    private val profileUseCase: ProfileUseCase,
+    private val statisticUseCase: StatisticUseCase,
     private val getAllFavoriteUseCase: GetAllFavoriteUseCase,
     private val insertFavorite: InsertFavoriteUseCase,
     private val deleteFavorite: DeleteFavoriteUseCase,
-    repository: FilterDataRepository,
-    private val logoutUseCase: LogoutUseCase
+    private val repository: FilterDataRepository,
+    private val logoutUseCase: LogoutUseCase,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -72,57 +83,36 @@ class HomeViewModel @Inject constructor(
     val dataEvent = _dataEvent.receiveAsFlow()
 
     private val _favoriteProjects = MutableStateFlow<List<FavoriteProject>>(emptyList())
-    val favoriteProjects: StateFlow<List<FavoriteProject>> = _favoriteProjects
+    val favoriteProjects = _favoriteProjects.asStateFlow()
 
-    var userProfile by mutableStateOf<UserProfile?>(null)
+    private val _userName = MutableStateFlow<UserProfile?>(null)
+    val userName = _userName.asStateFlow()
 
-    private val _isInitialized = MutableStateFlow(false)
-    val isInitialized = _isInitialized.asStateFlow()
+    private val _statisticState = MutableStateFlow(StatisticsDataState())
+    val statisticState = _statisticState.asStateFlow()
+
+    private val _byStatus = MutableStateFlow<List<DonutData>>(emptyList())
+    val byStatus = _byStatus.asStateFlow()
 
 
     init {
-        observeFavorites()
+        setUpTokenExpired()
+
         viewModelScope.launch {
-            delay(1500)
-            _isInitialized.value = true
-        }
-    }
+            supervisorScope {
+                val statisticJob = async(dispatcher) { fetchStatistic() }
+                val profileJob = async(dispatcher) { fetchProfile() }
 
-    private fun observeFavorites() {
-        viewModelScope.launch(Dispatchers.IO) {
-            getAllFavoriteUseCase().collect { fav ->
-                _favoriteProjects.value = fav
+                statisticJob.await()
+                profileJob.await()
+
+                launch(dispatcher) { observeFavorites() }
             }
         }
     }
 
-    fun toggleFavorite(project: FavoriteProjectEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val favorite = _favoriteProjects.value.any { it.idProject == project.idProject }
-                if (favorite) {
-                    deleteFavorite(project.idProject)
-                    _dataEvent.send(DataEvent.ShowSnackBar("Favorit berhasil dihapus  "))
 
-                } else {
-                    insertFavorite(project.toDomain())
-                    _dataEvent.send(DataEvent.ShowSnackBar("Ditambahkan ke favorit"))
-                }
-            } catch (e: Exception) {
-                DataEvent.ShowSnackBar(e.message ?: Constant.UNKNOWN_ERROR)
-            }
-        }
-    }
-
-    init {
-        viewModelScope.launch {
-            profileUseCase().collect { profile ->
-                userProfile = profile
-            }
-        }
-    }
-
-    init {
+    private fun setUpTokenExpired() {
         if (repository is FilterDataRepositoryImpl) {
             repository.onTokenExpiredCallBack = {
                 viewModelScope.launch {
@@ -137,8 +127,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun applyProjectName(names: Map<String, String>) {
-        _searchQuery.value = if (names.isEmpty()) emptyMap() else names
+    private fun fetchProfile() {
+        viewModelScope.launch(dispatcher) {
+            profileUseCase().collect { profile ->
+                _userName.value = profile
+            }
+        }
     }
 
     val currentPagingData: Flow<PagingData<RecordData>> =
@@ -154,6 +148,7 @@ class HomeViewModel @Inject constructor(
             handleError(e)
         }.cachedIn(viewModelScope)
 
+
     private fun handleError(e: Throwable) {
         viewModelScope.launch {
             when (e) {
@@ -165,14 +160,115 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+
+    private fun observeFavorites() {
+        viewModelScope.launch(dispatcher) {
+            getAllFavoriteUseCase().collect { fav ->
+                _favoriteProjects.value = fav
+            }
+        }
+    }
+
+    //Bug!! Send few request on snackbar
+    fun toggleFavorite(project: FavoriteProjectEntity) {
+        viewModelScope.launch {
+            try {
+                val favorite = _favoriteProjects.value.any { it.idProject == project.idProject }
+                if (favorite) {
+                    deleteFavorite(project.idProject)
+                    _dataEvent.send(DataEvent.ShowSnackBar("Favorit berhasil dihapus  "))
+
+                } else {
+                    insertFavorite(project.toDomain())
+                    _dataEvent.send(DataEvent.ShowSnackBar("Ditambahkan ke favorit"))
+                }
+            } catch (e: Exception) {
+                _dataEvent.send(
+                    DataEvent.ShowSnackBar(e.message ?: Constant.UNKNOWN_ERROR)
+                )
+
+            }
+        }
+    }
+
+
+    fun applyProjectName(names: Map<String, String>) {
+        _searchQuery.value = if (names.isEmpty()) emptyMap() else names
+    }
+
+
     fun onLogoutClicked() {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch {
             logoutUseCase()
         }
     }
 
-    fun refreshPaging(){
-        _searchQuery.value = _searchQuery.value.toMap()
+
+    fun fetchStatistic() {
+        viewModelScope.launch {
+            if (_statisticState.value.isLoading || _statisticState.value.totalProjects > 0) return@launch // ✅ cegah re-request
+
+            _statisticState.value = _statisticState.value.copy(isLoading = true)
+
+            statisticUseCase()
+                .catch { e ->
+                    _statisticState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = e.message ?: "Failed to fetch statistic"
+                        )
+                    }
+                }.collect { result ->
+                    when (result) {
+
+                        is Result.Success -> {
+                            val data = result.data.data
+
+                            val categoryColors = mapOf(
+                                "UNDER CONSTRUCTION" to Color(0xFFE74C3C),
+                                "PLANNING" to Color(0xFF27AE60),
+                                "POST TENDER" to Color(0xFFF1C40F),
+                                "PILLING WORK" to Color(0xFF1ABC9C),
+                                "HOLD PROJECT" to Color(0xFFFB8C00)
+                            )
+
+                            val total = data.totalProjects.takeIf { it > 0 } ?: 1
+
+                            val trends = withContext(Dispatchers.Default) {
+                                data.byCategory.mapValues { (category, count) ->
+                                    ((count.toFloat() / total.toFloat()) * 100f).roundToInt()
+                                }
+                            }
+
+                            _byStatus.value = mapToDonut(data.byStatus, categoryColors)
+                            _statisticState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isLoaded = true,
+                                    totalProjects = data.totalProjects,
+                                    byCategory = data.byCategory,
+                                    byStatus = data.byStatus,
+                                    byProvince = data.byProvince,
+                                    categoryTrends = trends,
+
+                                    )
+                            }
+                        }
+
+                        is Result.Error -> {
+                            _statisticState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isLoaded = false,
+                                    error = result.exception.message ?: "Unknown Error!"
+                                )
+                            }
+                        }
+
+                        else -> Unit
+                    }
+                }
+        }
     }
 }
 

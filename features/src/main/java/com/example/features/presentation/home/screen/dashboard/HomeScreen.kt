@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -52,9 +54,9 @@ import com.example.features.presentation.home.component.TopAppBarContent
 import com.example.features.presentation.home.screen.DataEvent
 import com.example.features.presentation.home.screen.HomeViewModel
 import com.example.features.presentation.home.screen.NotificationViewModel
-import com.example.features.presentation.home.screen.StatisticViewModel
 import com.example.features.presentation.home.state.toDataState
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +64,6 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     viewmodel: HomeViewModel = hiltViewModel(),
     notificationViewModel: NotificationViewModel = hiltViewModel(),
-    statisticViewModel: StatisticViewModel = hiltViewModel(),
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onNavigateToLogin: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
@@ -70,8 +71,8 @@ fun HomeScreen(
     onScrollChange: (Boolean) -> Unit
 ) {
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
-    val pagingItems = viewmodel.currentPagingData.collectAsLazyPagingItems()
-    val profile = viewmodel.userProfile
+
+    val profile = viewmodel.userName.collectAsStateWithLifecycle()
 
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
@@ -82,26 +83,19 @@ fun HomeScreen(
 
     val favorites by viewmodel.favoriteProjects.collectAsState()
     val count by notificationViewModel.unreadCount.collectAsState()
-    val isInitialized by viewmodel.isInitialized.collectAsStateWithLifecycle()
-    val statisticState by statisticViewModel.statisticState.collectAsStateWithLifecycle()
+
+    val pagingItems = viewmodel.currentPagingData.collectAsLazyPagingItems()
+    val statistic by viewmodel.statisticState.collectAsStateWithLifecycle()
+    val status by viewmodel.byStatus.collectAsState()
+
+    val isInitialized = statistic.isLoaded && pagingItems.itemCount > 0
+
 
     LaunchedEffect(pagingItems.loadState) {
         val error = pagingItems.loadState.refresh as? LoadState.Error
         if (error?.error is TokenExpiredException) {
             showErrorSheet = true
         }
-    }
-
-    //Run Statistic
-    LaunchedEffect(Unit) {
-        statisticViewModel.fetchStatistic()
-    }
-
-    LaunchedEffect(statisticState.isLoaded) {
-        if (statisticState.isLoaded) {
-            viewmodel.refreshPaging()
-        }
-
     }
 
     if (showErrorSheet) {
@@ -126,7 +120,7 @@ fun HomeScreen(
         snapshotFlow { listState.firstVisibleItemScrollOffset }
             .collect { offset ->
                 val diff = offset - lastOffset
-                if (kotlin.math.abs(diff) > threshold) {
+                if (abs(diff) > threshold) {
                     onScrollChange(diff > 0)
                     lastOffset = offset
                 }
@@ -146,13 +140,14 @@ fun HomeScreen(
             }
         }
     }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
                     TopAppBarContent(
-                        name = profile?.name ?: "",
+                        name = profile.value?.name ?: "",
                         hello = stringResource(R.string.hello),
                         count = count,
                         onClick = { onNavigateToNotification() },
@@ -221,21 +216,31 @@ fun HomeScreen(
                     item(contentType = "Statistic") {
                         TextTitle(
                             icon = R.drawable.chart_column_stacked,
-                            title = stringResource(R.string.statistic)
+                            title = stringResource(R.string.statistic),
+                            desc = "Real-time project monitoring"
                         )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
                     }
 
                     item(contentType = "Statistic") {
+
                         StatisticScreen(
-                            viewModel = statisticViewModel
+                            statistic = statistic,
+                            status = status
                         )
                     }
+
 
                     item(contentType = "Latest") {
                         TextTitle(
                             icon = R.drawable.fire,
-                            title = stringResource(R.string.latest)
+                            title = stringResource(R.string.latest),
+                            desc = ""
                         )
+
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
 
                     items(

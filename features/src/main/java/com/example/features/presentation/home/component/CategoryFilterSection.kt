@@ -1,14 +1,6 @@
 package com.example.features.presentation.home.component
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import com.example.core_ui.R
-import com.example.core_ui.component.FilterCategory
-import com.example.core_ui.component.FilterCategoryRow
-
-@Composable
+/*@Composable
 fun CategoryFilterSection(
     selectedCategory: Int,
     onCategorySelected: (Int) -> Unit,
@@ -46,5 +38,5 @@ fun getCategoryCode(categoryId: Int): String {
         1 -> ""
         else -> ""
     }
-}
+}*/
 

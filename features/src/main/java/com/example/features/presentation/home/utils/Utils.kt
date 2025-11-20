@@ -15,7 +15,9 @@ import com.example.core_ui.R
 import com.example.data.local.entity.FavoriteProjectEntity
 import com.example.domain.model.FavoriteProject
 import com.example.domain.model.FilterDataModel
+import com.example.domain.response.UserData
 import com.example.features.presentation.home.state.DataState
+import com.example.features.presentation.profile.screen.state.ProfileState
 import com.example.features.presentation.search.state.ProjectFilterState
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -147,6 +149,59 @@ fun FavoriteProject.toDataState(no: Int = 0): DataState {
         status = this.status,
         location = this.location,
         province = this.province,
+    )
+}
+
+fun UserData.toProfileState(): ProfileState{
+    
+    return ProfileState(
+        
+        statusInfo = ProfileState.StatusInfo(
+            isLoading = false,
+            error = null
+        ),
+        basicInfo = ProfileState.BasicInfo(
+            name = this.name,
+            fullName = this.username,
+            photo = this.photo,
+            username = this.username
+        ),
+        contactInfo = ProfileState.ContactInfo(
+            email = this.email,
+            phone = this.phone,
+            address = this.address,
+            website = this.website
+        ),
+        professionalInfo = ProfileState.ProfessionalInfo(
+            position = this.position,
+            company = this.company,
+            note = this.note
+        ),
+        accountInfo = ProfileState.AccountInfo(
+            idUser = this.idUser,
+            idUserMaster = this.idUserMaster,
+            idRole = this.idRole,
+            roleName = this.idRole,
+            userStatus = this.userStatus,
+            userType = this.userType
+        ),
+        subscriptionInfo = ProfileState.SubscriptionInfo(
+            packageMemberType = this.packageMemberType,
+            subscriptionFee = this.subscriptionFee,
+            totalFee = this.totalFee,
+            counted = this.counted,
+            startDate = this.startDate,
+            endDate = this.endDate
+        ),
+        metadata = ProfileState.Metadata(
+            idProvince = this.idProvince,
+            idCity = this.idCity,
+            created = this.created,
+            createdBy = this.createdBy,
+            updated = this.updated,
+            updatedBy = this.updatedBy,
+            status = this.status
+        )
     )
 }
 

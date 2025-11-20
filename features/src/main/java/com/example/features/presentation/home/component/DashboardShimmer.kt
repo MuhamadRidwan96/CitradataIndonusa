@@ -30,14 +30,14 @@ fun DashboardShimmer() {
             .fillMaxSize()
             .padding(16.dp)
             .shimmer(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Spacer(modifier = Modifier.height(96.dp))
+        Spacer(modifier = Modifier.height(90.dp))
         //SearchBar
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(35.dp)
+                .height(36.dp)
                 .background(
                     baseColor,
                     RoundedCornerShape(12.dp)
@@ -48,39 +48,43 @@ fun DashboardShimmer() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(145.dp)
+                .height(160.dp)
                 .background(
                     baseColor,
                     RoundedCornerShape(16.dp)
                 )
         )
 
-        Spacer(modifier = Modifier.height(6.dp))
-
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.4f)
-                .height(25.dp)
+                .fillMaxWidth(0.5f)
+                .height(30.dp)
+                .background(
+                    baseColor,
+                    RoundedCornerShape(8.dp)
+                )
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.6f)
+                .height(20.dp)
                 .background(
                     baseColor,
                     RoundedCornerShape(8.dp)
                 )
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(2.dp))
         //Statistic
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp)
+                .height(190.dp)
                 .background(
                     baseColor,
                     RoundedCornerShape(16.dp)
                 )
         )
-        Spacer(modifier = Modifier.height(6.dp))
-
-
 
         repeat(2) {
             Row(
