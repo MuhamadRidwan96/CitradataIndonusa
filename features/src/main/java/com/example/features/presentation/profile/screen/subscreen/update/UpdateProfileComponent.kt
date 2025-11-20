@@ -28,8 +28,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -91,9 +89,7 @@ fun UpdateProfileComponent() {
 fun ProfileHeader(hello: String, name: String, modifier: Modifier = Modifier) {
 
     val updateStyle = MaterialTheme.typography.titleLarge.copy(
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurface,
-        fontFamily = FontFamily.SansSerif
+        color = MaterialTheme.colorScheme.onSurface
     )
 
     Column( verticalArrangement = Arrangement.spacedBy(0.dp)) {

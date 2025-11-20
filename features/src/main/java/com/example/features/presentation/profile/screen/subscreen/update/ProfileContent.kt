@@ -1,5 +1,8 @@
 package com.example.features.presentation.profile.screen.subscreen.update
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,20 +11,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ContentPaste
-import androidx.compose.material.icons.filled.LocalPolice
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,31 +34,212 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.feature_login.R
+import com.example.core_ui.R
+import com.example.core_ui.component.IconText
 
 @Composable
-fun ProfileContent() {
+fun ContentProfileScreen(
+    modifier: Modifier = Modifier,
+    onMembershipClick: () -> Unit,
+    onContactUsClick: () -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
+    onTermsClick: () -> Unit,
+    onLogout: (() -> Unit)? = null,
+    name: String,
+    fullName: String,
+    email: String,
+    address: String,
+    company: String,
+    phone: String?,
+    dateEnd: String
 
-    val profileIconSize = remember { 96.dp }
+) {
 
-    // Stacked Profile Image with Edit Button
+    val items = remember {
+        listOf(
+            ProfileItem.Regular(
+                R.drawable.award,
+                R.string.membership,
+                onMembershipClick
+            ),
+            ProfileItem.Regular(
+                R.drawable.phone,
+                R.string.call_us,
+                onContactUsClick
+            ),
+            ProfileItem.Regular(
+                R.drawable.shield_user,
+                R.string.privacy_policy,
+                onPrivacyPolicyClick
+            ),
+            ProfileItem.Regular(
+                R.drawable.notebook_text,
+                R.string.term_and_condition,
+
+                onTermsClick
+            )
+        ) + if (onLogout != null) {
+            listOf(ProfileItem.Logout(onLogout, true))
+        } else emptyList()
+
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        // Background header
+        Box(
+            modifier = Modifier
+                .height(125.dp)
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(bottomEnd = 44.dp)
+                )
+        )
+
+        // Scrollable content
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(bottom = 32.dp)
+        ) {
+            item(key = "l") {
+                Spacer(modifier = Modifier.height(35.dp))
+                CardProfile(
+                    name = name,
+                    fullName = fullName,
+                    email = email,
+                    address = address,
+                    company = company,
+                    phone = phone,
+                    dateEnd = dateEnd
+                )
+            }
+
+            item(key = "profileContent") {
+                ProfileItemList(items)
+            }
+        }
+    }
+}
+
+@Composable
+fun ProfileItemList(items: List<ProfileItem>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        items.forEachIndexed { index, item ->
+            ProfileItemRow(item)
+            if (index < items.lastIndex) {
+                ProfileDivider()
+            }
+        }
+    }
+}
+
+
+@Composable
+fun CardProfile(
+    modifier: Modifier = Modifier,
+    name: String,
+    fullName: String,
+    email: String,
+    address: String,
+    company: String,
+    phone: String?,
+    dateEnd: String
+) {
+
+    Card(
+        modifier = modifier.padding(24.dp),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.elevatedCardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ImageProfile()
+            Text(
+                text = name,
+                style = MaterialTheme.typography.headlineSmall,
+                maxLines = 1,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = fullName,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                color = Color.Gray,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            ProfileText(
+                email = email,
+                address = address,
+                company = company,
+                phone = phone,
+                dateEnd = dateEnd
+            )
+
+        }
+    }
+}
+
+@Composable
+fun ProfileText(
+    email: String,
+    address: String,
+    company: String,
+    phone: String?,
+    dateEnd: String
+){
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        IconText(R.drawable.mail, email)
+        IconText(R.drawable.phone, phone ?: "")
+        IconText(R.drawable.map_pin_house, address)
+        IconText(R.drawable.factory, company)
+        IconText(R.drawable.calendar, dateEnd)
+    }
+}
+
+@Composable
+fun ImageProfile() {
     Box(
         modifier = Modifier
-            .size(112.dp),
+            .size(94.dp),
         contentAlignment = Alignment.Center
     ) {
         // Profile Image
         Icon(
             imageVector = Icons.Default.AccountCircle,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.secondary,
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
             modifier = Modifier
-                .size(profileIconSize)
+                .size(84.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.secondaryContainer)
         )
@@ -66,80 +248,40 @@ fun ProfileContent() {
 
 
 @Composable
-fun TextName(
-    name: String,
-    username: String
-) {
-    val spacer = remember { 24.dp }
-    val padding = remember { 16.dp }
-
-    val nameStyle = MaterialTheme.typography.titleLarge.copy(
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.secondary,
-    )
-
-    val usernameStyle = MaterialTheme.typography.titleMedium.copy(
-        color = Color.Gray
-    )
-    Column(
-        modifier = Modifier.padding(padding),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-
-        Spacer(modifier = Modifier.size(spacer))
-        // Name
-        Text(
-            text = name,
-            style = nameStyle,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-
-        Text(
-            text = username,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = 8.dp),
-            color = Color.Gray,
-            maxLines = 1,
-            style = usernameStyle
-        )
-    }
-}
-
-@Composable
 fun ProfileItemRow(
     item: ProfileItem,
     modifier: Modifier = Modifier
 ) {
-    val rowPadding = remember { PaddingValues(vertical = 12.dp, horizontal = 16.dp) }
-    val iconSpacer = remember { 12.dp }
-
+    val titleText = when (item) {
+        is ProfileItem.Regular -> stringResource(item.title)
+        is ProfileItem.Logout -> stringResource(item.title)
+    }
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .padding(vertical = 12.dp)
             .clickable(
                 enabled = item.enabled,
                 onClick = item.onClick
-            )
-            .padding(rowPadding),
-        verticalAlignment = Alignment.CenterVertically
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Icon(
-            imageVector = item.icon,
-            contentDescription = item.title,
-            tint = when (item) {
-                is ProfileItem.Logout -> Color.Gray
-                else -> MaterialTheme.colorScheme.primary
+        Image(
+            painter = painterResource(item.icon),
+            modifier = Modifier.size(18.dp),
+            contentDescription = null,
+            colorFilter = when (item) {
+                is ProfileItem.Logout -> ColorFilter.tint(Color.Red)
+                else -> ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
             }
         )
-        Spacer(modifier = Modifier.width(iconSpacer))
 
         Text(
-            text = item.title,
+            text = titleText,
             color = when (item) {
                 is ProfileItem.Logout -> Color.Gray
-                else -> MaterialTheme.colorScheme.onSurfaceVariant
+                else -> MaterialTheme.colorScheme.onSurface
             },
             style = MaterialTheme.typography.bodyMedium,
         )
@@ -149,70 +291,22 @@ fun ProfileItemRow(
 @Composable
 private fun ProfileDivider() {
     HorizontalDivider(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        thickness = 0.5.dp,
+        modifier = Modifier.padding(horizontal = 8.dp),
+        thickness = 0.9.dp,
         color = MaterialTheme.colorScheme.outlineVariant
     )
 }
 
-
-@Composable
-fun ContentProfile(
-    onMembershipClick: () -> Unit,
-    onContactUsClick: () -> Unit,
-    onPrivacyPolicyClick: () -> Unit,
-    onTermsClick: () -> Unit,
-    onLogout: (() -> Unit)? = null
-) {
-    val items = listOf(
-        ProfileItem.Regular(
-            Icons.Default.WorkspacePremium,
-            stringResource(R.string.membership),
-            onMembershipClick
-        ),
-        ProfileItem.Regular(
-            Icons.Default.Phone,
-            stringResource(R.string.call_us),
-            onContactUsClick
-        ),
-        ProfileItem.Regular(
-            Icons.Default.LocalPolice,
-            stringResource(R.string.privacy_policy),
-            onPrivacyPolicyClick
-        ),
-        ProfileItem.Regular(
-            Icons.Default.ContentPaste,
-            stringResource(R.string.term_and_condition),
-            onTermsClick
-        )
-    ) + if (onLogout != null) {
-        listOf(ProfileItem.Logout(onLogout, true))
-    } else emptyList()
-
-    LazyColumn(
-        modifier = Modifier
-            .size(650.dp)
-    ) {
-        itemsIndexed(items) { index, item ->
-            ProfileItemRow(item)
-            if (index < items.lastIndex) {
-                ProfileDivider()
-            }
-        }
-    }
-}
-
 @Stable
 sealed interface ProfileItem {
-    val icon: ImageVector
-    val title: String
+    val icon: Int
     val onClick: () -> Unit
     val enabled: Boolean
         get() = true
 
     data class Regular(
-        override val icon: ImageVector,
-        override val title: String,
+        @DrawableRes override val icon: Int,
+        @StringRes val title: Int,
         override val onClick: () -> Unit
     ) : ProfileItem
 
@@ -220,12 +314,10 @@ sealed interface ProfileItem {
         override val onClick: () -> Unit,
         override val enabled: Boolean
     ) : ProfileItem {
-        override val icon: ImageVector = Icons.AutoMirrored.Filled.Logout
-        override val title: String = ProfileItemConstant.LOGOUT
+        @DrawableRes
+        override val icon: Int = R.drawable.log_out
+        val title: Int = R.string.logout
     }
 }
 
-object ProfileItemConstant {
-    const val LOGOUT = "Logout"
-}
 
