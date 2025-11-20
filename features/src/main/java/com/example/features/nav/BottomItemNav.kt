@@ -1,16 +1,12 @@
 package com.example.features.nav
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Explore
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.annotation.DrawableRes
+import com.example.core_ui.R
 
-sealed class BottomNavItem(val route: String, val icon: ImageVector, val title: String) {
-    data object Home : BottomNavItem("home", Icons.Outlined.Home, "Home")
-    data object Search : BottomNavItem("search", Icons.Outlined.Explore, "Explore")
-    data object Favorite : BottomNavItem("favorite", Icons.Outlined.Favorite, "Favorite")
-    data object Profile : BottomNavItem("profile", Icons.Outlined.Person, "Profile")
+sealed class BottomNavItem(val route: String, @DrawableRes val icon: Int, val title: String) {
+    data object Home : BottomNavItem("home", R.drawable.house, "Home")
+    data object Search : BottomNavItem("search", R.drawable.compass, "Explore")
+    data object Favorite : BottomNavItem("favorite", R.drawable.folder_heart, "Favorite")
+    data object Profile : BottomNavItem("profile", R.drawable.hard_hat, "Profile")
 
 }

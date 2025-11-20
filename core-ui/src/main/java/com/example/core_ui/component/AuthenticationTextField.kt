@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -67,9 +68,9 @@ fun EmailTextField(
 
     // Smart keyboard actions - use external if provided, otherwise create
     val finalKeyboardActions = keyboardActions ?: KeyboardActions(
-            onNext = { nextFocusRequester?.requestFocus() },
-            onDone = { /* Default behavior */ }
-        )
+        onNext = { nextFocusRequester?.requestFocus() },
+        onDone = { /* Default behavior */ }
+    )
 
 
     val borderColor =
@@ -77,9 +78,7 @@ fun EmailTextField(
 
     val textFieldColors = OutlinedTextFieldDefaults.colors(focusedBorderColor = borderColor)
 
-    val modifier = Modifier
-        .fillMaxWidth()
-        .heightIn(min = defaults.minHeight)
+    val modifier = Modifier.heightIn(min = defaults.minHeight).fillMaxWidth()
 
     OutlinedTextField(
         value = value,
@@ -241,6 +240,7 @@ private fun TextFieldLeadingIcon(
 private fun TextFieldLabel(text: String) {
     Text(
         text = text,
-        style = MaterialTheme.typography.bodyMedium
+        style = MaterialTheme.typography.bodyMedium,
+        fontFamily = FontFamily.SansSerif
     )
 }

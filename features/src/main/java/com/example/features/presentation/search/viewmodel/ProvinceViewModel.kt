@@ -1,7 +1,5 @@
 package com.example.features.presentation.search.viewmodel
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.common.Result
@@ -13,7 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
@@ -29,19 +26,14 @@ class ProvinceViewModel @Inject constructor(
     val provinceList: StateFlow<Result<ProvinceResponse>> = _provinceList
 
     private val _provinceEvent = MutableSharedFlow<ProvinceEvent>()
-    val provinceEvent = _provinceEvent.asSharedFlow()
 
     private val _provinceState = MutableStateFlow(ProvinceState())
     val provinceStateViewModel = _provinceState.asStateFlow()
 
-    private val _query = mutableStateOf("")
-    val query: State<String> = _query
-
-    fun onQueryChange(newQuery: String) {
-        _query.value = newQuery
-    }
+    private var isLoaded = false // flag, supaya tidak fetch berulang
 
     fun getProvinces() {
+        if (isLoaded) return // ✅ kalau sudah pernah load, skip
         viewModelScope.launch(Dispatchers.IO) {
 
             provinceUseCase(
@@ -56,18 +48,21 @@ class ProvinceViewModel @Inject constructor(
                 .collect {
                     _provinceList.value = it
                     _provinceEvent.emit(ProvinceEvent.Success)
+                    isLoaded = true
                 }
         }
     }
 
+    fun updateProvinces(idProvince : String,province: String){
+        _provinceState.update { it.copy(
+            idProvince = idProvince,
+            provinceName = province,
+        ) }
+    }
 
-    fun updateProvince(id: String, name: String) {
-        _provinceState.update { current ->
-            current.copy(
-                idProvince = id,
-                provinceName = name
-            )
-        }
+    fun clearProvince(){
+        _provinceState.update { ProvinceState() }
+        _provinceList.value = Result.Loading
     }
 }
 

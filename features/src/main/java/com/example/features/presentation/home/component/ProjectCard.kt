@@ -15,8 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -42,38 +42,43 @@ import androidx.compose.ui.unit.sp
 import com.example.core_ui.R
 import com.example.core_ui.component.IconText
 import com.example.core_ui.component.StatusChip
+import com.example.data.local.entity.FavoriteProjectEntity
 import com.example.features.presentation.home.state.DataState
 import com.example.features.presentation.home.utils.formatToFullDate
+import com.example.features.presentation.home.utils.toFavoriteProjectEntity
 
 
 @Composable
 fun ProjectCard(
     project: DataState,
     onClick: () -> Unit,
-    onFavoriteClick: (Boolean) -> Unit,
+    isFavorite : Boolean,
+    onToggleFavorite : (FavoriteProjectEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val cardConfiguration = rememberCardConfiguration(project.statProject)
+    val cleanStat = cleanStatus(project.statProject ?: "")
+    val cardConfiguration = rememberCardConfiguration(cleanStat)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = cardConfiguration.topPadding, bottom = 12.dp)
+            .padding(top = cardConfiguration.topPadding, bottom = 8.dp)
     ) {
         ProjectCardContent(
             project = project,
             onClick = onClick,
-            onFavoriteClick = onFavoriteClick,
-            cardConfiguration = cardConfiguration
+            isFavorite = isFavorite,
+            onToggleFavorite =onToggleFavorite,
+            cardConfiguration = cardConfiguration,
         )
 
         cardConfiguration.statusColor?.let { color ->
             StatusBadge(
-                text = project.statProject,
+                text = cleanStat,
                 backgroundColor = color,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .offset(x = (-12).dp, y = (-12).dp)
+                    .offset(x = (-8).dp, y = (-16).dp)
             )
         }
     }
@@ -83,17 +88,18 @@ fun ProjectCard(
 private fun ProjectCardContent(
     project: DataState,
     onClick: () -> Unit,
-    onFavoriteClick: (Boolean) -> Unit,
+    isFavorite : Boolean,
+    onToggleFavorite : (FavoriteProjectEntity) -> Unit,
     cardConfiguration: CardConfiguration
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(14.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         border = cardConfiguration.border,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onSecondary)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier.padding(
@@ -105,27 +111,27 @@ private fun ProjectCardContent(
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             ProjectHeader(
-                projectStatus = project.status,
-                textCategory = project.category,
-                number = project.no
+                projectStatus = project.status ?: "",
+                textCategory = project.category ?: "",
+                number = project.no  ?: 0
             )
-            ProjectTitle(title = project.project)
+            ProjectTitle(title = project.project ?: "")
 
 
-            val dates = project.lastUpdate
+            val dates = project.lastUpdate ?: ""
             ProjectMetadata(
                 date = formatToFullDate(dates),
-                location = project.location,
-                province = project.province,
-                idProject = project.idProject
+                location = project.location ?: "" ,
+                province = project.province ?: "",
+                idProject = project.idProject.toString()
             )
 
             HorizontalDivider(modifier = Modifier.height(0.5.dp))
 
             BottomCard(
-                idRecord = project.idRecord,
-                isFavorite = project.isFavorite,
-                onFavoriteClick = { onFavoriteClick(false) }
+                idRecord = project.idRecord ?: "",
+                isFavorite = isFavorite,
+                onFavoriteClick = { onToggleFavorite(project.toFavoriteProjectEntity()) }
             )
         }
     }
@@ -140,14 +146,15 @@ private data class CardConfiguration(
 
 @Composable
 private fun rememberCardConfiguration(statProject: String): CardConfiguration {
-    return remember(statProject) {
-        when (statProject) {
+    val status = cleanStatus(statProject)
+    return remember(status) {
+        when (status) {
             "New" -> CardConfiguration(
                 topPadding = 12.dp,
                 border = BorderStroke(
                     2.dp,
                     Color.Unspecified
-                ), // Will be resolved at composition time
+                ),
                 statusColor = Color.Unspecified
             )
 
@@ -165,20 +172,20 @@ private fun rememberCardConfiguration(statProject: String): CardConfiguration {
         }
     }.let { config ->
         // Resolve colors at composition time
-        val colorScheme = MaterialTheme.colorScheme
+        val colors = MaterialTheme.colorScheme
         config.copy(
             border = config.border?.copy(
                 brush = SolidColor(
-                    when (statProject) {
-                        "New" -> colorScheme.primary
-                        "Update" -> colorScheme.scrim
+                    when (status) {
+                        "New" -> colors.surfaceContainerHigh
+                        "Update" -> colors.surfaceContainerHighest
                         else -> Color.Transparent
                     }
                 )
             ),
-            statusColor = when (statProject) {
-                "New" -> colorScheme.primary
-                "Update" -> colorScheme.scrim
+            statusColor = when (status) {
+                "New" -> colors.surfaceContainerHigh
+                "Update" -> colors.surfaceContainerHighest
                 else -> config.statusColor
             }
         )
@@ -194,11 +201,18 @@ private fun StatusBadge(
     Text(
         text = text,
         color = Color.White,
+        fontWeight = FontWeight.Bold,
         style = MaterialTheme.typography.labelMedium,
         modifier = modifier
-            .background(backgroundColor, shape = RoundedCornerShape(50))
+            .background(backgroundColor, shape = RoundedCornerShape(38))
             .padding(horizontal = 10.dp, vertical = 4.dp)
     )
+}
+
+fun cleanStatus(raw:String): String{
+    return raw
+        .replace(Regex("<.*?>"), "")
+        .trim()
 }
 
 @Composable
@@ -230,11 +244,10 @@ private fun HeaderText(text: String) {
     Text(
         text = text,
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.onTertiary, RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
             .padding(horizontal = 16.dp, vertical = 4.dp),
-        fontSize = 12.sp,
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onBackground
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }
 
@@ -262,12 +275,12 @@ private fun ProjectMetadata(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         RowLocation(location, province)
-        IconText(R.drawable.ic_schedule, date)
+        IconText(R.drawable.ic_calendar, date)
         TextComponent(text = stringResource(R.string.id_project)) {
             Text(
                 text = idProject,
                 color = Color.Gray,
-                fontSize = 10.sp,
+                style = MaterialTheme.typography.labelMedium ,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -294,7 +307,7 @@ private fun RowLocation(location: String, province: String) {
         Icon(
             painter = painterResource(R.drawable.ic_location),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
                 .size(16.dp)
                 .alignBy(FirstBaseline)
@@ -333,13 +346,12 @@ private fun FavoriteButton(
     IconButton(onClick = onClick) {
         val colorScheme = MaterialTheme.colorScheme
         Icon(
-            imageVector = if (isFavorite) Icons.Filled.Folder else Icons.Outlined.Folder,
+            imageVector = if (isFavorite) Icons.Filled.Bookmark else Icons.Outlined.Bookmark,
             contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
             tint = if (isFavorite) colorScheme.primary else colorScheme.outlineVariant
         )
     }
 }
-
 
 
 

@@ -12,10 +12,14 @@ import com.example.domain.model.LoginModel
 import com.example.domain.model.ProvinceModel
 import com.example.domain.model.RegisterModel
 import com.example.domain.response.ProfileResponse
+import com.example.domain.response.RecordData
+import com.example.domain.response.StatisticsResponse
 import com.example.domain.response.UpdateProfileResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -35,7 +39,7 @@ interface ApiService {
         @Header("Page") page: Int,
         @Header("Limit") limit: Int,
         @Body filters: Map<String, String>
-    ): Response<DataResponse>
+    ): Response<DataResponse<RecordData>>
 
     @GET("CitraDataIndonusa/apl/api/v1/getUser")
     suspend fun getUser():Response<ProfileResponse>
@@ -59,7 +63,7 @@ interface ApiService {
         @Header("Page") page: Int,
         @Header("Limit") limit: Int,
         @Body filter: FilterDataModel? = null
-    ): Response<DataResponse>
+    ): Response<ResponseBody>
 
     @POST("/CitraDataIndonusa/apl/api/master/Province/province")
     suspend fun getProvince(
@@ -70,5 +74,15 @@ interface ApiService {
     suspend fun getCity(
         @Body search: CityModel
     ): Response<RegenciesResponse>
+
+    @POST("CitraDataIndonusa/apl/api/v1/save-token")
+    @FormUrlEncoded
+    suspend fun saveToken(
+        @Field("user_id") userId:String,
+        @Field("token")  token: String
+    ) : Response<ResponseBody>
+
+    @POST("CitraDataIndonusa/apl/api/master/statistic")
+    suspend fun getStatistic(): Response<StatisticsResponse>
 
 }

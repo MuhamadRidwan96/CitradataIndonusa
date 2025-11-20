@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -20,18 +21,23 @@ fun IconText(
     text: String,
     modifier: Modifier = Modifier
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
         Icon(
             painter = painterResource(id = icon),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = modifier.size(14.dp)
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = modifier
+                .size(18.dp)
+                .alignBy(FirstBaseline)
         )
         Text(
             text = text,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 3,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
     }

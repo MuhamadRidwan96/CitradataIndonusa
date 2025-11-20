@@ -3,11 +3,11 @@ package com.example.domain.response
 import com.google.gson.annotations.SerializedName
 
 
-data class DataResponse(
+data class DataResponse<T>(
     @SerializedName("success") val success: Boolean,
     @SerializedName("status") val status: Int,
     @SerializedName("message") val message: String,
-    @SerializedName("data") val data: List<RecordData>? = null,
+    @SerializedName("data") val data: List<T>? = null,
     @SerializedName("Page") val page: Int,
     @SerializedName("Limit") val limit: Int,
     @SerializedName("TotalRecord") val totalRecord: Int

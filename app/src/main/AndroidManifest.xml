@@ -15,6 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CitradataIndonusa"
         android:name=".MyApplication"
+        android:windowSoftInputMode="adjustPan|adjustResize"
+
         tools:targetApi="31">
         <activity
             android:name=".ui.MainActivity"

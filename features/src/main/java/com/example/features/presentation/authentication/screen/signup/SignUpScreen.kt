@@ -95,7 +95,8 @@ fun SignUpScreen(
     Scaffold(
         topBar = {
             MyTopAppBar(
-                onBackClick = { onBackClick() }
+                onBackClick = { onBackClick() },
+                text = stringResource(R.string.sign_in)
             )
         },
         content = { padding ->
@@ -134,7 +135,8 @@ fun SignUpScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTopAppBar(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    text: String
 ) {
 
     val navigationIcon: @Composable () -> Unit = {
@@ -161,7 +163,7 @@ fun MyTopAppBar(
     TopAppBar(
         title = {
             Text(
-                text = "Sign In",
+                text = text,
                 style = MaterialTheme.typography.titleLarge
             )
         },

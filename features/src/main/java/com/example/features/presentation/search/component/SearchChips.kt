@@ -1,32 +1,34 @@
 package com.example.features.presentation.search.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun SearchChips(
     selectedCategoryId: Int?,
-    onCategorySelected: (Int) -> Unit,
+    onCategorySelected: (Int?, String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val buildingCategories by produceState(initialValue = emptyList()) {
+    val buildingCategories = remember {
 
-        value = listOf(
+        listOf(
             BuildingCategory(5, "Mix Use"),
             BuildingCategory(6, "Hotel"),
             BuildingCategory(7, "Apartment"),
@@ -45,37 +47,45 @@ fun SearchChips(
             BuildingCategory(20, "Mining")
         )
     }
-
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
+        modifier = modifier
+            .fillMaxWidth(),
+        verticalItemSpacing = 12.dp,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        buildingCategories.forEach { category ->
-            val isSelected = selectedCategoryId == category.id
-            FilterChip(
-                selected = isSelected,
-                onClick = {
-                    onCategorySelected(category.id)
-                },
-                shape = RoundedCornerShape(16.dp),
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                    selectedLabelColor = MaterialTheme.colorScheme.onSurface
-                ),
-                modifier = Modifier
-                    .heightIn(min = 43.dp)
-                    .padding(4.dp),
-                leadingIcon = if (isSelected) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Done,
-                            contentDescription = "Done icon",
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
-                    }
-                } else {
-                    null
-                },
-                label = { Text(category.name) }
+
+        items(items = buildingCategories, key = {it.id}) { category ->
+            CategoryChip(
+                category = category,
+                isSelected = category.id == selectedCategoryId,
+                onClick = { onCategorySelected(category.id, category.name) }
+            )
+        }
+    }
+}
+
+@Composable
+fun CategoryChip(category: BuildingCategory, isSelected: Boolean, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        color = if (isSelected) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(25),
+        tonalElevation = 2.dp,
+        shadowElevation = 1.dp,
+        border = BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface),
+        modifier = Modifier.padding(4.dp)
+            .height(42.dp),
+
+    ) {
+        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+            Text(
+                text = category.name,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp).fillMaxWidth(),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
             )
         }
     }

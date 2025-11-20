@@ -1,7 +1,5 @@
 package com.example.features.presentation.search.viewmodel
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.common.Result
@@ -12,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -28,19 +25,19 @@ class CityViewModel @Inject constructor(
     val cityList: StateFlow<Result<RegenciesResponse>> = _cityList
 
     private val _cityEvent = MutableSharedFlow<CityEvent>()
-    val cityEvent = _cityEvent.asSharedFlow()
 
     private val _cityState = MutableStateFlow(CityState())
     val cityState = _cityState.asStateFlow()
 
-    private val _query = mutableStateOf("")
-    val query: State<String> = _query
-
-    fun onQueryChange(newQuery: String) {
-        _query.value = newQuery
-    }
+    private var lastProvinceId: String? = null // ✅ cache id province terakhir
 
     fun getCity(idProvince: String?) {
+        if (idProvince.isNullOrEmpty()) return
+        if (idProvince == lastProvinceId && _cityList.value is Result.Success){
+            return // ✅ kalau provinsi sama & data sudah ada, skip fetch
+        }
+        lastProvinceId = idProvince
+
         viewModelScope.launch(Dispatchers.IO) {
             _cityList.value = Result.Loading
             cityUseCase("", idProvince, "")
@@ -53,18 +50,27 @@ class CityViewModel @Inject constructor(
         }
     }
 
-    fun updateCity(
-        idCity: String,
-        idProvince: String?,
-        name: String
-    ) {
+    fun setProvinceToCity(idProvince:String?){
         _cityState.update { current ->
-            current.copy(
-                idCity = idCity,
-                idProvince = idProvince,
-                cityName = name
-            )
+            current.copy(idProvince = idProvince)
         }
+
+        if (!idProvince.isNullOrEmpty()){
+            getCity(idProvince)
+        }
+    }
+
+    fun updateCity(idCity: String,idProvince: String?, city:String){
+        _cityState.update { it.copy(
+            idCity = idCity,
+            idProvince = idProvince,
+            cityName = city,
+        ) }
+    }
+
+    fun clearCity() {
+        _cityState.update { CityState() }
+        _cityList.value = Result.Loading
     }
 }
 

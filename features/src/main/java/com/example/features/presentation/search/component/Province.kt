@@ -1,124 +1,115 @@
 package com.example.features.presentation.search.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.common.Result
-import com.example.core_ui.component.AppBottomSheet
-import com.example.core_ui.component.CompactSearchBar
 import com.example.domain.response.ProvinceResponse
-import com.example.features.presentation.search.viewmodel.ProvinceEvent
 import com.example.features.presentation.search.viewmodel.ProvinceViewModel
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.delay
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProvinceBottomSheet(
-    onDismiss: () -> Unit,
+    selectedProvince: String,
     viewModel: ProvinceViewModel,
-    onProvinceSelected: (String) -> Unit,
-    onClear: () -> Unit
+    onProvinceSelected: (String, String) -> Unit,
 ) {
+    val provincesState by viewModel.provinceList.collectAsState()
 
-    var showListProvince by rememberSaveable { mutableStateOf(false) }
-    val query by viewModel.query
-    val provinces by viewModel.provinceList.collectAsState()
-    val provinceState by viewModel.provinceStateViewModel.collectAsState()
-    val snackBarHostState = remember { SnackbarHostState() }
+    var expanded by remember { mutableStateOf(false) }
 
-
-    LaunchedEffect(showListProvince) {
-        if (showListProvince) {
-            viewModel.getProvinces()
-        }
-    }
     LaunchedEffect(Unit) {
-        viewModel.provinceEvent.collectLatest { event ->
-            when (event) {
-                is ProvinceEvent.Success -> {}
-                is ProvinceEvent.Error -> {
-                    snackBarHostState.showSnackbar(event.message)
-                }
-            }
-        }
+        delay(500)
+        viewModel.getProvinces()
     }
 
-    Column {
-       /* AppOutlinedTextFieldEnableFalse(
-            value = provinceState.provinceName,
-            onClearClicked = {
-                onClear()
-                viewModel.updateProvince("", "")
-            },
-            placeHolder = "Pilih Provinsi",
-            onClicked = { showListProvince = true }
-        )*/
+    var provinces = when (provincesState) {
+        is Result.Success -> (provincesState as Result.Success<ProvinceResponse>).data.data
+        else -> emptyList()
+    }
 
-        AppBottomSheet(
-            isVisible = showListProvince,
-            onDismiss = {
-                showListProvince = false
-                onDismiss()
-            },
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.5f)),
+        tonalElevation = 0.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 42.dp)
+            .clickable { expanded = !expanded }
+    ) {
+
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Column(
+
+            TextField(
+                readOnly = true,
+                value = selectedProvince,
+                onValueChange = {},
+                textStyle = MaterialTheme.typography.bodySmall,
+                placeholder = { Text("Pilih Provinsi", style = MaterialTheme.typography.bodySmall) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable)
                     .fillMaxWidth()
-                    .heightIn(400.dp)
-                    .padding(16.dp)
-            ) {
-                CompactSearchBar(
-                    query = query,
-                    onQueryChange = viewModel::onQueryChange
+                    .height(45.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    errorContainerColor = Color.Transparent
                 )
+            )
 
-                // Filtered province list
-                val filteredProvinces = when (provinces) {
-                    is Result.Success -> {
-                        val allProvinces = (provinces as Result.Success<ProvinceResponse>).data.data
-                        allProvinces.filter {
-                            it.province.contains(query, ignoreCase = true)
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                provinces.forEach { province ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                province.province,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        },
+                        onClick = {
+                            onProvinceSelected(province.idProvince, province.province)
+                            expanded = false
                         }
-                    }
-                    else -> emptyList()
-                }
-
-                LazyColumn(
-                    modifier = Modifier.heightIn(400.dp)
-                ) {
-                    items(filteredProvinces) { province ->
-                        Text(
-                            text = province.province,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    viewModel.updateProvince(
-                                        id = province.idProvince,
-                                        name = province.province
-                                    )
-                                    onProvinceSelected(province.idProvince)
-                                    showListProvince = false
-                                    onDismiss()
-                                }
-                                .padding(16.dp)
-                        )
-                    }
+                    )
                 }
             }
         }

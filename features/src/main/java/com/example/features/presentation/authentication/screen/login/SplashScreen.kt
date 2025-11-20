@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,7 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.feature_login.R
+import com.example.core_ui.R
 import kotlinx.coroutines.delay
 
 
@@ -32,12 +33,14 @@ fun SplashScreen(
 ) {
     val processState by viewModel.processState.collectAsStateWithLifecycle()
     var hasNavigated by remember { mutableStateOf(false) }
+
+    val currentState by rememberUpdatedState(processState)
     LaunchedEffect(Unit) {
     viewModel.checkLogin()}
 
     // Simple fade animation saja
     val alpha by animateFloatAsState(
-        targetValue = if (processState.isReady) 1f else 1f,
+        targetValue = if (currentState.isReady) 1f else 1f,
         animationSpec = tween(durationMillis = 200),
         label = "alpha"
     )
@@ -48,19 +51,19 @@ fun SplashScreen(
     ) {
 
         Image(
-            painter = painterResource(R.drawable.logo_dummy),
+            painter = painterResource(R.drawable.logo),
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
-                .size(150.dp)
+                .size(250.dp)
                 .alpha(alpha)
         )
     }
-    LaunchedEffect(processState.isReady) {
-        if (processState.isReady && !hasNavigated) {
+    LaunchedEffect(currentState.isReady) {
+        if (currentState.isReady && !hasNavigated) {
             hasNavigated = true
-            delay(600)
-            if (processState.isLoggedIn) {
+            delay(200)
+            if (currentState.isLoggedIn) {
                 onNavigateToHome()
             } else {
                 onNavigateToLogin()

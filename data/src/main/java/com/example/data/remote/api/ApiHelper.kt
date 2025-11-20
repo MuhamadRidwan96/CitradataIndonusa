@@ -11,7 +11,9 @@ import com.example.domain.model.ProvinceModel
 import com.example.domain.model.RegisterModel
 import com.example.domain.response.ProfileResponse
 import com.example.domain.response.ProvinceResponse
+import com.example.domain.response.RecordData
 import com.example.domain.response.RegenciesResponse
+import com.example.domain.response.StatisticsResponse
 import com.example.domain.response.UpdateProfileResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -19,14 +21,16 @@ import retrofit2.Response
 interface ApiHelper{
     suspend fun login(requestLogin:LoginModel):Response<LoginResponse>
     suspend fun register(requestRegister: RegisterModel):Response<RegisterResponse>
-    suspend fun searchData(page: Int,limit: Int,filters:Map<String,String>):Response<DataResponse>
+    suspend fun searchData(page: Int,limit: Int,filters:Map<String,String>):Response<DataResponse<RecordData>>
     suspend fun getData(page: Int, limit : Int):Response<ResponseBody>
     suspend fun getDetailData(idProject:String):Response<ProjectDetailResponse>
     suspend fun getUser():Response<ProfileResponse>
     suspend fun updateProfile():Response<UpdateProfileResponse>
     suspend fun getProvince(province: ProvinceModel?): Response<ProvinceResponse>
     suspend fun getCity(city: CityModel): Response<RegenciesResponse>
-    suspend fun filterData(page: Int, limit: Int,filteredData: FilterDataModel?): Response<DataResponse>
+    suspend fun filterData(page: Int, limit: Int,filteredData: FilterDataModel?): Response<ResponseBody>
+    suspend fun saveToken(userId:String,token: String) : Response<ResponseBody>
+    suspend fun getStatistic(): Response<StatisticsResponse>
 
 }
 

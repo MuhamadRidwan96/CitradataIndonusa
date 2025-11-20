@@ -1,6 +1,7 @@
 package com.example.domain.usecase.authentication
 
 import com.example.common.Result
+import com.example.domain.di.IoDispatcher
 import com.example.domain.model.LoginModel
 import com.example.domain.model.UserModel
 import com.example.domain.preferences.UserPreferences
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
     private val repository: AuthRepository,
-    private val userPreferences: UserPreferences,
+    @IoDispatcher private val userPreferences: UserPreferences,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
     operator fun invoke(email: String, password: String): Flow<Result<LoginResponse>> =
