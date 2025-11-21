@@ -8,7 +8,6 @@ import androidx.core.app.NotificationCompat
 import com.example.citradataindonusa.ui.MainActivity
 import com.example.core_ui.R
 import com.example.domain.model.NotificationModel
-import com.example.domain.preferences.UserPreferences
 import com.example.domain.usecase.notification.UpdateNotificationCountUseCase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -16,27 +15,20 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class FirebaseMessaging : FirebaseMessagingService() {
 
     @Inject
-    lateinit var userPreferences: UserPreferences
-
-    @Inject
     lateinit var updateNotificationCountUseCase: UpdateNotificationCountUseCase
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Timber.tag("FirebaseMessaging").d("New FCM Token: $token")
     }
 
     //jika pesan berisi payload data
     override fun onMessageReceived(message: RemoteMessage) {
-        Timber.tag("FCM").d("Pesan diterima: ${message.data}")
-        val start = System.currentTimeMillis()
 
         val title = message.notification?.title ?:
                     message.data["title"] ?: "New message"
@@ -56,7 +48,6 @@ class FirebaseMessaging : FirebaseMessagingService() {
             )
         }
 
-        Timber.tag("FCM").d("Insert ke Room selesai dalam ${System.currentTimeMillis() - start} ms")
 
     }
 
@@ -69,7 +60,6 @@ class FirebaseMessaging : FirebaseMessagingService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = notificationManager.getNotificationChannel(channelId)
             if (channel == null) {
-                Timber.tag("FCM").e("Notification channel $channelId not found!")
                 return
             }
         }

@@ -16,6 +16,7 @@ import com.example.data.repositoryImpl.FavoriteRepositoryImpl
 import com.example.data.repositoryImpl.FilterDataRepositoryImpl
 import com.example.data.repositoryImpl.LocationRepositoryImpl
 import com.example.data.repositoryImpl.NotificationRepositoryImpl
+import com.example.data.repositoryImpl.ProfileRepositoryImpl
 import com.example.data.repositoryImpl.SaveTokenRepositoryImpl
 import com.example.data.repositoryImpl.StatisticRepositoryImpl
 import com.example.domain.repository.AuthRepository
@@ -25,6 +26,7 @@ import com.example.domain.repository.FavoriteRepository
 import com.example.domain.repository.FilterDataRepository
 import com.example.domain.repository.LocationRepository
 import com.example.domain.repository.NotificationRepository
+import com.example.domain.repository.ProfileRepository
 import com.example.domain.repository.SaveTokenRepository
 import com.example.domain.repository.StatisticRepository
 import dagger.Module
@@ -126,5 +128,11 @@ object DataModule {
     @Singleton
     fun provideStatisticRepository(apiHelper: ApiHelper) : StatisticRepository{
         return StatisticRepositoryImpl(apiHelper)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileRepository(apiHelper: ApiHelper): ProfileRepository {
+        return ProfileRepositoryImpl(apiHelper)
     }
 }

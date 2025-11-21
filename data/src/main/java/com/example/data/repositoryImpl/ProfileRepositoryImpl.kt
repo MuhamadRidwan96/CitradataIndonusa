@@ -9,10 +9,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class ProfileRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper):  ProfileRepository {
-    override suspend fun getUser():Flow<Result<ProfileResponse>> = flow{
+class ProfileRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) : ProfileRepository {
+    override suspend fun getUser(): Flow<Result<ProfileResponse>> = flow {
         val response = apiHelper.getUser()
         emit(response.toResult())
     }
-
 }
