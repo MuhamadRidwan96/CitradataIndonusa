@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.features.presentation.MainScreen
 import com.example.features.presentation.profile.screen.subscreen.contact_us.ContactUsScreen
-import com.example.features.presentation.profile.screen.subscreen.membership.MyMembershipScreen
+import com.example.features.presentation.profile.screen.subscreen.membership.MembershipScreen
 import com.example.features.presentation.profile.screen.subscreen.policy.PrivacyPolicyScreen
 import com.example.features.presentation.profile.screen.subscreen.terms.TermsAndConditionScreen
 import com.example.features.presentation.profile.screen.subscreen.update.UpdateProfileScreen
@@ -26,7 +26,7 @@ fun RootNavigationGraph(modifier: Modifier = Modifier,navController: NavHostCont
         splashNavGraph(navController = navController)
         authNavGraph(navController = navController)
         composable(Graph.HOME) { MainScreen(modifier,navController,projectId) }
-        composable(ProfileRoutes.MEMBERSHIP) { MyMembershipScreen(navController = navController) }
+        composable(ProfileRoutes.MEMBERSHIP) { MembershipScreen(navController = navController) }
         composable(ProfileRoutes.CONTACT) { ContactUsScreen(navController = navController) }
         composable(ProfileRoutes.PRIVACY) { PrivacyPolicyScreen(navController = navController) }
         composable(ProfileRoutes.TERMS) { TermsAndConditionScreen(navController = navController) }
