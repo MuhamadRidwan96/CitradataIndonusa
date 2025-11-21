@@ -3,19 +3,16 @@ package com.example.citradataindonusa
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.util.Log
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.HiltAndroidApp
-import io.kotzilla.sdk.analytics.koin.analytics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.startKoin
-import timber.log.Timber
-
 
 @HiltAndroidApp
 class MyApplication : Application() {
+
     override fun onCreate() {
         super.onCreate()
 
@@ -25,12 +22,12 @@ class MyApplication : Application() {
             FirebaseApp.initializeApp(this@MyApplication)
         }
 
-        startKoin {
+    /*    startKoin {
             androidContext(this@MyApplication)
 
             // Add kotzilla analytics
             analytics()
-        }
+        }*/
 
     }
 
@@ -40,13 +37,13 @@ class MyApplication : Application() {
         val channel = notificationManager.getNotificationChannel(channelId)
 
         if (channel != null) {
-            Timber.d("Channel exists: ${channel.id} - ${channel.name}")
+            Log.d("Channel exists","${channel.id} - ${channel.name}")
         } else {
-            Timber.e("Channel NOT found: $channelId")
             // Force create channel jika tidak ditemukan
             createNotificationChannel()
         }
     }
+
 
     private fun createNotificationChannel() {
         val channelId = "default_channel"
@@ -59,6 +56,5 @@ class MyApplication : Application() {
 
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
-        Timber.d("Channel created: $channelId")
     }
 }
