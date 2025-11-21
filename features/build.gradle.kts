@@ -10,7 +10,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -91,6 +91,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
+    //shimmer
+
+    implementation(libs.androidx.compose.shimmer)
 
     //datastore
     implementation(libs.androidx.datastore.preferences)
@@ -126,6 +129,9 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     //coil
     implementation(libs.coil.compose)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
 
 
 }
