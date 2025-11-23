@@ -18,7 +18,6 @@ import com.example.features.presentation.home.screen.detail.ProjectDetailScreen
 import com.example.features.presentation.home.screen.notification.NotificationScreen
 import com.example.features.presentation.profile.screen.main.ProfileScreen
 import com.example.features.presentation.search.SearchScreen
-import timber.log.Timber
 
 
 @Composable
@@ -127,7 +126,6 @@ private fun NavGraphBuilder.notificationDestination(navController: NavHostContro
     ) {
         composable(route = NotificationDestination.ROUTE) {
             NotificationScreen(onBackClick = { navController.popBackStack() })
-            Timber.tag("notifikasi graph",)
         }
     }
 }

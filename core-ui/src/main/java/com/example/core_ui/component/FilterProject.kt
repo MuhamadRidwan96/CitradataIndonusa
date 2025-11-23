@@ -1,5 +1,6 @@
 package com.example.core_ui.component
 
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,24 +22,26 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.example.core_ui.AppTheme
 import com.example.core_ui.R
-import com.example.core_ui.utils.toWithIf
+import com.example.core_ui.utils.toWhiteIf
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FilterCategoryRow(
     categories: List<FilterCategory>,
@@ -48,7 +51,9 @@ fun FilterCategoryRow(
     @DrawableRes icon: Int,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(
@@ -63,15 +68,16 @@ fun FilterCategoryRow(
 
             Text(
                 text = stringResource(R.string.cat_project),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
         }
 
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.
+            spacedBy(12.dp)
         ) {
             items(categories) { category ->
                 val isSelected = category.id == selectedCategoryProjectId
@@ -96,30 +102,22 @@ fun FilterCategoryRow(
                             .padding(8.dp)
                     ) {
 
-                        Image(
+
+
+                        Icon(
                             painter = painterResource(category.icon),
                             contentDescription = category.label,
                             modifier = Modifier
                                 .size(48.dp)
                                 .clip(CircleShape)
-                                .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
+                                .background(if (isSelected) MaterialTheme.colorScheme.surfaceContainerHighest else MaterialTheme.colorScheme.surface)
+                                .toWhiteIf(isSelected)
                                 .padding(8.dp)
-                                .toWithIf(isSelected),
-                            contentScale = ContentScale.Fit,
-
-                            )
+                        )
                         Text(
                             text = category.label.uppercase(),
-                            color = if (isSelected) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.outline,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                lineHeight = 12.sp,
-                                letterSpacing = 0.8.sp,
-                                textAlign = TextAlign.Center,
-                                fontFamily = FontFamily.SansSerif
-                            ),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.labelSmallEmphasized,
                             textAlign = TextAlign.Center,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
@@ -154,3 +152,49 @@ data class FilterCategory(
     val code: String,
     @DrawableRes val icon: Int
 )
+
+@Preview(showBackground = true)
+@Composable
+fun Preview11(){
+
+    val listCategory =
+        listOf(
+            FilterCategory(5, "Highrise & Commercial", "HRC", R.drawable.building_2),
+            FilterCategory(6, "Middle Projects", "MDL", R.drawable.building),
+            FilterCategory(7, "Lower Projects", "LOW", R.drawable.house),
+            FilterCategory(8, "Industrial & Infrastructure", "IND", R.drawable.factory),
+            FilterCategory(9, "Fitting Out & Interior", "FTO", R.drawable.armchair)
+        )
+
+    AppTheme {
+        FilterCategoryRow(
+            categories = listCategory,
+            selectedCategoryProjectId = 5,
+            onCategoryProjectSelected = { _, _ -> },
+            icon = R.drawable.building
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun Preview12(){
+
+    val listCategory =
+        listOf(
+            FilterCategory(5, "Highrise & Commercial", "HRC", R.drawable.building_2),
+            FilterCategory(6, "Middle Projects", "MDL", R.drawable.building),
+            FilterCategory(7, "Lower Projects", "LOW", R.drawable.house),
+            FilterCategory(8, "Industrial & Infrastructure", "IND", R.drawable.factory),
+            FilterCategory(9, "Fitting Out & Interior", "FTO", R.drawable.armchair)
+        )
+
+    AppTheme {
+        FilterCategoryRow(
+            categories = listCategory,
+            selectedCategoryProjectId = 6,
+            onCategoryProjectSelected = { _, _ ->} ,
+            icon = R.drawable.building
+        )
+    }
+}

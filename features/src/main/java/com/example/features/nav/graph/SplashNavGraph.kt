@@ -31,5 +31,5 @@ fun NavGraphBuilder.splashNavGraph(navController: NavHostController) {
 }
 
 sealed class SplashNavigationScreen(val route: String) {
-    data object Splash : SplashNavigationScreen(route = "SPLASH")
+    data object Splash : SplashNavigationScreen("SPLASH")
 }
