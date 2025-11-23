@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
@@ -30,10 +29,11 @@ fun SwitchPpr(
     ) {
         Text(
             text = stringResource(R.string.with_ppr),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
             modifier = Modifier.weight(1f),
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.SansSerif,
+
         )
 
         Switch(

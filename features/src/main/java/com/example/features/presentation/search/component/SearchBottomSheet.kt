@@ -15,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
@@ -27,13 +26,13 @@ import com.example.features.presentation.search.viewmodel.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBottomSheet(
-    onDismiss: () -> Unit,
-    sheetState: SheetState,
-    viewModel: SearchViewModel,
-    provinceVM: ProvinceViewModel,
-    cityVM: CityViewModel
-) {
+    fun SearchBottomSheet(
+        onDismiss: () -> Unit,
+        sheetState: SheetState,
+        viewModel: SearchViewModel,
+        provinceVM: ProvinceViewModel,
+        cityVM: CityViewModel
+    ) {
     val searchState by viewModel.draftState.collectAsState()
 
     ModalBottomSheet(
@@ -141,7 +140,6 @@ private fun SearchBottomSheetContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 color = MaterialTheme.colorScheme.onSurface,
-                fontFamily = FontFamily.SansSerif,
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.titleLarge
             )
@@ -210,3 +208,4 @@ private fun SearchBottomSheetContent(
         }
     }
 }
+
