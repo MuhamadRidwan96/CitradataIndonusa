@@ -67,8 +67,7 @@ fun TextMain(text: String) {
     Text(
         text = text,
         color = MaterialTheme.colorScheme.onSurface,
-        style = MaterialTheme.typography.bodyMedium,
-        fontWeight = FontWeight.Bold
+        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
     )
 }
 

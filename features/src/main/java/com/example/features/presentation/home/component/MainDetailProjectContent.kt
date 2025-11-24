@@ -154,8 +154,7 @@ private fun ProjectName(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 4,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold
+                color = MaterialTheme.colorScheme.onSurface
             )
             IconText(R.drawable.ic_city, city)
             IconText(R.drawable.ic_category, province)
@@ -239,12 +238,32 @@ private fun DateRow(start: String, end: String, expDate: String) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            InfoItem(title = stringResource(R.string.month_start)) {}
-            IconText(R.drawable.ic_calendar, start)
+            InfoItem(title = stringResource(R.string.month_start)) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_calendar),
+                    contentDescription = "start date",
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = start,
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium)
+                )
+            }
+
             Spacer(modifier = Modifier.weight(1f))
-            InfoItem(title = stringResource(R.string.month_end)) {}
-            IconText(R.drawable.ic_calendar, end)
+            InfoItem(title = stringResource(R.string.month_end)) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_calendar),
+                    contentDescription = "End date",
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = end,
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium)
+                )
+            }
         }
+
         InfoItem(title = stringResource(R.string.exp_date)) {
             TextMain(expDate)
         }

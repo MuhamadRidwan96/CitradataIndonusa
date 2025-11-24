@@ -68,8 +68,7 @@ fun BulletList(lines: List<String>) {
         lines.forEach { line ->
             Text(
                 text = "• $line",
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
                 color = MaterialTheme.colorScheme.onSurface
             )
         }

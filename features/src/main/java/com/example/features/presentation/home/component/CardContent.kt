@@ -55,7 +55,7 @@ fun HeaderText(text: String) {
     Text(
         text = text,
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(topStart = 12.dp, bottomEnd = 12.dp))
             .padding(horizontal = 16.dp, vertical = 4.dp),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant

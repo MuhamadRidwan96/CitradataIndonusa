@@ -1,6 +1,7 @@
 package com.example.features.presentation.home.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.IconText
@@ -45,13 +47,16 @@ fun EntityCard(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onSecondary),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Column(modifier = modifier.padding(16.dp)) {
+        Column(
+            modifier = modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
 
             TitleSection(icon, section)
 
             Text(
                 text = name,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
@@ -59,24 +64,28 @@ fun EntityCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
+            Spacer(modifier.height(8.dp))
             IconText(R.drawable.ic_phone, phone)
             IconText(R.drawable.ic_mail, email)
             IconText(R.drawable.link_24px, web)
             IconText(R.drawable.ic_fax, fax)
 
+
+            Spacer(modifier.height(8.dp))
+
             if (teamMembers.isNotEmpty()) {
-                Spacer(modifier.height(12.dp))
 
                 Text(
                     text = stringResource(R.string.team_member),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
                     color = Color.Gray
                 )
-                Spacer(modifier.height(4.dp))
+                Spacer(modifier.height(8.dp))
 
                 teamMembers.forEach { member ->
                     TeamMemberComponent(member)
-                    Spacer(modifier.height(8.dp))
+                    Spacer(modifier.height(4.dp))
+
                 }
             }
             Text(
@@ -90,23 +99,63 @@ fun EntityCard(
 
 @Composable
 private fun TeamMemberComponent(teamMember: TeamMember) {
-
-    Text(
-        text = teamMember.structureName,
-        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-        modifier = Modifier.fillMaxWidth()
-    )
-    if (teamMember.position.isNotBlank()) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(2.dp)
+    ){
         Text(
-            text = teamMember.position,
-            style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray
+            text = teamMember.structureName,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.fillMaxWidth()
         )
+
+        if (teamMember.position.isNotBlank()) {
+            Text(
+                text = teamMember.position,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+        }
+
+        if (teamMember.phone.isNotBlank()) {
+            IconText(R.drawable.ic_phone, teamMember.phone)
+        }
+        if (teamMember.email.isNotBlank()) {
+            IconText(R.drawable.ic_mail, teamMember.email)
+        }
     }
-    if (teamMember.phone.isNotBlank()) {
-        IconText(R.drawable.ic_phone, teamMember.phone)
-    }
-    if (teamMember.email.isNotBlank()) {
-        IconText(R.drawable.ic_mail, teamMember.email)
-    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewEntityCard() {
+
+    // Dummy Team Members
+    val dummyTeamMembers = listOf(
+        TeamMember(
+            structureName = "Ridwan",
+            position = "Manager",
+            phone = "082132810",
+            email = "m.rmdn.96@gmail.com"
+        ),
+        TeamMember(
+            structureName = "Muhamad",
+            position = "Supervisor",
+            phone = "092138324923",
+            email = "adakjdbaksjb@gmail.com"
+        )
+    )
+
+    EntityCard(
+        icon = R.drawable.ic_mail, // ganti dengan drawable kamu
+        section = "Developer",
+        name = "PT Contoh Konstruksi Indonesia",
+        address = "Jl. Raya Sudirman No. 123, Jakarta Pusat",
+        phone = "021-1234567",
+        email = "info@contoh.co.id",
+        web = "www.contoh.co.id",
+        fax = "021-7654321",
+        note = "Perusahaan konstruksi terkemuka di Indonesia.",
+        teamMembers = dummyTeamMembers,
+        modifier = Modifier.padding(16.dp)
+    )
 }

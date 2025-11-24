@@ -28,12 +28,12 @@ fun SpecificationItem(title: String, value: String) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray)
+                style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = value,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium)
             )
         }
     }
