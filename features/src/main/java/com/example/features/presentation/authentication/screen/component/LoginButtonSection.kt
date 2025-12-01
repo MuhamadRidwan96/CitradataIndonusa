@@ -17,15 +17,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.core_ui.R
 
 @Composable
@@ -81,9 +80,7 @@ private fun LoginButton(
         } else {
             Text(
                 text = stringResource(R.string.sign_in),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
             )
         }
     }
@@ -104,9 +101,7 @@ private fun TextDivider() {
             text = stringResource(R.string.or),
             modifier = Modifier.padding(horizontal = 8.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.SansSerif
+            style = MaterialTheme.typography.bodyMedium
         )
         HorizontalDivider(
             modifier = Modifier
@@ -119,7 +114,7 @@ private fun TextDivider() {
 
 @Composable
 private fun OutlinedButtonSign(onGoogleClick: () -> Unit, modifier: Modifier = Modifier) {
-    val painter = painterResource(id = R.drawable.google)
+    val painter = remember { R.drawable.google }
 
     OutlinedButton(
         onClick = onGoogleClick,
@@ -132,7 +127,7 @@ private fun OutlinedButtonSign(onGoogleClick: () -> Unit, modifier: Modifier = M
         ) {
 
             Icon(
-                painter = painter,
+                painter = painterResource(painter),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
                 tint = Color.Unspecified // Preserve original colors
@@ -141,9 +136,8 @@ private fun OutlinedButtonSign(onGoogleClick: () -> Unit, modifier: Modifier = M
 
             Text(
                 text = stringResource(R.string.login_with_google),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
 
             )
         }

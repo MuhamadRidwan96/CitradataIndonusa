@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.features.presentation.authentication.state.LoginFormState
 import com.example.features.presentation.authentication.state.LoginProcessState
@@ -27,7 +26,7 @@ fun LoginContent(
     onLoginClick: () -> Unit,
     onGoogleClick: () -> Unit,
     onSignUpClick: () -> Unit,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues
 ) {
     val focusRequester = remember { FocusRequester() }
 
@@ -35,8 +34,7 @@ fun LoginContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(contentPadding)
-            .padding(horizontal = 32.dp)
-            .testTag("LoginContent"),
+            .padding(horizontal = 32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
 
@@ -50,7 +48,7 @@ fun LoginContent(
             onDone = onLoginClick
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         LoginButtonSection(
             isSubmitEnabled = isSubmitEnabled,
@@ -58,11 +56,9 @@ fun LoginContent(
             onLoginClick = onLoginClick,
             onGoogleClick = onGoogleClick
         )
-        Spacer(modifier = Modifier.height(16.dp))
 
+        Spacer(modifier = Modifier.height(16.dp))
         SignUpSection(onSignUpClick = onSignUpClick)
-
-        Spacer(modifier = Modifier.height(16.dp))
 
     }
 }

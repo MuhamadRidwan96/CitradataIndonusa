@@ -26,11 +26,8 @@ fun ScreenLogin(
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
-    val formState by viewModel.formState.collectAsStateWithLifecycle()
-    val processState by viewModel.processState.collectAsStateWithLifecycle()
-    val isSubmitted by viewModel.isSubmitEnabled.collectAsStateWithLifecycle()
-    val authState by viewModel.authState.collectAsStateWithLifecycle()
 
+    // === Event Listener ===
     LaunchedEffect(Unit) {
         viewModel.loginEvent.collectLatest { event ->
             when (event) {
@@ -42,18 +39,22 @@ fun ScreenLogin(
         }
     }
 
-    LaunchedEffect(authState) {
-        when (authState) {
-            is AuthResponse.Success -> onLoginSuccess()
-            is AuthResponse.Error -> {
-                if ((authState as AuthResponse.Error).message.isNotBlank()) {
-                    snackBarHostState.showSnackbar("Gagal login dengan google")
+    // === AuthState Listener (Google Sign-in) ===
+    LaunchedEffect(Unit) {
+        viewModel.authState.collectLatest { auth ->
+            when (auth) {
+                is AuthResponse.Success -> onLoginSuccess()
+                is AuthResponse.Error -> {
+                    if (auth.message.isNotBlank()) {
+                        snackBarHostState.showSnackbar("Gagal login dengan google")
+                    }
                 }
-            }
 
-            else -> {}
+                else -> Unit
+            }
         }
     }
+
 
     Scaffold(
         snackbarHost = {
@@ -70,6 +71,12 @@ fun ScreenLogin(
             }
         }
     ) { padding ->
+
+        val formState by viewModel.formState.collectAsStateWithLifecycle()
+        val processState by viewModel.processState.collectAsStateWithLifecycle()
+        val isSubmitted by viewModel.isSubmitEnabled.collectAsStateWithLifecycle()
+
+
         LoginContent(
             formState = formState,
             processState = processState,

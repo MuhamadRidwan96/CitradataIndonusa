@@ -1,8 +1,6 @@
 package com.example.features.presentation.authentication.screen.component
 
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -27,11 +25,9 @@ fun OptimizedPasswordTextField(
     val keyboardActions = remember(focusRequester) {
         KeyboardActions(onDone = { onDone() })
     }
-    val icons = remember { Icons.Outlined.Lock }
 
     PasswordTextField(
         password = password,
-        leadingIcon = icons,
         isError = isError,
         onPasswordChange = onPasswordChange,
         label = label,

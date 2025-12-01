@@ -1,6 +1,7 @@
 package com.example.core_ui.component
 
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,49 +17,34 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.core_ui.R
 
-val LocalTextFieldDefaults = staticCompositionLocalOf {
-    TextFieldDefault()
-}
-
-@Immutable
-data class TextFieldDefault(
-    val minHeight: Dp = 56.dp,
-    val shape: Shape = RoundedCornerShape(8.dp)
-)
 
 @Composable
 fun EmailTextField(
     value: String,
     isError: Boolean,
     label: String,
-    leadingIcon: ImageVector,
     onValueChange: (String) -> Unit,
     nextFocusRequester: FocusRequester? = null,
     keyboardActions: KeyboardActions? = null,
 ) {
-    val defaults = LocalTextFieldDefaults.current
 
     val keyboardOptions =
         KeyboardOptions(
@@ -78,7 +64,9 @@ fun EmailTextField(
 
     val textFieldColors = OutlinedTextFieldDefaults.colors(focusedBorderColor = borderColor)
 
-    val modifier = Modifier.heightIn(min = defaults.minHeight).fillMaxWidth()
+    val modifier = Modifier
+        .heightIn(min = 56.dp)
+        .fillMaxWidth()
 
     OutlinedTextField(
         value = value,
@@ -87,7 +75,7 @@ fun EmailTextField(
         leadingIcon = {
             // REFACTOR 8: Buat leading icon sebagai separate composable
             TextFieldLeadingIcon(
-                icon = leadingIcon,
+                icon = R.drawable.ic_mail,
                 isError = isError
             )
         },
@@ -99,7 +87,7 @@ fun EmailTextField(
         keyboardActions = finalKeyboardActions,
         isError = isError,
         singleLine = true,
-        shape = defaults.shape,
+        shape = RoundedCornerShape(14.dp),
         colors = textFieldColors
     )
 }
@@ -107,7 +95,6 @@ fun EmailTextField(
 @Composable
 fun PasswordTextField(
     password: String,
-    leadingIcon: ImageVector,
     isError: Boolean,
     onPasswordChange: (String) -> Unit,
     label: String,
@@ -115,7 +102,6 @@ fun PasswordTextField(
     onDone: () -> Unit = {},
     keyboardActions: KeyboardActions? = null
 ) {
-    val defaults = LocalTextFieldDefaults.current
 
     // State untuk password visibility
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -129,7 +115,7 @@ fun PasswordTextField(
     }
 
     val modifier = Modifier
-        .heightIn(min = defaults.minHeight)
+        .heightIn(min = 56.dp)
         .fillMaxWidth()
         .let { mod ->
             if (focusRequester != null) mod.focusRequester(focusRequester) else mod
@@ -162,7 +148,7 @@ fun PasswordTextField(
         leadingIcon = {
             // REFACTOR 8: Buat leading icon sebagai separate composable
             TextFieldLeadingIcon(
-                icon = leadingIcon,
+                icon = R.drawable.ic_developer,
                 isError = isError
             )
         },
@@ -185,7 +171,7 @@ fun PasswordTextField(
         keyboardActions = finalKeyboardActions,
         singleLine = true,
         isError = isError,
-        shape = defaults.shape,
+        shape = RoundedCornerShape(14.dp),
         colors = textFieldColors
     )
 }
@@ -224,13 +210,14 @@ private fun PasswordVisibilityToggle(
 
 @Composable
 private fun TextFieldLeadingIcon(
-    icon: ImageVector,
+    @DrawableRes icon : Int,
     isError: Boolean
 ) {
     val tintColor =
         if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+
     Icon(
-        imageVector = icon,
+       painter = painterResource(icon),
         contentDescription = null,
         tint = tintColor
     )
@@ -241,6 +228,5 @@ private fun TextFieldLabel(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        fontFamily = FontFamily.SansSerif
     )
 }

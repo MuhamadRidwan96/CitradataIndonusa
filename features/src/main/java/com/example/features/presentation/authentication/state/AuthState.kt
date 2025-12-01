@@ -1,8 +1,8 @@
 package com.example.features.presentation.authentication.state
 
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 
-@Immutable
+@Stable
 data class LoginFormState(
     val email: String = "",
     val password: String = "",
@@ -11,14 +11,14 @@ data class LoginFormState(
     val errorMessage: String? = null,
 )
 
-@Immutable
+@Stable
 data class LoginProcessState(
     val isLoading: Boolean = false,
     val isLoggedIn: Boolean = false,
     val isReady: Boolean = false
 )
 
-@Immutable
+@Stable
 data class SignUpFormState(
     val username: String = "",
     val email: String = "",
