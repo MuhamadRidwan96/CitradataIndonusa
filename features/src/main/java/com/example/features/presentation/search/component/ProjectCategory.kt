@@ -12,7 +12,7 @@ import com.example.core_ui.component.FilterCategoryRow
 fun ProjectCategory(
     modifier: Modifier = Modifier,
     categorySelected: Int?,
-    onCategorySelected: (Int, String) -> Unit
+    onCategorySelect: (Int, String) -> Unit
 
 ) {
     val listCategory = remember {
@@ -28,7 +28,7 @@ fun ProjectCategory(
         categories = listCategory,
         selectedCategoryProjectId = categorySelected,
         onCategoryProjectSelected = { id, name ->
-            onCategorySelected(id, name)
+            onCategorySelect(id, name)
         },
         modifier = modifier.fillMaxWidth(),
         icon = R.drawable.building_2

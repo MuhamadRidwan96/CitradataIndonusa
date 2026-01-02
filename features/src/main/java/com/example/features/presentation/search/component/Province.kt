@@ -1,7 +1,6 @@
 package com.example.features.presentation.search.component
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -18,49 +17,41 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.common.Result
-import com.example.domain.response.ProvinceResponse
-import com.example.features.presentation.search.viewmodel.ProvinceViewModel
-import kotlinx.coroutines.delay
+import com.example.features.presentation.search.state.LocationState
 
 
+@Suppress("EffectKeys")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProvinceBottomSheet(
-    selectedProvince: String,
-    viewModel: ProvinceViewModel,
-    onProvinceSelected: (String, String) -> Unit,
+    selectedProvince: String?, modifier: Modifier = Modifier,
+    onGetProvince: (String) -> Unit,
+    onProvinceSelect: (String, String) -> Unit,
+    state: LocationState
 ) {
-    val provincesState by viewModel.provinceList.collectAsState()
-
+    val currentOnGetProvince by rememberUpdatedState(onGetProvince)
     var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        delay(500)
-        viewModel.getProvinces()
-    }
-
-    var provinces = when (provincesState) {
-        is Result.Success -> (provincesState as Result.Success<ProvinceResponse>).data.data
-        else -> emptyList()
+        currentOnGetProvince("")
     }
 
     Surface(
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.5f)),
         tonalElevation = 0.dp,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 42.dp)
-            .clickable { expanded = !expanded }
     ) {
 
         ExposedDropdownMenuBox(
@@ -71,10 +62,15 @@ fun ProvinceBottomSheet(
 
             TextField(
                 readOnly = true,
-                value = selectedProvince,
+                value = selectedProvince?:"",
                 onValueChange = {},
                 textStyle = MaterialTheme.typography.bodySmall,
-                placeholder = { Text("Pilih Provinsi", style = MaterialTheme.typography.bodySmall) },
+                placeholder = {
+                    Text(
+                        "Pilih Provinsi",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
                     .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable)
@@ -97,19 +93,34 @@ fun ProvinceBottomSheet(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                provinces.forEach { province ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                province.province,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        },
-                        onClick = {
-                            onProvinceSelected(province.idProvince, province.province)
-                            expanded = false
-                        }
+                when (val provinceState = state.province) {
+                    is Result.Loading -> DropdownMenuItem(
+                        enabled = false,
+                        text = { Text("Memuat...") },
+                        onClick = {}
                     )
+
+                    is Result.Error -> DropdownMenuItem(
+                        enabled = false,
+                        text = { Text("Gagal memuat") },
+                        onClick = {}
+                    )
+
+                    is Result.Success ->
+                        provinceState.data.data.forEach { province ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        province.province,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                },
+                                onClick = {
+                                    onProvinceSelect(province.idProvince, province.province)
+                                    expanded = false
+                                }
+                            )
+                        }
                 }
             }
         }

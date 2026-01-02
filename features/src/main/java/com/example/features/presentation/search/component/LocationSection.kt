@@ -10,7 +10,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,23 +22,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.CDATextField
-import com.example.features.presentation.search.viewmodel.CityViewModel
-import com.example.features.presentation.search.viewmodel.ProvinceViewModel
+import com.example.features.presentation.search.state.LocationState
 
 @Composable
 fun LocationSection(
     query: String,
+    selectedProvince: String,
+    selectedCity: String,
+    idProvince: String?,
     onQueryChange: (String) -> Unit,
-    onProvinceSelected: (String?, String) -> Unit,
-    onCitySelected: (String?, String?, String) -> Unit,
+    onProvinceSelect: (String?, String) -> Unit,
+    onCitySelect: (String?, String?, String) -> Unit,
     modifier: Modifier = Modifier,
-    provinceViewModel: ProvinceViewModel,
-    cityViewModel: CityViewModel
+    onGetProvince: (String) -> Unit,
+    onGetCity: (String) -> Unit,
+    state: LocationState
 ) {
 
-    val selectedProvinceName by provinceViewModel.provinceStateViewModel.collectAsState()
-    val selectedCity by cityViewModel.cityState.collectAsState()
-    val cityList by cityViewModel.cityList.collectAsState()
     var localQuery by remember { mutableStateOf(query) }
 
     Column(
@@ -67,30 +66,25 @@ fun LocationSection(
                 ),
             )
         }
+
         ProvinceBottomSheet(
-            selectedProvince = selectedProvinceName.provinceName,
-            viewModel = provinceViewModel,
-            onProvinceSelected = { id, name ->
-                onProvinceSelected(id, name)
-                provinceViewModel.updateProvinces(id, name)
-                cityViewModel.setProvinceToCity(id)
-            }
+            selectedProvince = selectedProvince,
+            onGetProvince = { onGetProvince("") },
+            onProvinceSelect = onProvinceSelect,
+            state = state,
         )
 
         CityBottomSheet(
-            idProvince = selectedProvinceName.idProvince,
-            selectedCityName = selectedCity.cityName,
-            cityList = cityList,
-            onCitySelected = { idCity, idProv, city ->
-                onCitySelected(idCity, idProv, city)
-                cityViewModel.updateCity(idCity, idProv, city)
-            },
-            viewModel = cityViewModel
+            idProvince = idProvince,
+            selectedCityName = selectedCity,
+            onCitySelect = onCitySelect,
+            onGetCity = onGetCity,
+            state = state,
         )
 
         CDATextField(
             icon = R.drawable.map_pin_house,
-            value =localQuery,
+            value = localQuery,
             onValueChange = {
                 localQuery = it
                 onQueryChange(it)

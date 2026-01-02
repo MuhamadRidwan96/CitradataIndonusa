@@ -11,99 +11,47 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.SwitchPpr
+import com.example.features.presentation.search.state.LocationState
 import com.example.features.presentation.search.state.ProjectFilterState
-import com.example.features.presentation.search.viewmodel.CityViewModel
-import com.example.features.presentation.search.viewmodel.ProvinceViewModel
-import com.example.features.presentation.search.viewmodel.SearchViewModel
+import com.example.features.presentation.search.state.SearchBottomSheetAction
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-    fun SearchBottomSheet(
-        onDismiss: () -> Unit,
-        sheetState: SheetState,
-        viewModel: SearchViewModel,
-        provinceVM: ProvinceViewModel,
-        cityVM: CityViewModel
-    ) {
-    val searchState by viewModel.draftState.collectAsState()
+fun SearchBottomSheet(
+    modifier: Modifier = Modifier,
+    sheetState: SheetState,
+    searchState: ProjectFilterState,
+    locationState: LocationState,
+    selectedProvince: String,
+    selectedCity: String,
+    onGetProvince : (String) -> Unit,
+    onGetCity : (String) -> Unit,
+    onAction: (SearchBottomSheetAction) -> Unit
+
+) {
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { onAction(SearchBottomSheetAction.Dismiss) },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
     ) {
         SearchBottomSheetContent(
             searchState = searchState,
-            onSetWithPpr = { enabled ->
-                viewModel.updateDraft {
-                    it.copy(
-                        withPpr = enabled,
-                        ppr = "PPR"
-                    )
-                }
-            },
-            onSetStartDate = { startDate -> viewModel.updateDraft { it.copy(startDate = startDate) } },
-            onSetEndDate = { endDate -> viewModel.updateDraft { it.copy(endDate = endDate) } },
-            onClearStartDate = { viewModel.updateDraft { it.copy(startDate = "") } },
-            onClearEndDate = { viewModel.updateDraft { it.copy(endDate = "") } },
-            onStatusSelected = { id, status ->
-                viewModel.updateDraft {
-                    it.copy(
-                        idProjectStatusCategory = id,
-                        statusCategory = status
-                    )
-                }
-            },
-            onCategorySelected = { id, category ->
-                viewModel.updateDraft {
-                    it.copy(
-                        idBuildingCategory = id,
-                        buildingCategoryName = category
-                    )
-                }
-            },
-            onQueryChanged = { newAddress ->
-                viewModel.updateDraft {
-                    it.copy(address = newAddress)
-                }
-            },
-            onProvinceSelected = { idProvince, province ->
-                viewModel.updateDraft {
-                    it.copy(
-                        idProvince = idProvince,
-                        provinceName = province
-                    )
-                }
-            },
-            onCitySelected = { idCity, idProvince, city ->
-                viewModel.updateDraft {
-                    it.copy(
-                        idCity = idCity,
-                        idProvince = idProvince,
-                        cityName = city
-                    )
-                }
-            },
-            provinceViewModel = provinceVM,
-            cityViewModel = cityVM,
-            searchViewModel = viewModel,
-            onDismiss = onDismiss,
-            onCategoryProjectSelected = { idProjectCat, cat ->
-                viewModel.updateDraft {
-                    it.copy(
-                        idProjectCategory = idProjectCat,
-                        projectCategoryName = cat
-                    )
-                }
-            },
+            locationState = locationState,
+            selectedProvince = selectedProvince,
+            selectedCity = selectedCity,
+            onAction = onAction,
+            onGetProvince = onGetProvince,
+            onGetCity = onGetCity,
         )
     }
 }
@@ -111,23 +59,14 @@ import com.example.features.presentation.search.viewmodel.SearchViewModel
 @Composable
 private fun SearchBottomSheetContent(
     searchState: ProjectFilterState,
-    onSetWithPpr: (Boolean) -> Unit,
-    onSetStartDate: (String) -> Unit,
-    onSetEndDate: (String) -> Unit,
-    onClearStartDate: () -> Unit,
-    onClearEndDate: () -> Unit,
-    onStatusSelected: (Int?, String) -> Unit,
-    onCategorySelected: (Int?, String) -> Unit,
-    onQueryChanged: (String) -> Unit,
-    onProvinceSelected: (String?, String) -> Unit,
-    onCitySelected: (String?, String?, String) -> Unit,
-    provinceViewModel: ProvinceViewModel,
-    cityViewModel: CityViewModel,
-    searchViewModel: SearchViewModel,
-    onDismiss: () -> Unit,
-    onCategoryProjectSelected: (Int?, String) -> Unit
-
+    locationState: LocationState,
+    selectedProvince: String,
+    selectedCity: String,
+    onGetProvince : (String) -> Unit,
+    onGetCity : (String) -> Unit,
+    onAction: (SearchBottomSheetAction) -> Unit
 ) {
+
     LazyColumn(
         contentPadding = PaddingValues(bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -147,48 +86,67 @@ private fun SearchBottomSheetContent(
         item {
             SwitchPpr(
                 checked = searchState.withPpr,
-                onCheckedChange = onSetWithPpr
+                onCheckedChange = {
+                    onAction(SearchBottomSheetAction.SetWithPpr(it))
+                }
             )
         }
         item {
             StartAndEndDate(
                 startDate = searchState.startDate,
                 endDate = searchState.endDate,
-                onStartDateSelected = onSetStartDate,
-                onEndDateSelected = onSetEndDate,
-                onClearStartDate = onClearStartDate,
-                onClearEndDate = onClearEndDate
+                onStartDateSelected = {date ->
+                    onAction(SearchBottomSheetAction.SetStartDate(date))},
+                onEndDateSelected = { endDate ->
+                    onAction(SearchBottomSheetAction.SetEndDate(endDate))
+                },
+                onClearStartDate = {onAction(SearchBottomSheetAction.ClearStartDate)},
+                onClearEndDate = { onAction(SearchBottomSheetAction.ClearEndDate) }
             )
         }
 
         item {
             LocationSection(
                 query = searchState.address,
-                onQueryChange = onQueryChanged,
-                onProvinceSelected = onProvinceSelected,
-                onCitySelected = onCitySelected,
-                provinceViewModel = provinceViewModel,
-                cityViewModel = cityViewModel
+                onQueryChange = { query ->
+                    onAction(SearchBottomSheetAction.QueryChange(query))
+                },
+                onProvinceSelect = { idProvince,name ->
+                    onAction(SearchBottomSheetAction.SelectProvince(idProvince,name))
+                },
+                onCitySelect = {idCity,idProvince,name ->
+                    onAction(SearchBottomSheetAction.SelectCity(idCity,idProvince,name))
+                },
+                onGetProvince = onGetProvince,
+                onGetCity = onGetCity,
+                state = locationState,
+                selectedProvince = selectedProvince,
+                selectedCity = selectedCity,
+                idProvince = searchState.idProvince,
             )
         }
 
         item {
             ProjectCategory(
                 categorySelected = searchState.idProjectCategory,
-                onCategorySelected = onCategoryProjectSelected
+                onCategorySelect = { id,name ->
+                    onAction(SearchBottomSheetAction.SelectProjectCategory(id,name)) }
             )
         }
         item {
             BuildingCategory(
                 selectedCategoryId = searchState.idBuildingCategory,
-                onCategorySelected = onCategorySelected
+                onCategorySelected = {id,name ->
+                    onAction(SearchBottomSheetAction.SelectBuildingCategory(id,name))
+                }
             )
         }
 
         item {
             ProjectStatusCategory(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                onStatusSelected = onStatusSelected,
+                onStatusSelected = { id,name ->
+                    onAction(SearchBottomSheetAction.SelectStatus(id,name)) },
                 selectedStatusId = searchState.idProjectStatusCategory,
             )
         }
@@ -198,8 +156,8 @@ private fun SearchBottomSheetContent(
             SimpleButton(
                 text = stringResource(R.string.cari),
                 onClick = {
-                    searchViewModel.applyFilters()
-                    onDismiss()
+                    onAction(SearchBottomSheetAction.Apply)
+                    onAction(SearchBottomSheetAction.Dismiss)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
