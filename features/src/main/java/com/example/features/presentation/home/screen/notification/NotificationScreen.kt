@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.NotificationModel
-import com.example.features.presentation.authentication.screen.signup.MyTopAppBar
+import com.example.features.presentation.authentication.screen.signup.component.MyTopAppBar
 import com.example.features.presentation.home.screen.NotificationViewModel
 import java.text.DateFormat
 import java.util.Date

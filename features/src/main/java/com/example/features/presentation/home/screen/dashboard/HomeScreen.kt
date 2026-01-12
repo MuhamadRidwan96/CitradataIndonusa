@@ -1,5 +1,4 @@
 package com.example.features.presentation.home.screen.dashboard
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,16 +58,23 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 
+@Suppress("EffectKeys")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewmodel: HomeViewModel = hiltViewModel(),
-    notificationViewModel: NotificationViewModel = hiltViewModel(),
-    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    modifier: Modifier = Modifier,
+
     onNavigateToLogin: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
     onNavigateToNotification: () -> Unit,
-    onScrollChange: (Boolean) -> Unit
+
+    onScrollChange: (Boolean) -> Unit,
+    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
+
+    viewmodel: HomeViewModel = hiltViewModel(),
+    notificationViewModel: NotificationViewModel = hiltViewModel(),
+
+
 ) {
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
 
@@ -79,7 +85,7 @@ fun HomeScreen(
     var showErrorSheet by remember { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+    val listState = rememberSaveable( saver = LazyListState.Saver) { LazyListState() }
 
     val favorites by viewmodel.favoriteProjects.collectAsState()
     val count by notificationViewModel.unreadCount.collectAsState()
@@ -114,7 +120,7 @@ fun HomeScreen(
     }
 
     //Detect direction scroll
-    LaunchedEffect(listState) {
+    LaunchedEffect(listState, onScrollChange) {
         var lastOffset = 0
         val threshold = 10
         snapshotFlow { listState.firstVisibleItemScrollOffset }
@@ -182,12 +188,12 @@ fun HomeScreen(
             }
         } else {
             Column(
-                modifier = Modifier
+                modifier = modifier
                     .padding(paddingValues)
                     .fillMaxSize()
             ) {
 
-                SearchSection(
+               SearchSection(
                     query = searchQuery,
                     onQueryChange = {
                         searchQuery = it
@@ -296,9 +302,6 @@ fun HomeScreen(
                         }
                     }
                 }
-                /*  if (pagingItems.loadState.refresh is LoadState.Loading) {
-                     // LoadingItem()
-                  }*/
             }
         }
     }

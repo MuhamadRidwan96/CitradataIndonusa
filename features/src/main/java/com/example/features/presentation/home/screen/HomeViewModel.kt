@@ -29,6 +29,8 @@ import com.example.features.presentation.home.state.HomeUiState
 import com.example.features.presentation.home.state.StatisticsDataState
 import com.example.features.presentation.home.utils.toFilterDataModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -91,8 +93,11 @@ class HomeViewModel @Inject constructor(
     private val _statisticState = MutableStateFlow(StatisticsDataState())
     val statisticState = _statisticState.asStateFlow()
 
-    private val _byStatus = MutableStateFlow<List<DonutData>>(emptyList())
+    private val _byStatus = MutableStateFlow<ImmutableList<DonutData>>(persistentListOf())
     val byStatus = _byStatus.asStateFlow()
+
+
+
 
 
     init {
@@ -235,7 +240,7 @@ class HomeViewModel @Inject constructor(
                             val total = data.totalProjects.takeIf { it > 0 } ?: 1
 
                             val trends = withContext(Dispatchers.Default) {
-                                data.byCategory.mapValues { (category, count) ->
+                                data.byCategory.mapValues { (_, count) ->
                                     ((count.toFloat() / total.toFloat()) * 100f).roundToInt()
                                 }
                             }

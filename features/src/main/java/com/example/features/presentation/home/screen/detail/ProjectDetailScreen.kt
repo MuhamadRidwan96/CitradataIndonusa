@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.features.presentation.authentication.screen.signup.MyTopAppBar
+import com.example.features.presentation.authentication.screen.signup.component.MyTopAppBar
 import com.example.features.presentation.home.component.FullScreenError
 import com.example.features.presentation.home.component.FullScreenLoading
 import com.example.features.presentation.home.component.MainDetailProjectContent
@@ -36,10 +36,12 @@ fun ProjectDetailScreen(
     }
 
     Scaffold(
-        topBar = { MyTopAppBar(
-            onBackClick = { onBackClick() },
-            text = "Back"
-        ) },
+        topBar = {
+            MyTopAppBar(
+                onBackClick = { onBackClick() },
+                text = "Back"
+            )
+        },
         content = { paddingValues ->
             when {
                 dataState.isLoading -> {
@@ -64,12 +66,12 @@ fun ProjectDetailScreen(
                     ) {
                         item(contentType = "project") { MainDetailProjectContent(status = dataState) }
                         item(contentType = "specification") { SpecificationTechnicalComponent(status = dataState) }
-                        item(contentType = "progress"){ ProgressProjectComponent(status = dataState) }
+                        item(contentType = "progress") { ProgressProjectComponent(status = dataState) }
 
                         //Developer
                         items(
                             items = dataState.developer,
-                            key = {dev -> dev.name},
+                            key = { dev -> dev.name },
                             contentType = { "developer" }
                         ) { dev ->
                             EntityCard(
@@ -87,7 +89,10 @@ fun ProjectDetailScreen(
                         }
 
                         //Contractor
-                        items(items = dataState.contractor, key = {con -> con.name}, contentType = {"contractor"}) { contractor ->
+                        items(
+                            items = dataState.contractor,
+                            key = { con -> con.name },
+                            contentType = { "contractor" }) { contractor ->
                             EntityCard(
                                 icon = EntityType.CONTRACTOR.icon,
                                 section = stringResource(EntityType.CONTRACTOR.label),
@@ -103,7 +108,10 @@ fun ProjectDetailScreen(
                         }
 
                         //Consultant
-                        items(items = dataState.consultant, key = {cons -> cons.name}, contentType = {"consultant"}) { consultant ->
+                        items(
+                            items = dataState.consultant,
+                            key = { cons -> cons.name },
+                            contentType = { "consultant" }) { consultant ->
                             EntityCard(
                                 icon = EntityType.CONSULTANT.icon,
                                 section = stringResource(EntityType.CONSULTANT.label),
