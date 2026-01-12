@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import com.example.core_ui.R
 import com.example.core_ui.component.FilterCategory
 import com.example.core_ui.component.FilterCategoryRow
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ProjectCategory(
@@ -16,7 +17,7 @@ fun ProjectCategory(
 
 ) {
     val listCategory = remember {
-        listOf(
+        persistentListOf(
             FilterCategory(5, "Highrise & Commercial", "HRC", R.drawable.building_2),
             FilterCategory(6, "Middle Projects", "MDL", R.drawable.building),
             FilterCategory(7, "Lower Projects", "LOW", R.drawable.house),
@@ -27,11 +28,10 @@ fun ProjectCategory(
     FilterCategoryRow(
         categories = listCategory,
         selectedCategoryProjectId = categorySelected,
-        onCategoryProjectSelected = { id, name ->
+        onCategoryProjectSelect = { id, name ->
             onCategorySelect(id, name)
         },
         modifier = modifier.fillMaxWidth(),
         icon = R.drawable.building_2
     )
-
 }

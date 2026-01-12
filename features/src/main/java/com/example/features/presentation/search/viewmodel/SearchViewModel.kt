@@ -97,6 +97,7 @@ class SearchViewModel @Inject constructor(
     private val _isInitialized = MutableStateFlow(false)
     val isInitialized = _isInitialized.asStateFlow()
 
+
     init {
         observeFavorite() // Start observation favorite
         viewModelScope.launch {

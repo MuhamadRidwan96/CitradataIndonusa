@@ -30,19 +30,18 @@ fun SearchBottomSheet(
     locationState: LocationState,
     selectedProvince: String,
     selectedCity: String,
-    onGetProvince : (String) -> Unit,
-    onGetCity : (String) -> Unit,
-    onAction: (SearchBottomSheetAction) -> Unit
+    onGetProvince: (String) -> Unit,
+    onGetCity: (String) -> Unit,
+    onAction: (SearchBottomSheetAction) -> Unit,
+    onDismiss: () -> Unit
 
 ) {
 
     ModalBottomSheet(
-        onDismissRequest = { onAction(SearchBottomSheetAction.Dismiss) },
+        onDismissRequest = { onDismiss() },
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.background,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
         SearchBottomSheetContent(
             searchState = searchState,
@@ -62,8 +61,8 @@ private fun SearchBottomSheetContent(
     locationState: LocationState,
     selectedProvince: String,
     selectedCity: String,
-    onGetProvince : (String) -> Unit,
-    onGetCity : (String) -> Unit,
+    onGetProvince: (String) -> Unit,
+    onGetCity: (String) -> Unit,
     onAction: (SearchBottomSheetAction) -> Unit
 ) {
 
@@ -95,12 +94,13 @@ private fun SearchBottomSheetContent(
             StartAndEndDate(
                 startDate = searchState.startDate,
                 endDate = searchState.endDate,
-                onStartDateSelected = {date ->
-                    onAction(SearchBottomSheetAction.SetStartDate(date))},
-                onEndDateSelected = { endDate ->
+                onStartDateSelect = { date ->
+                    onAction(SearchBottomSheetAction.SetStartDate(date))
+                },
+                onEndDateSelect = { endDate ->
                     onAction(SearchBottomSheetAction.SetEndDate(endDate))
                 },
-                onClearStartDate = {onAction(SearchBottomSheetAction.ClearStartDate)},
+                onClearStartDate = { onAction(SearchBottomSheetAction.ClearStartDate) },
                 onClearEndDate = { onAction(SearchBottomSheetAction.ClearEndDate) }
             )
         }
@@ -111,11 +111,11 @@ private fun SearchBottomSheetContent(
                 onQueryChange = { query ->
                     onAction(SearchBottomSheetAction.QueryChange(query))
                 },
-                onProvinceSelect = { idProvince,name ->
-                    onAction(SearchBottomSheetAction.SelectProvince(idProvince,name))
+                onProvinceSelect = { idProvince, name ->
+                    onAction(SearchBottomSheetAction.SelectProvince(idProvince, name))
                 },
-                onCitySelect = {idCity,idProvince,name ->
-                    onAction(SearchBottomSheetAction.SelectCity(idCity,idProvince,name))
+                onCitySelect = { idCity, idProvince, name ->
+                    onAction(SearchBottomSheetAction.SelectCity(idCity, idProvince, name))
                 },
                 onGetProvince = onGetProvince,
                 onGetCity = onGetCity,
@@ -129,15 +129,16 @@ private fun SearchBottomSheetContent(
         item {
             ProjectCategory(
                 categorySelected = searchState.idProjectCategory,
-                onCategorySelect = { id,name ->
-                    onAction(SearchBottomSheetAction.SelectProjectCategory(id,name)) }
+                onCategorySelect = { id, name ->
+                    onAction(SearchBottomSheetAction.SelectProjectCategory(id, name))
+                }
             )
         }
         item {
             BuildingCategory(
                 selectedCategoryId = searchState.idBuildingCategory,
-                onCategorySelected = {id,name ->
-                    onAction(SearchBottomSheetAction.SelectBuildingCategory(id,name))
+                onCategorySelect = { id, name ->
+                    onAction(SearchBottomSheetAction.SelectBuildingCategory(id, name))
                 }
             )
         }
@@ -145,8 +146,9 @@ private fun SearchBottomSheetContent(
         item {
             ProjectStatusCategory(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                onStatusSelected = { id,name ->
-                    onAction(SearchBottomSheetAction.SelectStatus(id,name)) },
+                onStatusSelect = { id, name ->
+                    onAction(SearchBottomSheetAction.SelectStatus(id, name))
+                },
                 selectedStatusId = searchState.idProjectStatusCategory,
             )
         }

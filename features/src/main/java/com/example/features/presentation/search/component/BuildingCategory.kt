@@ -21,11 +21,12 @@ import com.example.core_ui.R
 
 @Composable
 fun BuildingCategory(
+    modifier: Modifier = Modifier,
     selectedCategoryId: Int?,
-    onCategorySelected: (Int? , String) -> Unit
+    onCategorySelect: (Int? , String) -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -53,7 +54,7 @@ fun BuildingCategory(
         SearchChips(
             selectedCategoryId = selectedCategoryId,
             onCategorySelected = {id,name ->
-                onCategorySelected(id,name) },
+                onCategorySelect(id,name) },
             modifier = Modifier.height(350.dp)
         )
     }

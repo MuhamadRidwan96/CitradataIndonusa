@@ -1,5 +1,8 @@
 package com.example.features.presentation.search.state
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class ProjectFilterState(
     val startDate: String = "",
     val endDate: String = "",

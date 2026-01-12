@@ -31,7 +31,7 @@ import com.example.feature_login.R
 @Composable
 fun ProjectStatusCategory(
     selectedStatusId: Int?,
-    onStatusSelected: (Int? , String) -> Unit,    // Event ke parent
+    onStatusSelect: (Int? , String) -> Unit,    // Event ke parent
     modifier: Modifier = Modifier
 ) {
     val statuses by produceState(initialValue = emptyList()) {
@@ -78,7 +78,7 @@ fun ProjectStatusCategory(
                 FilterChip(
                     selected = isSelected,
                     onClick = {
-                        onStatusSelected(category.id, category.status)
+                        onStatusSelect(category.id, category.status)
                     },
                     shape = RoundedCornerShape(16.dp),
                     colors = FilterChipDefaults.filterChipColors(

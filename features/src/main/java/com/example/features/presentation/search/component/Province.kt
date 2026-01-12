@@ -33,7 +33,8 @@ import com.example.features.presentation.search.state.LocationState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProvinceBottomSheet(
-    selectedProvince: String?, modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier,
+    selectedProvince: String?,
     onGetProvince: (String) -> Unit,
     onProvinceSelect: (String, String) -> Unit,
     state: LocationState
@@ -62,7 +63,7 @@ fun ProvinceBottomSheet(
 
             TextField(
                 readOnly = true,
-                value = selectedProvince?:"",
+                value = selectedProvince ?: "",
                 onValueChange = {},
                 textStyle = MaterialTheme.typography.bodySmall,
                 placeholder = {

@@ -8,3 +8,10 @@ sealed class SearchUiState {
     data class Success(val data: LazyPagingItems<RecordData>? ):SearchUiState()
     data class Error(val message:String): SearchUiState()
 }
+
+
+sealed class LocationEvent(){
+    data class Error(val message : String) : LocationEvent()
+    data object ProvinceLoaded : LocationEvent()
+    data object CityLoaded : LocationEvent()
+}

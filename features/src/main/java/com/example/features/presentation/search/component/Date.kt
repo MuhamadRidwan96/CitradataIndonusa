@@ -21,15 +21,16 @@ import com.example.feature_login.R
 
 @Composable
 fun StartAndEndDate(
+    modifier:Modifier = Modifier,
     startDate: String,
     endDate: String,
-    onStartDateSelected: (String) -> Unit,
-    onEndDateSelected: (String) -> Unit,
+    onStartDateSelect: (String) -> Unit,
+    onEndDateSelect: (String) -> Unit,
     onClearStartDate: () -> Unit,
     onClearEndDate: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(
@@ -61,16 +62,16 @@ fun StartAndEndDate(
             DatePickerTextField(
                 modifier = Modifier.weight(1f),
                 selectedDate = startDate,
-                onDateSelected = onStartDateSelected,
-                onClearClicked = onClearStartDate,
+                onDateSelect = onStartDateSelect,
+                onClearClick = onClearStartDate,
                 placeholder = stringResource(R.string.start_date)
             )
 
             DatePickerTextField(
                 modifier = Modifier.weight(1f),
                 selectedDate = endDate,
-                onDateSelected = onEndDateSelected,
-                onClearClicked = onClearEndDate,
+                onDateSelect = onEndDateSelect,
+                onClearClick= onClearEndDate,
                 placeholder = stringResource(R.string.end_date)
             )
         }
