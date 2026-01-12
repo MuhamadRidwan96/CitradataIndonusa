@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.example.domain.model.DonutData
 
+@Suppress("EffectKeys")
 @Composable
 fun DonutChart(
     modifier: Modifier = Modifier,

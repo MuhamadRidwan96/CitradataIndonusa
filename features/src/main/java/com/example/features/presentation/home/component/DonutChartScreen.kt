@@ -70,9 +70,10 @@ fun DonutChartScreen(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun Legend(chartData: List<DonutData>) {
+fun Legend(chartData: List<DonutData>,
+           modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         chartData.forEach { item ->
             Row(
