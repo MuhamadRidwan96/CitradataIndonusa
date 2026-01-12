@@ -28,12 +28,18 @@ import com.example.features.presentation.home.component.ProjectCard
 import com.example.features.presentation.home.screen.DataEvent
 import com.example.features.presentation.home.utils.toDataState
 
+
+@Suppress("EffectKeys")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteScreen(
-    viewModel: FavoriteViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier,
+
     onNavigateToDetail: (String) -> Unit,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
+
+    viewModel: FavoriteViewModel = hiltViewModel(),
+
 ) {
 
     val favorites by viewModel.favorites.collectAsStateWithLifecycle(initialValue = emptyList())
@@ -81,7 +87,7 @@ fun FavoriteScreen(
             EmptyFavoriteState()
         } else {
             LazyColumn(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxSize()
                     .padding(paddingValues),
                 contentPadding = PaddingValues(16.dp),
