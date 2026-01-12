@@ -1,7 +1,5 @@
 package com.example.features.presentation.home.component
 
-import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,10 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.core_ui.AppTheme
 import com.example.core_ui.R
 import com.example.core_ui.component.IconText
 import com.example.data.local.entity.FavoriteProjectEntity
@@ -121,9 +116,13 @@ private fun ProjectCardContent(
 }
 
 @Composable
-fun BottomCard(idRecord: String, isFavorite: Boolean, onFavoriteClick: () -> Unit) {
+fun BottomCard(
+    modifier: Modifier = Modifier,
+    idRecord: String,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -132,90 +131,8 @@ fun BottomCard(idRecord: String, isFavorite: Boolean, onFavoriteClick: () -> Uni
             isFavorite = isFavorite,
             onClick = onFavoriteClick
         )
-
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun Preview12() {
-
-    val cardConfiguration = CardConfiguration(
-        topPadding = 12.dp,
-        border = BorderStroke(
-            2.dp,
-            Color.Unspecified
-        ),
-        statusColor = Color.Unspecified
-    )
-    val project = DataState(
-        checkbox = "1",
-        no = 1,
-        lastUpdate = "2025-05-11 09:56:35",
-        idRecord = "19093-21245/220424/CDI-HRC",
-        idProject = 12312,
-        project = "OFFICE - GEDUNG DAN KAWASAN PERKANTORAN KEMENTERIAN PERTAHANAN IKN NUSANTARA (TAHAP 1)",
-        statProject = "",
-        category = "HRC",
-        status = "PLANNING",
-        location = "KIPP IKN Nusantara, Desa Bumi Harapan, Kec. Sepaku.",
-        province = "KALIMANTAN TIMUR",
-        isLoading = false,
-        isFavorite = false,
-        filters = emptyMap()
-    )
-    AppTheme {
-        ProjectCardContent(
-            project = project,
-            onClick = {},
-            isFavorite = false,
-            onToggleFavorite = {},
-            cardConfiguration = cardConfiguration
-        )
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun Preview13() {
-
-    val cardConfiguration = CardConfiguration(
-        topPadding = 12.dp,
-        border = BorderStroke(
-            2.dp,
-            Color.Unspecified
-        ),
-        statusColor = Color.Unspecified
-    )
-    val project = DataState(
-        checkbox = "1",
-        no = 1,
-        lastUpdate = "2025-05-11 09:56:35",
-        idRecord = "19093-21245/220424/CDI-HRC",
-        idProject = 12312,
-        project = "OFFICE - GEDUNG DAN KAWASAN PERKANTORAN KEMENTERIAN PERTAHANAN IKN NUSANTARA (TAHAP 1)",
-        statProject = "",
-        category = "IND",
-        status = "PLANNING",
-        location = "KIPP IKN Nusantara, Desa Bumi Harapan, Kec. Sepaku. GEDUNG DAN KAWASAN PERKANTORAN KEMENTERIAN PERTAHANAN",
-        province = "KALIMANTAN TIMUR",
-        isLoading = false,
-        isFavorite = false,
-        filters = emptyMap()
-    )
-    AppTheme {
-        ProjectCardContent(
-            project = project,
-            onClick = {},
-            isFavorite = false,
-            onToggleFavorite = {},
-            cardConfiguration = cardConfiguration
-        )
-    }
-}
-
-
-
 
 
 

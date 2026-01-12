@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ErrorBottomSheet(
+    modifier: Modifier = Modifier,
     message: String,
     onDismiss: () -> Unit,
     sheetState: SheetState
@@ -35,7 +36,7 @@ fun ErrorBottomSheet(
         containerColor = MaterialTheme.colorScheme.surface
     ) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(24.dp)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -56,9 +57,11 @@ fun ErrorBottomSheet(
 }
 
 @Composable
-fun PagingErrorItem(message: String) {
+fun PagingErrorItem(
+    message: String, modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
         contentAlignment = Alignment.Center
@@ -74,11 +77,12 @@ fun PagingErrorItem(message: String) {
 
 @Composable
 fun FullScreenError(
+    modifier: Modifier = Modifier,
     error: String,
     onRetry: () -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -91,9 +95,11 @@ fun FullScreenError(
 }
 
 @Composable
-fun FullScreenLoading() {
+fun FullScreenLoading(
+    modifier: Modifier = Modifier,
+) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()

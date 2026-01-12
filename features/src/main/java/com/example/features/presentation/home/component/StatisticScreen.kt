@@ -25,12 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.domain.model.DonutData
 import com.example.features.presentation.home.state.StatisticsDataState
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun StatisticScreen(
     modifier: Modifier = Modifier,
     statistic: StatisticsDataState,
-    status: List<DonutData>
+    status: ImmutableList<DonutData>
 
 ) {
 
@@ -44,11 +45,11 @@ fun StatisticScreen(
 
         DonutChartScreen(status = status)
 
-        Spacer(modifier = modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2), // 2 kolom
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(max = 335.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),

@@ -28,12 +28,13 @@ import com.example.core_ui.component.StatusChip
 
 @Composable
 fun ProjectHeader(
+    modifier: Modifier = Modifier,
     projectStatus: String,
     textCategory: String,
     number: Int
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -42,20 +43,23 @@ fun ProjectHeader(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            HeaderText(number.toString())
+            HeaderText(text = number.toString())
             StatusChip(status = projectStatus)
             Spacer(modifier = Modifier.weight(1f))
-            HeaderText(textCategory)
+            HeaderText(text = textCategory)
         }
     }
 }
 
 @Composable
-fun HeaderText(text: String) {
+fun HeaderText(modifier: Modifier = Modifier, text: String) {
     Text(
         text = text,
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(topStart = 12.dp, bottomEnd = 12.dp))
+        modifier = modifier
+            .background(
+                MaterialTheme.colorScheme.surfaceVariant,
+                RoundedCornerShape(topStart = 12.dp, bottomEnd = 12.dp)
+            )
             .padding(horizontal = 16.dp, vertical = 4.dp),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -78,12 +82,16 @@ fun ProjectTitle(modifier: Modifier = Modifier, title: String) {
 
 @Composable
 fun ProjectMetadata(
+    modifier: Modifier = Modifier,
     date: String,
     location: String,
     province: String,
     idProject: String
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
 
         TextTittle(
             icon = R.drawable.ic_place_marker,
@@ -119,9 +127,13 @@ fun ProjectMetadata(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun TextComponent(text: String, content: @Composable () -> Unit) {
+fun TextComponent(
+    modifier: Modifier = Modifier,
+    text: String,
+    content: @Composable () -> Unit
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
     ) {
         Row(
@@ -136,8 +148,9 @@ fun TextComponent(text: String, content: @Composable () -> Unit) {
 
 
 @Composable
-fun RowLocation(location: String, province: String) {
+fun RowLocation(modifier: Modifier = Modifier, location: String, province: String) {
     Text(
+        modifier = modifier.fillMaxWidth(),
         text = "$location, $province",
         color = MaterialTheme.colorScheme.onSurface,
         style = MaterialTheme.typography.labelMedium
@@ -145,10 +158,15 @@ fun RowLocation(location: String, province: String) {
 }
 
 @Composable
-fun TextTittle(@DrawableRes icon: Int, text: String, content: @Composable () -> Unit) {
+fun TextTittle(
+    modifier: Modifier = Modifier,
+    @DrawableRes icon: Int,
+    text: String,
+    content: @Composable () -> Unit
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Icon(
             painter = painterResource(icon),

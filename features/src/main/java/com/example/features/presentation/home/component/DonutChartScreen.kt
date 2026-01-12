@@ -24,11 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.component.DonutChart
 import com.example.domain.model.DonutData
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun DonutChartScreen(
     modifier: Modifier = Modifier,
-    status: List<DonutData>
+    status: ImmutableList<DonutData>
 ) {
 
     Card(
@@ -70,7 +71,7 @@ fun DonutChartScreen(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun Legend(chartData: List<DonutData>,
+fun Legend(chartData: ImmutableList<DonutData>,
            modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxWidth()
