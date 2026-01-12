@@ -3,6 +3,7 @@ package com.example.features.presentation.authentication.screen.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.common.Result
+import com.example.domain.di.IoDispatcher
 import com.example.domain.response.AuthResponse
 import com.example.domain.usecase.authentication.CheckLoginUseCase
 import com.example.domain.usecase.authentication.GoogleSignInUseCase
@@ -17,7 +18,7 @@ import com.example.features.presentation.authentication.utils.isValidPassword
 import com.example.features.presentation.authentication.utils.toUiState
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +44,8 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val checkLoginUseCase: CheckLoginUseCase,
     private val googleSignInUseCase: GoogleSignInUseCase,
-    private val saveTokenUseCase: SaveTokenUseCase
+    private val saveTokenUseCase: SaveTokenUseCase,
+    @IoDispatcher private val dispatcher : CoroutineDispatcher
 ) : ViewModel() {
 
     private val _loginEvent =
@@ -94,7 +96,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             delay(500)
             loginUseCase(_formState.value.email, _formState.value.password)
-                .flowOn(Dispatchers.IO)
+                .flowOn(dispatcher)
                 .toUiState()
                 .onStart { setLoading(true) }
                 .onCompletion { setLoading(false) }
@@ -145,7 +147,7 @@ class LoginViewModel @Inject constructor(
 
 
                 googleSignInUseCase()
-                    .flowOn(Dispatchers.IO)
+                    .flowOn(dispatcher)
                     .collect { _authState.value = it }
             } catch (e: Exception) {
                 _loginEvent.send(LoginEvent.ShowSnackBar("Google Sign-In gagal: ${e.message}"))
@@ -175,7 +177,6 @@ class LoginViewModel @Inject constructor(
                         Timber.tag("AuthViewModel").e(result.exception, "❌ Gagal kirim token")
                     }
                 }
-
             }
         }
     }

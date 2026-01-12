@@ -19,8 +19,11 @@ import com.example.domain.response.AuthResponse
 import com.example.features.presentation.authentication.screen.component.LoginContent
 import kotlinx.coroutines.flow.collectLatest
 
+
+@Suppress("EffectKeys")
 @Composable
 fun ScreenLogin(
+    modifier: Modifier = Modifier,
     onLoginSuccess: () -> Unit,
     onSignUpClick: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
@@ -28,10 +31,12 @@ fun ScreenLogin(
     val snackBarHostState = remember { SnackbarHostState() }
 
     // === Event Listener ===
-    LaunchedEffect(Unit) {
+    LaunchedEffect(onLoginSuccess) {
         viewModel.loginEvent.collectLatest { event ->
             when (event) {
-                is LoginEvent.Success -> onLoginSuccess()
+                is LoginEvent.Success -> {
+                    onLoginSuccess()
+                }
                 is LoginEvent.ShowSnackBar -> {
                     snackBarHostState.showSnackbar(event.message)
                 }
@@ -40,7 +45,7 @@ fun ScreenLogin(
     }
 
     // === AuthState Listener (Google Sign-in) ===
-    LaunchedEffect(Unit) {
+    LaunchedEffect(onLoginSuccess) {
         viewModel.authState.collectLatest { auth ->
             when (auth) {
                 is AuthResponse.Success -> onLoginSuccess()
@@ -60,7 +65,7 @@ fun ScreenLogin(
         snackbarHost = {
             SnackbarHost(
                 hostState = snackBarHostState,
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp)
+                modifier = modifier.padding(start = 8.dp, end = 8.dp)
             ) { data ->
                 Snackbar(
                     snackbarData = data,

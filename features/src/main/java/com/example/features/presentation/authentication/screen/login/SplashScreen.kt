@@ -25,10 +25,14 @@ import com.example.core_ui.R
 import kotlinx.coroutines.delay
 
 
+@Suppress("EffectKeys")
 @Composable
 fun SplashScreen(
+    modifier: Modifier = Modifier,
+
     onNavigateToHome: () -> Unit,
     onNavigateToLogin: () -> Unit,
+
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val processState by viewModel.processState.collectAsStateWithLifecycle()
@@ -46,7 +50,7 @@ fun SplashScreen(
     )
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
 
@@ -59,7 +63,7 @@ fun SplashScreen(
                 .alpha(alpha)
         )
     }
-    LaunchedEffect(currentState.isReady) {
+    LaunchedEffect(currentState.isReady,onNavigateToLogin,onNavigateToHome)     {
         if (currentState.isReady && !hasNavigated) {
             hasNavigated = true
             delay(200)
