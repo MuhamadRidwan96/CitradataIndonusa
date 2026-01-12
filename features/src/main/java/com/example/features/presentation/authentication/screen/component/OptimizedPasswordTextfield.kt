@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
 import com.example.core_ui.R
@@ -12,6 +13,7 @@ import com.example.core_ui.component.PasswordTextField
 
 @Composable
 fun OptimizedPasswordTextField(
+    modifier: Modifier = Modifier,
     password: String,
     isError: Boolean,
     onPasswordChange: (String) -> Unit,
@@ -27,6 +29,7 @@ fun OptimizedPasswordTextField(
     }
 
     PasswordTextField(
+        modifier = modifier,
         password = password,
         isError = isError,
         onPasswordChange = onPasswordChange,

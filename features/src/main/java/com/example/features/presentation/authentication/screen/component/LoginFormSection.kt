@@ -19,6 +19,7 @@ import com.example.features.presentation.authentication.state.LoginFormState
 
 @Composable
 fun LoginFormSection(
+    modifier: Modifier = Modifier,
     formState: LoginFormState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -28,7 +29,7 @@ fun LoginFormSection(
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Text(
             text = stringResource(R.string.welcome),

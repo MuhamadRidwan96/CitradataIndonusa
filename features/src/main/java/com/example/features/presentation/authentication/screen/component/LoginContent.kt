@@ -18,6 +18,7 @@ import com.example.features.presentation.authentication.state.LoginProcessState
 
 @Composable
 fun LoginContent(
+    modifier: Modifier = Modifier,
     formState: LoginFormState,
     processState: LoginProcessState,
     isSubmitEnabled: Boolean,
@@ -31,7 +32,7 @@ fun LoginContent(
     val focusRequester = remember { FocusRequester() }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(contentPadding)
             .padding(horizontal = 32.dp),

@@ -29,17 +29,19 @@ import com.example.core_ui.R
 
 @Composable
 fun LoginButtonSection(
+    modifier: Modifier = Modifier,
     isLoading: Boolean,
     isSubmitEnabled: Boolean,
     onLoginClick: () -> Unit,
     onGoogleClick: () -> Unit
 
 ) {
-    val modifier = Modifier
+    val modifier = modifier
         .height(56.dp)
         .fillMaxWidth()
 
     Column(
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(13.dp),
     ) {
@@ -47,13 +49,11 @@ fun LoginButtonSection(
         LoginButton(
             isLoading = isLoading,
             isSubmitEnabled = isSubmitEnabled,
-            onLoginClick = onLoginClick,
-            modifier = modifier
+            onLoginClick = onLoginClick
         )
         TextDivider()
         OutlinedButtonSign(
-            onGoogleClick = onGoogleClick,
-            modifier = modifier
+            onGoogleClick = onGoogleClick
         )
     }
 }

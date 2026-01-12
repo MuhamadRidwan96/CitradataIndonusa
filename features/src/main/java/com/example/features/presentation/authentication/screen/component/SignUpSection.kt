@@ -18,11 +18,12 @@ import com.example.core_ui.R
 
 @Composable
 fun SignUpSection(
+    modifier: Modifier = Modifier,
     onSignUpClick: () -> Unit
 ) {
 
     val rowModifier = remember {
-        Modifier
+        modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp) }
 
