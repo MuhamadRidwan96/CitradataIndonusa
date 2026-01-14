@@ -38,6 +38,7 @@ import com.example.core_ui.R
 
 @Composable
 fun EmailTextField(
+    modifier: Modifier = Modifier,
     value: String,
     isError: Boolean,
     label: String,
@@ -64,7 +65,7 @@ fun EmailTextField(
 
     val textFieldColors = OutlinedTextFieldDefaults.colors(focusedBorderColor = borderColor)
 
-    val modifier = Modifier
+    val modifier = modifier
         .heightIn(min = 56.dp)
         .fillMaxWidth()
 
@@ -94,6 +95,7 @@ fun EmailTextField(
 
 @Composable
 fun PasswordTextField(
+    modifier: Modifier = Modifier,
     password: String,
     isError: Boolean,
     onPasswordChange: (String) -> Unit,
@@ -114,7 +116,7 @@ fun PasswordTextField(
         )
     }
 
-    val modifier = Modifier
+    val modifier = modifier
         .heightIn(min = 56.dp)
         .fillMaxWidth()
         .let { mod ->

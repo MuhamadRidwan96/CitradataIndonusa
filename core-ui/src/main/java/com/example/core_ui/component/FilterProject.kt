@@ -1,6 +1,5 @@
 package com.example.core_ui.component
 
-import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,19 +35,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.core_ui.AppTheme
 import com.example.core_ui.R
 import com.example.core_ui.utils.toWhiteIf
+import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FilterCategoryRow(
-    categories: List<FilterCategory>,
-    selectedCategoryProjectId: Int?,
-    onCategoryProjectSelected: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
+    categories: ImmutableList<FilterCategory>,
+    selectedCategoryProjectId: Int?,
+    onCategoryProjectSelect: (Int, String) -> Unit,
+
     @DrawableRes icon: Int,
 ) {
     Column(
@@ -82,7 +82,7 @@ fun FilterCategoryRow(
             items(categories) { category ->
                 val isSelected = category.id == selectedCategoryProjectId
                 Card(
-                    modifier = modifier
+                    modifier = Modifier
                         .height(100.dp)
                         .width(75.dp),
                     colors = CardDefaults.cardColors(
@@ -98,7 +98,7 @@ fun FilterCategoryRow(
                         verticalArrangement = Arrangement.Center,
                         modifier = Modifier
                             .fillMaxSize()
-                            .clickable { onCategoryProjectSelected(category.id, category.label) }
+                            .clickable { onCategoryProjectSelect(category.id, category.label) }
                             .padding(8.dp)
                     ) {
 
@@ -146,55 +146,10 @@ fun FilterCategoryRow(
     }
 }
 
+@Immutable
 data class FilterCategory(
     val id: Int,
     val label: String,
     val code: String,
     @DrawableRes val icon: Int
 )
-
-@Preview(showBackground = true)
-@Composable
-fun Preview11(){
-
-    val listCategory =
-        listOf(
-            FilterCategory(5, "Highrise & Commercial", "HRC", R.drawable.building_2),
-            FilterCategory(6, "Middle Projects", "MDL", R.drawable.building),
-            FilterCategory(7, "Lower Projects", "LOW", R.drawable.house),
-            FilterCategory(8, "Industrial & Infrastructure", "IND", R.drawable.factory),
-            FilterCategory(9, "Fitting Out & Interior", "FTO", R.drawable.armchair)
-        )
-
-    AppTheme {
-        FilterCategoryRow(
-            categories = listCategory,
-            selectedCategoryProjectId = 5,
-            onCategoryProjectSelected = { _, _ -> },
-            icon = R.drawable.building
-        )
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun Preview12(){
-
-    val listCategory =
-        listOf(
-            FilterCategory(5, "Highrise & Commercial", "HRC", R.drawable.building_2),
-            FilterCategory(6, "Middle Projects", "MDL", R.drawable.building),
-            FilterCategory(7, "Lower Projects", "LOW", R.drawable.house),
-            FilterCategory(8, "Industrial & Infrastructure", "IND", R.drawable.factory),
-            FilterCategory(9, "Fitting Out & Interior", "FTO", R.drawable.armchair)
-        )
-
-    AppTheme {
-        FilterCategoryRow(
-            categories = listCategory,
-            selectedCategoryProjectId = 6,
-            onCategoryProjectSelected = { _, _ ->} ,
-            icon = R.drawable.building
-        )
-    }
-}

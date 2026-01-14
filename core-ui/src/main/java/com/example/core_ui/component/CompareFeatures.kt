@@ -19,9 +19,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.model.CompareFeature
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-fun CompareFeatures(features: List<CompareFeature>) {
+fun CompareFeatures(
+    modifier: Modifier = Modifier,
+    features: ImmutableList<CompareFeature>) {
     val planNames = listOf("Free", "Basic", "Premium")
 
     val planStyle = MaterialTheme.typography.bodyLarge.copy(
@@ -29,7 +32,7 @@ fun CompareFeatures(features: List<CompareFeature>) {
         color = MaterialTheme.colorScheme.primary
     )
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = modifier.padding(16.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

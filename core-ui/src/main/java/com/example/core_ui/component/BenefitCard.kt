@@ -17,7 +17,9 @@ import androidx.compose.ui.unit.dp
 import com.example.core_ui.model.BenefitPlan
 
 @Composable
-fun BenefitCard(benefit: BenefitPlan) {
+fun BenefitCard(
+    modifier: Modifier  = Modifier,
+    benefit: BenefitPlan) {
     val planStyle = MaterialTheme.typography.titleMedium.copy(
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSurface,
@@ -28,7 +30,7 @@ fun BenefitCard(benefit: BenefitPlan) {
     )
     Row(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
 
         Icon(

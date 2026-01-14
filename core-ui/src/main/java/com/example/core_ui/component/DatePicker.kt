@@ -36,8 +36,8 @@ import java.util.Locale
 fun DatePickerTextField(
     modifier: Modifier = Modifier,
     selectedDate: String,
-    onDateSelected: (String) -> Unit,
-    onClearClicked: () -> Unit,
+    onDateSelect: (String) -> Unit,
+    onClearClick: () -> Unit,
     placeholder: String
 
 ) {
@@ -58,7 +58,7 @@ fun DatePickerTextField(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            onDateSelected(formatDate(millis))
+                            onDateSelect(formatDate(millis))
                         }
                         showDatePicker = false
                     }
@@ -104,7 +104,7 @@ fun DatePickerTextField(
 
         if (selectedDate.isNotEmpty()) {
             IconButton(
-                onClick = onClearClicked,
+                onClick = onClearClick,
                 modifier = Modifier.align(Alignment.CenterEnd)
             ) {
                 Icon(Icons.Default.Clear, contentDescription = "clear")
