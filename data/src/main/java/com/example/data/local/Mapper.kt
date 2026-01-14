@@ -7,6 +7,8 @@ import com.example.data.utils.randomComposeColor
 import com.example.domain.model.DonutData
 import com.example.domain.model.FavoriteProject
 import com.example.domain.model.NotificationModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 fun FavoriteProjectEntity.toDomain() = FavoriteProject(
     idProject,
@@ -48,12 +50,15 @@ fun NotificationModel.toEntity() = NotificationEntity(
     timestamp
 )
 
-fun mapToDonut(data: Map<String,Int>,colorMap:Map<String,Color>): List<DonutData>{
-    return data.map {(label,value) ->
-        DonutData(
-            label = label,
-            value = value.toFloat(),
-            color = colorMap[label] ?: randomComposeColor()
+    fun mapToDonut(
+        data: Map<String, Int>,
+        colorMap: Map<String, Color>
+    ): ImmutableList<DonutData> {
+        return data.map { (label, value) ->
+            DonutData(
+                label = label,
+                value = value.toFloat(),
+                color = colorMap[label] ?: randomComposeColor()
             )
+        }.toImmutableList()
     }
-}
