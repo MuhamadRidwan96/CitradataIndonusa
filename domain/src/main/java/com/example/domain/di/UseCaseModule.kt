@@ -154,8 +154,8 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideGetNotificationCountUseCase(repository: NotificationRepository): GetNotificationCountUseCase {
-        return GetNotificationCountUseCase(repository)
+    fun provideGetNotificationCountUseCase(repository: NotificationRepository,  @IoDispatcher dispatcher: CoroutineDispatcher): GetNotificationCountUseCase {
+        return GetNotificationCountUseCase(repository, dispatcher)
     }
 
     @Provides
