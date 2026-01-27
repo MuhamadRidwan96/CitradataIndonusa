@@ -6,9 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.SideEffect
 import androidx.core.view.WindowCompat
-import androidx.navigation.compose.rememberNavController
 import com.example.core_ui.AppTheme
-import com.example.features.nav.graph.RootNavigationGraph
+import com.example.features.nav.navhost.RootNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -17,14 +16,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val projectId = intent?.getStringExtra("project_id")
-
         setContent {
             AppTheme {
-                RootNavigationGraph(navController = rememberNavController(), projectId = projectId)
                 SideEffect {
                     WindowCompat.setDecorFitsSystemWindows(window, false)
                 }
+                RootNavHost()
             }
         }
     }
