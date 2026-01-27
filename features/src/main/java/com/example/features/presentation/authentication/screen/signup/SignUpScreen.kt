@@ -26,8 +26,10 @@ import com.example.features.presentation.authentication.state.SignUpFormState
 import kotlinx.coroutines.flow.collectLatest
 
 
+@Suppress("EffectKeys")
 @Composable
 fun SignUpScreen(
+    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     viewmodel: SignUpViewmodel = hiltViewModel()
 ) {
@@ -42,7 +44,7 @@ fun SignUpScreen(
         },
         content = { padding ->
             Column(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxSize()
                     .padding(padding)
             ) {

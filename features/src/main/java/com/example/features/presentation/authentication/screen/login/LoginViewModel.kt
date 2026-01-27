@@ -138,7 +138,6 @@ class LoginViewModel @Inject constructor(
                 isReady = true
             ) }
         }
-
     }
 
     val signWithGoogle: () -> Unit = {

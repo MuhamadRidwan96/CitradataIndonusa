@@ -1,7 +1,5 @@
 package com.example.features.presentation.authentication.screen.login
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,13 +7,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -29,25 +22,22 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(
     modifier: Modifier = Modifier,
-
-    onNavigateToHome: () -> Unit,
-    onNavigateToLogin: () -> Unit,
-
+    onCheckLogin: (Boolean) -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
+
 ) {
-    val processState by viewModel.processState.collectAsStateWithLifecycle()
-    var hasNavigated by remember { mutableStateOf(false) }
+    val state by viewModel.processState.collectAsStateWithLifecycle()
 
-    val currentState by rememberUpdatedState(processState)
     LaunchedEffect(Unit) {
-    viewModel.checkLogin()}
+        viewModel.checkLogin()
+    }
 
-    // Simple fade animation saja
-    val alpha by animateFloatAsState(
-        targetValue = if (currentState.isReady) 1f else 1f,
-        animationSpec = tween(durationMillis = 200),
-        label = "alpha"
-    )
+    LaunchedEffect(state.isReady,onCheckLogin) {
+        if (state.isReady){
+            delay(1200)
+            onCheckLogin(state.isLoggedIn)
+        }
+    }
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -58,21 +48,8 @@ fun SplashScreen(
             painter = painterResource(R.drawable.logo),
             contentDescription = null,
             contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .size(250.dp)
-                .alpha(alpha)
+            modifier = Modifier.size(250.dp)
         )
-    }
-    LaunchedEffect(currentState.isReady,onNavigateToLogin,onNavigateToHome)     {
-        if (currentState.isReady && !hasNavigated) {
-            hasNavigated = true
-            delay(200)
-            if (currentState.isLoggedIn) {
-                onNavigateToHome()
-            } else {
-                onNavigateToLogin()
-            }
-        }
     }
 }
 
