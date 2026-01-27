@@ -10,26 +10,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.example.core_ui.component.TopAppBarWithBack
 import com.example.feature_login.R
 
 @Composable
-fun PrivacyPolicyScreen(navController: NavHostController) {
+fun PrivacyPolicyScreen(
+    modifier: Modifier = Modifier,
+    onNavigateBack : () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBarWithBack(
                 title = stringResource(R.string.privacy_and_policy),
-                onBackClick = {
-                    if (navController.previousBackStackEntry != null) {
-                        navController.popBackStack()
-                    }
-                }
+                onBackClick = onNavigateBack
             )
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,

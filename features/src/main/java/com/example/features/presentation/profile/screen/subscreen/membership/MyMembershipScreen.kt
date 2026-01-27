@@ -22,6 +22,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,33 +30,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.example.core_ui.component.BenefitCard
 import com.example.core_ui.component.CompareFeatures
 import com.example.core_ui.component.SubscriptionCard
 import com.example.core_ui.component.TopAppBarWithBack
 import com.example.feature_login.R
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
-fun MembershipScreen(navController: NavHostController) {
-    val tabTitles = listOf("Plans", "Benefits", "Compare")
+fun MembershipScreen(
+    modifier: Modifier = Modifier,
+    onNavigateBack : () -> Unit){
+    val tabTitles = remember { persistentListOf("Plans", "Benefits", "Compare") }
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
             TopAppBarWithBack(
                 title = stringResource(R.string.membership),
-                onBackClick = {
-                    if (navController.previousBackStackEntry != null) {
-                        navController.popBackStack()
-                    }
-                }
+                onBackClick = onNavigateBack
             )
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 10.dp, vertical = 12.dp),
@@ -93,12 +93,12 @@ fun MembershipScreen(navController: NavHostController) {
                     TabSection(
                         tabTitles = tabTitles,
                         selectedTabIndex = pagerState.currentPage,
-                        onTabSelected = { index ->
+                        onTabSelect = { index ->
                             coroutineScope.launch {
                                 pagerState.animateScrollToPage(index)
                             }
                         },
-                        pagerState = pagerState
+                        pagerState = pagerState,
                     )
                 }
 
@@ -122,9 +122,9 @@ fun MembershipScreen(navController: NavHostController) {
 
 @Composable
 private fun TabSection(
-    tabTitles: List<String>,
+    tabTitles: ImmutableList<String>,
     selectedTabIndex: Int,
-    onTabSelected: (Int) -> Unit,
+    onTabSelect: (Int) -> Unit,
     pagerState: PagerState
 ) {
     SecondaryTabRow(
@@ -142,7 +142,7 @@ private fun TabSection(
         tabTitles.forEachIndexed { index, title ->
             Tab(
                 selected = selectedTabIndex == index,
-                onClick = { onTabSelected(index) },
+                onClick = { onTabSelect(index) },
                 text = {
                     Text(
                         text = title,
@@ -160,11 +160,13 @@ private fun TabSection(
 }
 
 @Composable
-fun PlansSection() {
+fun PlansSection(
+    modifier: Modifier = Modifier
+) {
     val subscriptionPlans = rememberSubscriptionPlans()
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -182,10 +184,12 @@ fun PlansSection() {
 
 
 @Composable
-fun BenefitsContent() {
+fun BenefitsContent(
+    modifier: Modifier = Modifier
+) {
     val benefitPlans = rememberBenefitPlans()
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -201,14 +205,18 @@ fun BenefitsContent() {
 }
 
 @Composable
-fun CompareContent() {
+fun CompareContent(
+    modifier: Modifier = Modifier
+) {
     val features = rememberComparePlans()
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(top = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) { item { CompareFeatures(features) } }
+    ) { item { CompareFeatures(
+        features = features
+    ) } }
 }

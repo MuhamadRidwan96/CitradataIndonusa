@@ -16,30 +16,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.core_ui.AppTheme
 import com.example.core_ui.component.TopAppBarWithBack
 import com.example.feature_login.R
 
 @Composable
-fun TermsAndConditionScreen(navController: NavHostController) {
+fun TermsAndConditionScreen(
+    modifier: Modifier = Modifier,
+    onNavigateBack : () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBarWithBack(
                 title = stringResource(R.string.term_and_condition),
-                onBackClick = {
-                    if (navController.previousBackStackEntry != null) {
-                        navController.popBackStack()
-                    }
-                }
+                onBackClick = onNavigateBack
             )
         },
         bottomBar = {
             Row(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -70,13 +64,5 @@ fun TermsAndConditionScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {}
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewTerms() {
-    AppTheme {
-        TermsAndConditionScreen(navController = rememberNavController())
     }
 }

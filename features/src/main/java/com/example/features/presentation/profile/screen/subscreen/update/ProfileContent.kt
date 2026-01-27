@@ -28,7 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,27 +42,28 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.IconText
+import com.example.features.presentation.profile.screen.state.CardInfo
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 fun ContentProfileScreen(
     modifier: Modifier = Modifier,
+
+    state: CardInfo,
+
     onMembershipClick: () -> Unit,
     onContactUsClick: () -> Unit,
     onPrivacyPolicyClick: () -> Unit,
     onTermsClick: () -> Unit,
     onLogout: (() -> Unit)? = null,
-    name: String,
-    fullName: String,
-    email: String,
-    address: String,
-    company: String,
-    phone: String?,
-    dateEnd: String
 
-) {
 
-    val items = remember {
-        listOf(
+    ) {
+
+    val mainItems = remember {
+        (persistentListOf(
             ProfileItem.Regular(
                 R.drawable.award,
                 R.string.membership,
@@ -86,9 +87,9 @@ fun ContentProfileScreen(
             )
         ) + if (onLogout != null) {
             listOf(ProfileItem.Logout(onLogout, true))
-        } else emptyList()
-
+        } else emptyList()).toPersistentList()
     }
+
 
     Box(
         modifier = modifier
@@ -117,32 +118,40 @@ fun ContentProfileScreen(
             item(key = "l") {
                 Spacer(modifier = Modifier.height(35.dp))
                 CardProfile(
-                    name = name,
-                    fullName = fullName,
-                    email = email,
-                    address = address,
-                    company = company,
-                    phone = phone,
-                    dateEnd = dateEnd
+
+                    cardInfo = CardInfo(
+                        name = state.name,
+                        fullName = state.fullName,
+                        email = state.email,
+                        address = state.address,
+                        company = state.company,
+                        phone = state.phone,
+                        dateEnd = state.dateEnd
+                    )
                 )
             }
 
             item(key = "profileContent") {
-                ProfileItemList(items)
+                ProfileItemList(
+                    items = mainItems
+                )
             }
         }
     }
 }
 
 @Composable
-fun ProfileItemList(items: List<ProfileItem>) {
+fun ProfileItemList(modifier: Modifier = Modifier, items: ImmutableList<ProfileItem>) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
         items.forEachIndexed { index, item ->
-            ProfileItemRow(item)
+            ProfileItemRow(
+
+                item = item
+            )
             if (index < items.lastIndex) {
                 ProfileDivider()
             }
@@ -154,13 +163,7 @@ fun ProfileItemList(items: List<ProfileItem>) {
 @Composable
 fun CardProfile(
     modifier: Modifier = Modifier,
-    name: String,
-    fullName: String,
-    email: String,
-    address: String,
-    company: String,
-    phone: String?,
-    dateEnd: String
+    cardInfo: CardInfo
 ) {
 
     Card(
@@ -178,7 +181,7 @@ fun CardProfile(
         ) {
             ImageProfile()
             Text(
-                text = name,
+                text = cardInfo.name,
                 style = MaterialTheme.typography.headlineSmall,
                 maxLines = 1,
                 fontWeight = FontWeight.SemiBold,
@@ -187,7 +190,7 @@ fun CardProfile(
             )
 
             Text(
-                text = fullName,
+                text = cardInfo.fullName,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 color = Color.Gray,
@@ -195,11 +198,11 @@ fun CardProfile(
             )
 
             ProfileText(
-                email = email,
-                address = address,
-                company = company,
-                phone = phone,
-                dateEnd = dateEnd
+                email = cardInfo.email,
+                address = cardInfo.address,
+                company = cardInfo.company,
+                phone = cardInfo.phone,
+                dateEnd = cardInfo.dateEnd
             )
 
         }
@@ -208,14 +211,15 @@ fun CardProfile(
 
 @Composable
 fun ProfileText(
+    modifier: Modifier = Modifier,
     email: String,
     address: String,
     company: String,
     phone: String?,
     dateEnd: String
-){
+) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         IconText(R.drawable.mail, email)
@@ -227,9 +231,9 @@ fun ProfileText(
 }
 
 @Composable
-fun ImageProfile() {
+fun ImageProfile(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(94.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -249,8 +253,9 @@ fun ImageProfile() {
 
 @Composable
 fun ProfileItemRow(
-    item: ProfileItem,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    item: ProfileItem
+
 ) {
     val titleText = when (item) {
         is ProfileItem.Regular -> stringResource(item.title)
@@ -259,11 +264,11 @@ fun ProfileItemRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
             .clickable(
                 enabled = item.enabled,
                 onClick = item.onClick
-            ),
+            )
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -297,7 +302,7 @@ private fun ProfileDivider() {
     )
 }
 
-@Stable
+@Immutable
 sealed interface ProfileItem {
     val icon: Int
     val onClick: () -> Unit

@@ -9,31 +9,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
 import com.example.core_ui.component.TopAppBarWithBack
 import com.example.feature_login.R
 
 @Composable
-fun UpdateProfileScreen(navController: NavHostController) {
+fun UpdateProfileScreen(
+    modifier:Modifier= Modifier,
+    onBackClick: () -> Unit) {
 
     Scaffold(
         topBar = {
             TopAppBarWithBack(title = stringResource(R.string.update_profile),
-                onBackClick = {
-                    if (navController.previousBackStackEntry != null) {
-                        navController.popBackStack()
-                    }
-                })
+                onBackClick = onBackClick )
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(paddingValues)
                 .imePadding()
                 .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            UpdateProfileComponent()
+            UpdateProfileComponent(
+                modifier = TODO(),
+                profileState = TODO(),
+                usernameChange = TODO(),
+                nameChange = TODO(),
+                emailChange = TODO()
+            )
         }
     }
 }

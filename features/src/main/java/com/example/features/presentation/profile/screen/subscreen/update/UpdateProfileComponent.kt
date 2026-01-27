@@ -19,8 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -34,17 +32,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.LabeledTextField
+import com.example.features.presentation.profile.screen.state.ProfileState
 
 @Composable
-fun UpdateProfileComponent() {
+fun UpdateProfileComponent(
+    modifier: Modifier = Modifier,
+    profileState: ProfileState,
+    usernameChange : (String) -> Unit,
+    nameChange:  (String) -> Unit,
+    emailChange : (String) -> Unit
+
+) {
     val focusManager = LocalFocusManager.current
 
-    val username = rememberSaveable { mutableStateOf("") }
-    val name = rememberSaveable { mutableStateOf("") }
-    val email = rememberSaveable { mutableStateOf("") }
-
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -54,24 +56,24 @@ fun UpdateProfileComponent() {
 
         ProfileTextField(
             label = stringResource(R.string.username),
-            value = username.value,
-            onValueChange = { username.value = it },
+            value = profileState.basicInfo.username,
+            onValueChange = usernameChange,
             imeAction = ImeAction.Next,
             onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
         )
 
         ProfileTextField(
             label = stringResource(R.string.full_name),
-            value = name.value,
-            onValueChange = { name.value = it },
+            value = profileState.basicInfo.name,
+            onValueChange = nameChange,
             imeAction = ImeAction.Next,
             onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
         )
 
         ProfileTextField(
             label = stringResource(R.string.email),
-            value = email.value,
-            onValueChange = { email.value = it },
+            value = profileState.contactInfo.email,
+            onValueChange = emailChange,
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Done,
             onImeAction = { focusManager.clearFocus() }
@@ -117,10 +119,11 @@ fun ProfileHeader(hello: String, name: String, modifier: Modifier = Modifier) {
 private fun ProfileTextField(
     label: String,
     value: String,
+    onImeAction: () -> Unit,
     onValueChange: (String) -> Unit,
     imeAction: ImeAction,
     keyboardType: KeyboardType = KeyboardType.Text,
-    onImeAction: () -> Unit
+
 ) {
     LabeledTextField(
         label = label,
