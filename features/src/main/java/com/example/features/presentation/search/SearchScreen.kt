@@ -64,7 +64,6 @@ import kotlinx.coroutines.launch
  * Main search screen composable that displays project search functionality
  * with filtering, pagination, and favorites management
  *
- * @param onNavigateToLogin Callback when user needs to login (session expired)
  * @param onNavigateToDetail Callback when user clicks on a project card
  * @param modifier Modifier for the root composable
  * @param snackBarHostState State holder for showing snack bar messages
@@ -76,7 +75,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    onNavigateToLogin: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
 
     modifier: Modifier = Modifier,
@@ -180,7 +178,6 @@ fun SearchScreen(
                     sessionSheetState.hide()
                     errorShowSheet = false
 
-                    onNavigateToLogin()
                     viewModel.onLogoutClicked()
                 }
 

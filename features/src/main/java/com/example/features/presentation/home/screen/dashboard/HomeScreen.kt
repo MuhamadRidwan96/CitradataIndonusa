@@ -53,6 +53,7 @@ import com.example.features.presentation.home.component.TopAppBarContent
 import com.example.features.presentation.home.screen.DataEvent
 import com.example.features.presentation.home.screen.HomeViewModel
 import com.example.features.presentation.home.screen.NotificationViewModel
+import com.example.features.presentation.home.state.HomeNavigation
 import com.example.features.presentation.home.state.toDataState
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -64,9 +65,7 @@ import kotlin.math.abs
 fun HomeScreen(
     modifier: Modifier = Modifier,
 
-    onNavigateToLogin: () -> Unit,
-    onNavigateToDetail: (String) -> Unit,
-    onNavigateToNotification: () -> Unit,
+    homeNavigation: HomeNavigation,
 
     onScrollChange: (Boolean) -> Unit,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -75,7 +74,9 @@ fun HomeScreen(
     notificationViewModel: NotificationViewModel = hiltViewModel(),
 
 
+
 ) {
+
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
 
     val profile = viewmodel.userName.collectAsStateWithLifecycle()
@@ -112,7 +113,6 @@ fun HomeScreen(
                 coroutineScope.launch {
                     sheetState.hide()
                     showErrorSheet = false
-                    onNavigateToLogin()
                     viewmodel.onLogoutClicked()
                 }
             }
@@ -156,7 +156,7 @@ fun HomeScreen(
                         name = profile.value?.name ?: "",
                         hello = stringResource(R.string.hello),
                         count = count,
-                        onClick = { onNavigateToNotification() },
+                        onClick = { homeNavigation.toNotification() },
                     )
                 },
                 scrollBehavior = scrollBehavior,
@@ -261,7 +261,7 @@ fun HomeScreen(
                                 favorites.any { fav -> fav.idProject == it.idProject.toInt() }
                             ProjectCard(
                                 project = dataState,
-                                onClick = { onNavigateToDetail(dataState.idProject.toString()) },
+                                onClick = { homeNavigation.toDetail(dataState.idProject.toString()) },
                                 isFavorite = isFav,
                                 onToggleFavorite = { favEntity ->
                                     viewmodel.toggleFavorite(favEntity)

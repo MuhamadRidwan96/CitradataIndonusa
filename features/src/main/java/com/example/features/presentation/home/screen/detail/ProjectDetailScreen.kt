@@ -25,6 +25,7 @@ import com.example.features.presentation.home.utils.EntityType
 
 @Composable
 fun ProjectDetailScreen(
+    modifier: Modifier = Modifier,
     projectId: String,
     onBackClick: () -> Unit,
     viewModel: DetailViewmodel = hiltViewModel()
@@ -55,7 +56,7 @@ fun ProjectDetailScreen(
                 }
 
                 else -> {
-                    val contentModifier = Modifier
+                    val contentModifier = modifier
                         .fillMaxSize()
 
                     LazyColumn(
