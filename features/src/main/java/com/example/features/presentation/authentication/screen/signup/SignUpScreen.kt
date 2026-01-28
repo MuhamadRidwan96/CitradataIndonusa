@@ -78,6 +78,7 @@ fun SignUpScreen(
 
 @Composable
 fun SignUpScreenContent(
+    modifier : Modifier = Modifier,
     state: SignUpFormState,
     onUsernameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
@@ -86,7 +87,7 @@ fun SignUpScreenContent(
     onSignInClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
