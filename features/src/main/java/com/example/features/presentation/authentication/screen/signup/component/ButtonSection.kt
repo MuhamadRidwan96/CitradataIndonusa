@@ -25,20 +25,21 @@ import com.example.feature_login.R
 
 @Composable
 fun ButtonSection(
+    modifier: Modifier= Modifier,
     onSignUpClick: () -> Unit,
     onSignInClick: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 24.dp, vertical = 16.dp)
             .fillMaxWidth()
     ) {
         Button(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp),
+                .height(50.dp),
             onClick = { onSignUpClick() },
         ) {
             Icon(

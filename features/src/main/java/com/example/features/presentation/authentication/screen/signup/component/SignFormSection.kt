@@ -26,6 +26,7 @@ import com.example.features.presentation.authentication.state.SignUpFormState
 
 @Composable
 fun SignUpFormSection(
+    modifier: Modifier = Modifier,
     state: SignUpFormState,
     onUsernameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
@@ -34,7 +35,7 @@ fun SignUpFormSection(
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
             .padding(horizontal = 24.dp)) {
 
         Text(

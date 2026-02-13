@@ -17,6 +17,7 @@ import com.example.features.theme.Shapes
 
 @Composable
 fun SignUpTextField(
+    modifier: Modifier = Modifier,
     value: String,
     isError: Boolean,
     label: String,
@@ -27,7 +28,7 @@ fun SignUpTextField(
         value = value,
         isError = isError,
         shape = Shapes.medium,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .heightIn(56.dp),
         onValueChange = onValueChange,
