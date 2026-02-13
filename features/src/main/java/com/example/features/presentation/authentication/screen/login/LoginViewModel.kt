@@ -64,6 +64,7 @@ class LoginViewModel @Inject constructor(
     //make more simple with 1 combine
     val isSubmitEnabled: StateFlow<Boolean> = formState.map { state ->
         isValidEmail(state.email) && isValidPassword(state.password)
+
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),

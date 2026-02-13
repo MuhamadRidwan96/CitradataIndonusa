@@ -1,5 +1,6 @@
 package com.example.features.presentation.authentication.screen.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,14 +37,11 @@ fun LoginButtonSection(
     onGoogleClick: () -> Unit
 
 ) {
-    val modifier = modifier
-        .height(56.dp)
-        .fillMaxWidth()
 
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(13.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
 
         LoginButton(
@@ -52,6 +50,7 @@ fun LoginButtonSection(
             onLoginClick = onLoginClick
         )
         TextDivider()
+
         OutlinedButtonSign(
             onGoogleClick = onGoogleClick
         )
@@ -66,7 +65,9 @@ private fun LoginButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(50.dp),
         onClick = onLoginClick,
         enabled = isSubmitEnabled
     ) {
@@ -98,10 +99,10 @@ private fun TextDivider() {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            text = stringResource(R.string.or),
+            text = "Or",
             modifier = Modifier.padding(horizontal = 8.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodySmall
         )
         HorizontalDivider(
             modifier = Modifier
@@ -119,6 +120,12 @@ private fun OutlinedButtonSign(onGoogleClick: () -> Unit, modifier: Modifier = M
     OutlinedButton(
         onClick = onGoogleClick,
         modifier = modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        border = BorderStroke(
+            width = 1.5.dp,
+            color = MaterialTheme.colorScheme.outline
+        )
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,

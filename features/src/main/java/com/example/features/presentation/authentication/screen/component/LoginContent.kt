@@ -12,7 +12,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.core_ui.AppTheme
 import com.example.features.presentation.authentication.state.LoginFormState
 import com.example.features.presentation.authentication.state.LoginProcessState
 
@@ -35,7 +37,7 @@ fun LoginContent(
         modifier = modifier
             .fillMaxSize()
             .padding(contentPadding)
-            .padding(horizontal = 32.dp),
+            .padding(horizontal = 26.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
 
@@ -52,15 +54,37 @@ fun LoginContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         LoginButtonSection(
+            modifier = Modifier.padding(),
             isSubmitEnabled = isSubmitEnabled,
             isLoading = processState.isLoading,
             onLoginClick = onLoginClick,
             onGoogleClick = onGoogleClick
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
+
         SignUpSection(onSignUpClick = onSignUpClick)
 
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun Preview1(){
+    val form = LoginFormState()
+    val state = LoginProcessState()
+    AppTheme {
+        LoginContent(
+            formState = form,
+            processState = state,
+            isSubmitEnabled = true,
+            onEmailChange = {},
+            onPasswordChange = { },
+            onLoginClick = {},
+            onGoogleClick = {},
+            onSignUpClick ={},
+            contentPadding = PaddingValues(16.dp),
+        )
     }
 }
 
