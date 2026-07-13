@@ -33,9 +33,11 @@ import com.example.core_ui.R
 @Composable
 fun CompactSearchBar(
     modifier: Modifier = Modifier,
+    onClear :() -> Unit,
     query: String,
     onQueryChange: (String) -> Unit = {},
-    onClear :() -> Unit
+    enabled : Boolean = true
+
 ) {
     val updatedOnQueryChange by rememberUpdatedState(onQueryChange)
 
@@ -44,7 +46,7 @@ fun CompactSearchBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(36.dp)
+            .height(44.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(colors.background)
             .border(1.dp, colors.outline, RoundedCornerShape(8.dp))
@@ -63,13 +65,14 @@ fun CompactSearchBar(
             if (query.isEmpty()) {
                 Text(
                     text = "Search project name...",
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                    color = colors.onSurface.copy(alpha = 0.6f),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colors.onSurface,
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
             }
 
             BasicTextField(
+                enabled = enabled,
                 value = query,
                 onValueChange = updatedOnQueryChange,
                 singleLine = true,

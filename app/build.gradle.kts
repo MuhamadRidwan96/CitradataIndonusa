@@ -62,6 +62,8 @@ dependencies {
     implementation (project(":data")) // Bergantung pada modul data
     implementation(project(":core-ui"))//Bergantung pada modul core-ui
     implementation(project(":features"))
+    implementation(project(":common"))
+    testImplementation(project(":common"))
 
 
     implementation(libs.androidx.core.ktx)
@@ -111,6 +113,12 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
+
+    //test
+    testImplementation (libs.kotlinx.coroutines.test)
+    testImplementation (libs.turbine)
+    testImplementation (libs.mockk)
+    testImplementation(kotlin("test"))
 
 
 }

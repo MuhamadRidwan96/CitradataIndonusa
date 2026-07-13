@@ -65,6 +65,8 @@ dependencies {
         implementation(libs.material.icons.extended)
         implementation(libs.coil.compose)
         implementation(libs.androidx.ui.text.google.fonts)
+
+        implementation(libs.kotlinx.collections.immutable)
     }
 
 }

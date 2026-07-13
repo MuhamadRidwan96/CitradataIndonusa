@@ -42,7 +42,7 @@ fun LoginFormSection(
         )
         Text(
             text = stringResource(R.string.sign),
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 

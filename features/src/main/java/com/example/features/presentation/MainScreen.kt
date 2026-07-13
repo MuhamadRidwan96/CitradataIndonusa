@@ -19,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -48,7 +47,7 @@ import com.example.features.presentation.search.SearchScreen
  * This composable serves as the root screen that manages:
  * - Internal navigation using a nested NavHostController
  * - Conditional bottom navigation bar visibility
- * - Smooth animations for bottom bar appearance/disappearancex`
+ * - Smooth animations for bottom bar appearance/disappearance`
  * - Scroll-based bottom bar behavior
  *
  * @param modifier Modifier for styling and layout customization
@@ -92,6 +91,7 @@ fun MainScreen(
 
     /**✅ Scaffold hanya untuk content, tanpa bottom bar**/
     Scaffold(
+        contentWindowInsets = WindowInsets(0,0,0,0),
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
@@ -119,14 +119,16 @@ fun MainScreen(
                     }
                 )
             }
-        },
-        contentWindowInsets = WindowInsets(0.dp)
+        }
     ) { paddingValues ->
+
         NavHost(
             navController = navController,
-            modifier = Modifier.padding(paddingValues),
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
             startDestination = Screen.Home.route
         ) {
+
+
 
                 composable(Screen.Home.route) {
                     HomeScreen(
@@ -137,7 +139,7 @@ fun MainScreen(
                             toNotification = {
                                 navController.navigate(Screen.Notification.route)
                             },
-                            toLogout = { onLogout() }
+                            toLogout = { onLogout()}
 
                         ),
                         onScrollChange = {}
@@ -237,15 +239,5 @@ fun MainScreen(
 }
 
 
-/*  // Main navigation graph that handles screen content
-             HomeNavGraph(
-                 navController = innerNavController,
-                 rootNavController = navController,
-                 projectId = projectId,
-                 onScrollChange = { scrollingDown ->
 
-                     // Hide bottom nav when scrolling down, show when scrolling up
-                     isBottomNavVisible = !scrollingDown
-                 }
-             )*/
 

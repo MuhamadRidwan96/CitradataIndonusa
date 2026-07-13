@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
 
 package com.example.core_ui
+
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
@@ -93,16 +94,14 @@ fun AppTheme(
     //dynamicColor: Boolean = false,
     content: @Composable() () -> Unit
 ) {
-         val colorScheme =  if (darkTheme) darkScheme else lightScheme
+    val colorScheme = if (darkTheme) darkScheme else lightScheme
 
 
-
-
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = AppTypography,
-      motionScheme = MotionScheme.expressive(),
-    content = content
-  )
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = AppTypography,
+        motionScheme = MotionScheme.expressive(),
+        content = content
+    )
 }
 

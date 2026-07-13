@@ -17,12 +17,13 @@ import com.example.core_ui.R
 
 @Composable
 fun SwitchPpr(
+    modifier: Modifier = Modifier,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically

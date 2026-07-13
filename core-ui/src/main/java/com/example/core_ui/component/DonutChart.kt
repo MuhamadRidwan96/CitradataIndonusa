@@ -1,16 +1,18 @@
 package com.example.core_ui.component
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.domain.model.DonutData
 import kotlinx.collections.immutable.ImmutableList
@@ -20,7 +22,6 @@ import kotlinx.collections.immutable.ImmutableList
 fun DonutChart(
     modifier: Modifier = Modifier,
     data: ImmutableList<DonutData>,
-    animationDuration: Int = 1500,
     strokeWidth: Float = 40f //thickness donut
 
 ) {
@@ -28,35 +29,46 @@ fun DonutChart(
     val total = data.sumOf { it.value.toDouble() }.toFloat()
     if (total == 0f) return
 
-    val animatedProgress = remember { Animatable(0f) }
+    Box(
+        modifier = modifier.size(105.dp),
+        contentAlignment = Alignment.Center,
+    ){
+        Canvas(
+            modifier = Modifier
+                .size(100.dp)
+                .padding(8.dp)
+        ) {
+            var startAngle = -90f
 
-    LaunchedEffect(data) {
-        animatedProgress.animateTo(
-            1f,
-            animationSpec = tween(durationMillis = animationDuration)
-        )
-    }
+            data.forEach { item ->
+                val fraction = item.value/total
+                val sweep = 360 * fraction
 
-    Canvas(
-        modifier = modifier
-            .size(110.dp)
-            .padding(16.dp)
-    ) {
-        var startAngle = -90f
+                //Donut arc without fill
+                drawArc(
+                    color = item.color,
+                    startAngle = startAngle,
+                    sweepAngle = sweep,
+                    useCenter = false,
+                    style = Stroke(width = strokeWidth, cap = StrokeCap.Butt)
+                )
+                startAngle += 360 * fraction
+            }
+        }
 
-        data.forEach { item ->
-            val fraction = item.value/total
-            val sweep = 360 * fraction * animatedProgress.value
-
-            //Donut arc without fill
-            drawArc(
-                color = item.color,
-                startAngle = startAngle,
-                sweepAngle = sweep,
-                useCenter = false,
-                style = Stroke(width = strokeWidth, cap = StrokeCap.Butt)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Text(
+                text = total.toInt().toString(),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold
             )
-            startAngle += 360 * fraction
+            Text(
+                text = "Total",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

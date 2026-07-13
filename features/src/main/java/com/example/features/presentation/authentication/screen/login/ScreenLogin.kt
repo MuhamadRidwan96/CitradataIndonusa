@@ -30,6 +30,10 @@ fun ScreenLogin(
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
 
+    val formState by viewModel.formState.collectAsStateWithLifecycle()
+    val processState by viewModel.processState.collectAsStateWithLifecycle()
+    val isSubmitted by viewModel.isSubmitEnabled.collectAsStateWithLifecycle()
+
     // === Event Listener ===
     LaunchedEffect(onLoginSuccess) {
         viewModel.loginEvent.collectLatest { event ->
@@ -62,6 +66,7 @@ fun ScreenLogin(
 
 
     Scaffold(
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
         snackbarHost = {
             SnackbarHost(
                 hostState = snackBarHostState,
@@ -75,12 +80,8 @@ fun ScreenLogin(
                 )
             }
         }
+
     ) { padding ->
-
-        val formState by viewModel.formState.collectAsStateWithLifecycle()
-        val processState by viewModel.processState.collectAsStateWithLifecycle()
-        val isSubmitted by viewModel.isSubmitEnabled.collectAsStateWithLifecycle()
-
 
         LoginContent(
             formState = formState,

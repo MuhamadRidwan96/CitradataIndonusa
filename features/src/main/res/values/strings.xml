@@ -55,4 +55,5 @@
     <string name="with_ppr">Dengan PPR</string>
     <string name="timeline">Time Line</string>
     <string name="project_status">Project Status</string>
+    <string name="hello">Hello</string>
 </resources>
