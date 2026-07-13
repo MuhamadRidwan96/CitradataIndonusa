@@ -1,116 +1,164 @@
 package com.example.features.presentation.profile.screen.subscreen.update
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Autorenew
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.LabeledTextField
-import com.example.features.presentation.profile.screen.state.ProfileState
+import com.example.features.presentation.profile.screen.state.EditProfile
 
 @Composable
 fun UpdateProfileComponent(
+    profileState: EditProfile,
+    usernameChange: (String) -> Unit,
+    nameChange: (String) -> Unit,
+    emailChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    profileState: ProfileState,
-    usernameChange : (String) -> Unit,
-    nameChange:  (String) -> Unit,
-    emailChange : (String) -> Unit
-
+    onUpdateClick: () -> Unit = {}
 ) {
+
     val focusManager = LocalFocusManager.current
 
-    Column(
+    LazyColumn(
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+            .imePadding(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        Spacer(modifier = Modifier.height(24.dp))
+        item {
+            ProfileEditHeader(
+                name = profileState.name
+            )
+        }
 
-        ProfileTextField(
-            label = stringResource(R.string.username),
-            value = profileState.basicInfo.username,
-            onValueChange = usernameChange,
-            imeAction = ImeAction.Next,
-            onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
-        )
+        item {
 
-        ProfileTextField(
-            label = stringResource(R.string.full_name),
-            value = profileState.basicInfo.name,
-            onValueChange = nameChange,
-            imeAction = ImeAction.Next,
-            onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
-        )
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth()
+            ) {
 
-        ProfileTextField(
-            label = stringResource(R.string.email),
-            value = profileState.contactInfo.email,
-            onValueChange = emailChange,
-            keyboardType = KeyboardType.Email,
-            imeAction = ImeAction.Done,
-            onImeAction = { focusManager.clearFocus() }
-        )
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
 
-        Spacer(modifier = Modifier.height(32.dp))
+                    ProfileTextField(
+                        label = stringResource(R.string.username),
+                        value = profileState.username,
+                        onValueChange = usernameChange,
+                        imeAction = ImeAction.Next,
+                        onImeAction = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+                    )
 
-        UpdateButton {
-            focusManager.clearFocus()
+                    ProfileTextField(
+                        label = stringResource(R.string.full_name),
+                        value = profileState.fullName,
+                        onValueChange = nameChange,
+                        imeAction = ImeAction.Next,
+                        onImeAction = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+                    )
+
+                    ProfileTextField(
+                        label = stringResource(R.string.email),
+                        value = profileState.email,
+                        onValueChange = emailChange,
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Done,
+                        onImeAction = {
+                            focusManager.clearFocus()
+                        }
+                    )
+                }
+            }
+        }
+
+        item {
+
+            UpdateButton(
+                onClick = {
+                    focusManager.clearFocus()
+                    onUpdateClick()
+                }
+            )
         }
     }
 }
 
 @Composable
-fun ProfileHeader(hello: String, name: String, modifier: Modifier = Modifier) {
+private fun ProfileEditHeader(
+    name: String,
+    modifier: Modifier = Modifier
+) {
 
-    val updateStyle = MaterialTheme.typography.titleLarge.copy(
-        color = MaterialTheme.colorScheme.onSurface
-    )
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
-    Column( verticalArrangement = Arrangement.spacedBy(0.dp)) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-
+        Surface(
+            modifier = Modifier.size(110.dp),
+            shape = CircleShape,
+            tonalElevation = 4.dp
         ) {
-            Text(text = hello, style = updateStyle)
-            Text(text = name, style = updateStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Image(
-                painter = painterResource(R.drawable.waving_hand),
+
+            Icon(
+                imageVector = Icons.Default.AccountCircle,
                 contentDescription = null,
-                modifier = modifier
-                    .size(42.dp)
-                    .padding(8.dp),
-                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize(),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = stringResource(R.string.update_profile),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = name,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
@@ -124,7 +172,7 @@ private fun ProfileTextField(
     imeAction: ImeAction,
     keyboardType: KeyboardType = KeyboardType.Text,
 
-) {
+    ) {
     LabeledTextField(
         label = label,
         value = value,
@@ -136,20 +184,28 @@ private fun ProfileTextField(
 }
 
 @Composable
-private fun UpdateButton(onClick: () -> Unit) {
+private fun UpdateButton(
+    onClick: () -> Unit
+) {
+
     Button(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .sizeIn(minHeight = 56.dp),
+            .height(56.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
+
         Icon(
-            imageVector = Icons.Default.Autorenew,
+            imageVector = Icons.Default.Check,
             contentDescription = null
         )
-        Spacer(modifier = Modifier.size(6.dp))
-        Text(stringResource(R.string.update_profile))
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = stringResource(R.string.update_profile)
+        )
     }
 }
 

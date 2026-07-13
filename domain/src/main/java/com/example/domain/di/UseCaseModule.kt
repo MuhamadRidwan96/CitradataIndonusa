@@ -27,7 +27,9 @@ import com.example.domain.usecase.notification.GetAllNotificationUseCase
 import com.example.domain.usecase.notification.GetNotificationCountUseCase
 import com.example.domain.usecase.notification.ResetNotificationCountUseCase
 import com.example.domain.usecase.notification.UpdateNotificationCountUseCase
-import com.example.domain.usecase.profile.ApiProfileUseCase
+import com.example.domain.usecase.profile.ClearProfileUseCase
+import com.example.domain.usecase.profile.ObserverProfileUseCase
+import com.example.domain.usecase.profile.RefreshProfileUseCase
 import com.example.domain.usecase.room.DeleteFavoriteUseCase
 import com.example.domain.usecase.room.FavoriteUseCase
 import com.example.domain.usecase.room.GetAllFavoriteUseCase
@@ -195,8 +197,24 @@ object UseCaseModule {
     @Singleton
     fun providesApiProfileUseCase(
         repository: ProfileRepository,
+    ): ObserverProfileUseCase {
+        return ObserverProfileUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRefreshProfileUseCase(
+        repository: ProfileRepository,
         @IoDispatcher dispatcher: CoroutineDispatcher
-    ): ApiProfileUseCase {
-        return ApiProfileUseCase(repository, dispatcher)
+    ):RefreshProfileUseCase{
+        return RefreshProfileUseCase(repository,dispatcher)
+    }
+
+    @Provides
+    @Singleton
+    fun provideClearProfileUseCase(
+    repository: ProfileRepository,
+    @IoDispatcher dispatcher: CoroutineDispatcher) : ClearProfileUseCase{
+        return ClearProfileUseCase(repository,dispatcher)
     }
 }

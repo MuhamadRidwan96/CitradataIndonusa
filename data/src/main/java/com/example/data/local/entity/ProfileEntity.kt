@@ -1,15 +1,16 @@
-package com.example.domain.model
+package com.example.data.local.entity
 
-import androidx.compose.runtime.Immutable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Immutable
-data class UserProfile(
+@Entity(tableName = "profile")
+data class ProfileEntity (
+    @PrimaryKey val idUser: String,
     val name: String,
     val fullName:String,
     val email: String,
     val photo: String,
     val roleName : String,
-    val idUser: String,
     val idUserMaster: String?,
     val idRole: String,
     val idProvince: String?,

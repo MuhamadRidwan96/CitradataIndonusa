@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.data.local.dao.AppDatabase
 import com.example.data.local.dao.FavoriteDAO
 import com.example.data.local.dao.NotificationDao
+import com.example.data.local.dao.ProfileDAO
 import com.example.data.remote.api.ApiHelper
 import com.example.data.remote.api.ApiHelperImpl
 import com.example.data.remote.api.ApiService
@@ -120,6 +121,12 @@ object DataModule {
 
     @Provides
     @Singleton
+    fun provideProfileDao(db: AppDatabase) : ProfileDAO {
+        return db.profileDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideNotificationRepository(dao: NotificationDao): NotificationRepository {
         return NotificationRepositoryImpl(dao)
     }
@@ -132,7 +139,8 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideProfileRepository(apiHelper: ApiHelper): ProfileRepository {
-        return ProfileRepositoryImpl(apiHelper)
+    fun provideProfileRepository( apiHelper: ApiHelper,dao: ProfileDAO): ProfileRepository {
+        return ProfileRepositoryImpl(apiHelper,dao)
     }
+
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,13 +48,16 @@ fun MembershipScreen(
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBarWithBack(
                 title = stringResource(R.string.membership),
-                onBackClick = onNavigateBack
+                onBackClick = onNavigateBack,
+
             )
         }
     ) { paddingValues ->
+
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -64,13 +68,13 @@ fun MembershipScreen(
 
             Text(
                 text = "Choose Your Plan",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
                 text = "Select the membership that works best for you",
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray
             )
 

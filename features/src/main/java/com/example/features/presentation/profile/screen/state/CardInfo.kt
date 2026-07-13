@@ -10,5 +10,14 @@ data class CardInfo(
     val address: String,
     val company: String,
     val phone: String?,
-    val dateEnd: String
+    val dateEnd: String,
+    val username : String
+)
+
+@Immutable
+data class EditProfile(
+    val name: String,
+    val fullName: String,
+    val email: String,
+    val username : String
 )

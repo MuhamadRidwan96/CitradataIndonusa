@@ -2,17 +2,17 @@ package com.example.data.remote.api
 
 import com.example.domain.model.CityModel
 import com.example.domain.model.FilterDataModel
-import com.example.domain.response.DataResponse
-import com.example.domain.response.LoginResponse
-import com.example.domain.response.ProjectDetailResponse
-import com.example.domain.response.RegisterResponse
 import com.example.domain.model.LoginModel
 import com.example.domain.model.ProvinceModel
 import com.example.domain.model.RegisterModel
+import com.example.domain.response.DataResponse
+import com.example.domain.response.LoginResponse
 import com.example.domain.response.ProfileResponse
+import com.example.domain.response.ProjectDetailResponse
 import com.example.domain.response.ProvinceResponse
 import com.example.domain.response.RecordData
 import com.example.domain.response.RegenciesResponse
+import com.example.domain.response.RegisterResponse
 import com.example.domain.response.StatisticsResponse
 import com.example.domain.response.UpdateProfileResponse
 import okhttp3.ResponseBody
@@ -31,6 +31,7 @@ interface ApiHelper{
     suspend fun filterData(page: Int, limit: Int,filteredData: FilterDataModel?): Response<ResponseBody>
     suspend fun saveToken(userId:String,token: String) : Response<ResponseBody>
     suspend fun getStatistic(): Response<StatisticsResponse>
+
 
 }
 
