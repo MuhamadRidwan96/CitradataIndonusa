@@ -20,7 +20,7 @@ fun <T> Response<T>.toResult(): Result<T> {
     } else {
         val errorBody = this.errorBody()?.string()
         val errorMessage = try {
-            errorBody?.let {
+            errorBody?.let {    
                 val parseMessage = ErrorHandle.parseErrorBody(it) ?: Constant.UNKNOWN_ERROR
                 if (parseMessage == "Token Time Expired.") {
                     throw TokenExpiredException(parseMessage)

@@ -10,6 +10,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
@@ -20,17 +21,26 @@ private data class StatusChipColors(
 )
 
 @Composable
-fun StatusChip(status: String) {
+fun StatusChip(status: String, modifier: Modifier = Modifier) {
     val chipColors = remember(status) {
         when (status.lowercase()) {
             "planning" -> StatusChipColors(Color(0xFF4CAF50), Color.White)
-            "post tender", "pilling work","piling work" -> StatusChipColors(Color(0xFFFFEB3B), Color.Black)
+            "post tender", "pilling work", "piling work" -> StatusChipColors(
+                Color(0xFFFFEB3B),
+                Color.Black
+            )
+
             "construction start", "project canceled" -> StatusChipColors(
                 Color(0xFFF44336),
                 Color.White
             )
 
             "under construction", "final project" -> StatusChipColors(
+                Color(0xFF2196F3),
+                Color.White
+            )
+
+            "under construction & tender" -> StatusChipColors(
                 Color(0xFF2196F3),
                 Color.White
             )
@@ -44,13 +54,13 @@ fun StatusChip(status: String) {
     Text(
         text = status,
         color = chipColors.textColor,
-        modifier = Modifier
+        modifier = modifier
             .background(
                 color = chipColors.backgroundColor,
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 12.dp, vertical = 6.dp),
-        style = MaterialTheme.typography.bodySmall,
+        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )

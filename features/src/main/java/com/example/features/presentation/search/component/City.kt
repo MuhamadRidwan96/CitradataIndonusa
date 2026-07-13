@@ -1,7 +1,7 @@
 package com.example.features.presentation.search.component
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -20,42 +20,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.common.Result
-import com.example.domain.response.RegenciesResponse
-import com.example.features.presentation.search.viewmodel.CityViewModel
-import kotlinx.coroutines.delay
+import com.example.features.presentation.search.state.LocationState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CityBottomSheet(
+    modifier: Modifier = Modifier,
     idProvince: String?,
     selectedCityName: String,
-    cityList: Result<RegenciesResponse>,
-    onCitySelected: (String, String?, String) -> Unit,
-    viewModel: CityViewModel,
-    modifier: Modifier = Modifier,
+    onCitySelect: (String, String?, String) -> Unit,
+    onGetCity: (String?) -> Unit,
+    state: LocationState
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(idProvince) {
+    val currentGetCity by rememberUpdatedState(onGetCity)
 
-        if (!idProvince.isNullOrEmpty()) {
-            delay(1000)
-            viewModel.getCity(idProvince)
-        }
+    LaunchedEffect(expanded, idProvince) {
+        if (!expanded) return@LaunchedEffect
+        idProvince
+            ?.takeIf { it.isNotBlank() }
+            ?.let {
+                currentGetCity(it)
+            }
     }
-
-    val cities = when (cityList) {
-        is Result.Success -> cityList.data.data
-        is Result.Loading -> null
-        is Result.Error -> emptyList()
-    }
-
 
     Surface(
         shape = RoundedCornerShape(8.dp),
@@ -64,7 +59,6 @@ fun CityBottomSheet(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 42.dp)
-            .clickable { expanded = !expanded }
     ) {
 
         ExposedDropdownMenuBox(
@@ -73,6 +67,7 @@ fun CityBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
+
             TextField(
                 readOnly = true,
                 value = selectedCityName,
@@ -84,37 +79,37 @@ fun CityBottomSheet(
                     .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable)
                     .fillMaxWidth()
                     .height(45.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    errorIndicatorColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent,
-                    errorContainerColor = Color.Transparent
-                )
+                  colors = TextFieldDefaults.colors(
+                      focusedIndicatorColor = Color.Transparent,
+                      unfocusedIndicatorColor = Color.Transparent,
+                      disabledIndicatorColor = Color.Transparent,
+                      errorIndicatorColor = Color.Transparent,
+                      focusedContainerColor = Color.Transparent,
+                      unfocusedContainerColor = Color.Transparent,
+                      disabledContainerColor = Color.Transparent,
+                      errorContainerColor = Color.Transparent
+                  ),
+                enabled = idProvince?.isNotBlank() == true
 
             )
-
 
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                when {
-                    cities == null -> DropdownMenuItem(
+                when (val city = state.cities) {
+                    is Result.Loading -> DropdownMenuItem(
                         enabled = false,
                         text = { Text("Memuat...") },
                         onClick = {}
                     )
 
-                    cities.isEmpty() -> DropdownMenuItem(
+                    is Result.Error -> DropdownMenuItem(
                         text = { Text("Tidak ada kota tersedia") },
                         onClick = { expanded = false }
                     )
 
-                    else -> cities.forEach { city ->
+                    is Result.Success -> city.data.data.forEach { city ->
                         DropdownMenuItem(
                             text = {
                                 Text(
@@ -123,7 +118,7 @@ fun CityBottomSheet(
                                 )
                             },
                             onClick = {
-                                onCitySelected(city.idCity, city.idProvince, city.cityName)
+                                onCitySelect(city.idCity, city.idProvince, city.cityName)
                                 expanded = false
                             }
                         )

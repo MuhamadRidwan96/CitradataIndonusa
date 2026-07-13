@@ -47,7 +47,7 @@ fun ProgressProjectComponent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .animateContentSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -92,19 +92,30 @@ private fun ProgressReportCard(project: ProjectPpr) {
                 ) {
                     Text(
                         text = project.pprCode,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
                         modifier = Modifier.weight(1f)
                     )
                     StatusChip(status = project.categoryName)
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                Text(
-                    text = formatToFullDate(project.pprCreated),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
+                    Text(
+                        text = "Date Created : ",
+                        style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
+                    )
+                    Text(
+                        text = formatToFullDate(project.pprCreated),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                        color = Color.Gray
+                    )
+                }
+
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -112,6 +123,7 @@ private fun ProgressReportCard(project: ProjectPpr) {
                     text = project.newInfo.cleanInfo(),
                     style = MaterialTheme.typography.bodyMedium
                 )
+
             }
         }
     }

@@ -4,12 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.local.entity.FavoriteProjectEntity
 import com.example.data.utils.Constant
+import com.example.domain.di.IoDispatcher
 import com.example.domain.model.FavoriteProject
 import com.example.domain.usecase.room.DeleteFavoriteUseCase
 import com.example.domain.usecase.room.GetAllFavoriteUseCase
 import com.example.features.presentation.home.screen.DataEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
     private val getAllFavoriteUseCase: GetAllFavoriteUseCase,
-    private val deleteFavoriteUseCase: DeleteFavoriteUseCase
+    private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _dataEvent = Channel<DataEvent>(Channel.BUFFERED)
@@ -34,7 +36,7 @@ class FavoriteViewModel @Inject constructor(
     }
 
     private fun observeFavorite() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             getAllFavoriteUseCase().collect { fav ->
                 _favorites.value = fav
             }
@@ -43,7 +45,7 @@ class FavoriteViewModel @Inject constructor(
 
     fun toggleFavorite(project: FavoriteProjectEntity) {
         try {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(dispatcher) {
                 val favorite = _favorites.value.any { it.idProject == project.idProject }
                 if (favorite) deleteFavoriteUseCase(project.idProject)
                 _dataEvent.send(DataEvent.ShowSnackBar("Favorite Berhasil dihapus!"))

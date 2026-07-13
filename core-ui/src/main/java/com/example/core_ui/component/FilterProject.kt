@@ -21,34 +21,39 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.core_ui.R
-import com.example.core_ui.utils.toWithIf
+import com.example.core_ui.utils.toWhiteIf
+import kotlinx.collections.immutable.ImmutableList
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FilterCategoryRow(
-    categories: List<FilterCategory>,
-    selectedCategoryProjectId: Int?,
-    onCategoryProjectSelected: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
+    categories: ImmutableList<FilterCategory>,
+    selectedCategoryProjectId: Int?,
+    onCategoryProjectSelect: (Int, String) -> Unit,
+
     @DrawableRes icon: Int,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(
@@ -63,20 +68,21 @@ fun FilterCategoryRow(
 
             Text(
                 text = stringResource(R.string.cat_project),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
         }
 
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.
+            spacedBy(12.dp)
         ) {
             items(categories) { category ->
                 val isSelected = category.id == selectedCategoryProjectId
                 Card(
-                    modifier = modifier
+                    modifier = Modifier
                         .height(100.dp)
                         .width(75.dp),
                     colors = CardDefaults.cardColors(
@@ -92,34 +98,26 @@ fun FilterCategoryRow(
                         verticalArrangement = Arrangement.Center,
                         modifier = Modifier
                             .fillMaxSize()
-                            .clickable { onCategoryProjectSelected(category.id, category.label) }
+                            .clickable { onCategoryProjectSelect(category.id, category.label) }
                             .padding(8.dp)
                     ) {
 
-                        Image(
+
+
+                        Icon(
                             painter = painterResource(category.icon),
                             contentDescription = category.label,
                             modifier = Modifier
                                 .size(48.dp)
                                 .clip(CircleShape)
-                                .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
+                                .background(if (isSelected) MaterialTheme.colorScheme.surfaceContainerHighest else MaterialTheme.colorScheme.surface)
+                                .toWhiteIf(isSelected)
                                 .padding(8.dp)
-                                .toWithIf(isSelected),
-                            contentScale = ContentScale.Fit,
-
-                            )
+                        )
                         Text(
                             text = category.label.uppercase(),
-                            color = if (isSelected) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.outline,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                lineHeight = 12.sp,
-                                letterSpacing = 0.8.sp,
-                                textAlign = TextAlign.Center,
-                                fontFamily = FontFamily.SansSerif
-                            ),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.labelSmallEmphasized,
                             textAlign = TextAlign.Center,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
@@ -148,6 +146,7 @@ fun FilterCategoryRow(
     }
 }
 
+@Immutable
 data class FilterCategory(
     val id: Int,
     val label: String,

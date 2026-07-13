@@ -11,6 +11,9 @@ import com.example.core_ui.model.BenefitPlan
 import com.example.core_ui.model.CompareFeature
 import com.example.core_ui.model.Feature
 import com.example.core_ui.model.SubscriptionPlan
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 fun rememberSubscriptionPlans(): List<SubscriptionPlan> = remember {
@@ -96,13 +99,13 @@ fun rememberBenefitPlans():List<BenefitPlan> = remember{
 }
 
 @Composable
-fun rememberComparePlans(): List<CompareFeature> = remember {
-    listOf(
+fun rememberComparePlans(): ImmutableList<CompareFeature> = remember {
+    (persistentListOf(
         CompareFeature("Ad-free experience", listOf("Basic", "Premium")),
         CompareFeature("Unlimited access", listOf("Premium")),
         CompareFeature("Download content", listOf("Basic", "Premium")),
         CompareFeature("Priority support", listOf("Premium")),
         CompareFeature("Exclusive content", listOf("Premium"))
-    )
+    ).toPersistentList())
 }
 

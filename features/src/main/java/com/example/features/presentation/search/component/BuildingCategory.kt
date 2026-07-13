@@ -15,18 +15,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 
 @Composable
 fun BuildingCategory(
+    modifier: Modifier = Modifier,
     selectedCategoryId: Int?,
-    onCategorySelected: (Int? , String) -> Unit
+    onCategorySelect: (Int? , String) -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -44,16 +44,17 @@ fun BuildingCategory(
             )
             Text(
                 text = stringResource(R.string.building_category),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+
             )
         }
 
         SearchChips(
             selectedCategoryId = selectedCategoryId,
-            onCategorySelected = {id,name ->
-                onCategorySelected(id,name) },
+            onCategorySelect= {id,name ->
+                onCategorySelect(id,name) },
             modifier = Modifier.height(350.dp)
         )
     }

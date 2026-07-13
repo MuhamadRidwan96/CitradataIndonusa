@@ -1,66 +1,74 @@
 package com.example.core_ui.component
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 fun LabeledTextField(
     label: String,
     value: String,
-    onValueChange: (String) -> Unit,
-    keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction,
-    onImeAction: () -> Unit
+    onImeAction: () -> Unit,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
 ) {
 
-    Text(text = label, fontSize = 14.sp)
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
 
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType,
-            imeAction = imeAction
-        ),
-        keyboardActions = KeyboardActions(
-            onAny = { onImeAction() }
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .drawWithCache {
-                val brush = Brush.horizontalGradient(listOf(Color.LightGray, Color.LightGray))
-                onDrawBehind {
-                    drawRoundRect(
-                        brush = brush,
-                        style = Stroke(width = 0.5.dp.toPx()),
-                        cornerRadius = CornerRadius(16.dp.toPx())
-                    )
-                }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(
+            modifier = Modifier.height(8.dp)
+        )
+
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            enabled = enabled,
+            readOnly = readOnly,
+            singleLine = true,
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = {
+                Text("")
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = keyboardType,
+                imeAction = imeAction
+            ),
+            keyboardActions = when (imeAction) {
+                ImeAction.Next -> KeyboardActions(
+                    onNext = { onImeAction() }
+                )
+
+                ImeAction.Done -> KeyboardActions(
+                    onDone = { onImeAction() }
+                )
+
+                else -> KeyboardActions()
             }
-            .sizeIn(48.dp),
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = MaterialTheme.colorScheme.background,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.onPrimary
-        ),
-        shape = RoundedCornerShape(16.dp),
-        singleLine = true,
-    )
+        )
+    }
 }

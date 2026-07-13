@@ -19,22 +19,28 @@ import com.example.domain.response.AuthResponse
 import com.example.features.presentation.authentication.screen.component.LoginContent
 import kotlinx.coroutines.flow.collectLatest
 
+
+@Suppress("EffectKeys")
 @Composable
 fun ScreenLogin(
+    modifier: Modifier = Modifier,
     onLoginSuccess: () -> Unit,
     onSignUpClick: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
+
     val formState by viewModel.formState.collectAsStateWithLifecycle()
     val processState by viewModel.processState.collectAsStateWithLifecycle()
     val isSubmitted by viewModel.isSubmitEnabled.collectAsStateWithLifecycle()
-    val authState by viewModel.authState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    // === Event Listener ===
+    LaunchedEffect(onLoginSuccess) {
         viewModel.loginEvent.collectLatest { event ->
             when (event) {
-                is LoginEvent.Success -> onLoginSuccess()
+                is LoginEvent.Success -> {
+                    onLoginSuccess()
+                }
                 is LoginEvent.ShowSnackBar -> {
                     snackBarHostState.showSnackbar(event.message)
                 }
@@ -42,24 +48,29 @@ fun ScreenLogin(
         }
     }
 
-    LaunchedEffect(authState) {
-        when (authState) {
-            is AuthResponse.Success -> onLoginSuccess()
-            is AuthResponse.Error -> {
-                if ((authState as AuthResponse.Error).message.isNotBlank()) {
-                    snackBarHostState.showSnackbar("Gagal login dengan google")
+    // === AuthState Listener (Google Sign-in) ===
+    LaunchedEffect(onLoginSuccess) {
+        viewModel.authState.collectLatest { auth ->
+            when (auth) {
+                is AuthResponse.Success -> onLoginSuccess()
+                is AuthResponse.Error -> {
+                    if (auth.message.isNotBlank()) {
+                        snackBarHostState.showSnackbar("Gagal login dengan google")
+                    }
                 }
-            }
 
-            else -> {}
+                else -> Unit
+            }
         }
     }
 
+
     Scaffold(
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
         snackbarHost = {
             SnackbarHost(
                 hostState = snackBarHostState,
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp)
+                modifier = modifier.padding(start = 8.dp, end = 8.dp)
             ) { data ->
                 Snackbar(
                     snackbarData = data,
@@ -69,7 +80,9 @@ fun ScreenLogin(
                 )
             }
         }
+
     ) { padding ->
+
         LoginContent(
             formState = formState,
             processState = processState,

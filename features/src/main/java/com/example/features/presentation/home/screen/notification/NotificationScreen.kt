@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.NotificationModel
-import com.example.features.presentation.authentication.screen.signup.MyTopAppBar
+import com.example.features.presentation.authentication.screen.signup.component.MyTopAppBar
 import com.example.features.presentation.home.screen.NotificationViewModel
 import java.text.DateFormat
 import java.util.Date
@@ -44,8 +44,10 @@ import java.util.Date
 
 @Composable
 fun NotificationScreen(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
     viewModel: NotificationViewModel = hiltViewModel(),
-    onBackClick: () -> Unit
+
 ) {
 
     val notifications by viewModel.notification.collectAsStateWithLifecycle()
@@ -59,7 +61,7 @@ fun NotificationScreen(
         },
         content = { paddingValues ->
 
-            LazyColumn(modifier = Modifier.padding(paddingValues)) {
+            LazyColumn(modifier = modifier.padding(paddingValues)) {
                 items(notifications) { notification ->
                     NotificationItem(
                         notification = notification,
@@ -72,7 +74,11 @@ fun NotificationScreen(
 
 
 @Composable
-fun NotificationItem(notification: NotificationModel, onClick: () -> Unit, onDelete: () -> Unit) {
+fun NotificationItem(
+    modifier: Modifier = Modifier,
+    notification: NotificationModel,
+    onClick: () -> Unit,
+    onDelete: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
 
     val backgroundColor = if (!notification.isRead)
@@ -81,10 +87,10 @@ fun NotificationItem(notification: NotificationModel, onClick: () -> Unit, onDel
         MaterialTheme.colorScheme.surface
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .padding(8.dp),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp),
         shape = RoundedCornerShape(12.dp)
     ) {

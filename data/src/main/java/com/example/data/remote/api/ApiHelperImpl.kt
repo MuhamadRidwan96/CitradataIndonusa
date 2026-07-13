@@ -77,5 +77,4 @@ class ApiHelperImpl @Inject constructor(
         return apiService.getStatistic()
     }
 
-
 }

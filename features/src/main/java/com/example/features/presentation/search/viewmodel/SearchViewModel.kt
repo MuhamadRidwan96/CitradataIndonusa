@@ -18,6 +18,7 @@ import com.example.domain.usecase.room.GetAllFavoriteUseCase
 import com.example.domain.usecase.room.InsertFavoriteUseCase
 import com.example.features.presentation.home.utils.toFilterDataModel
 import com.example.features.presentation.search.state.ProjectFilterState
+import com.example.features.presentation.search.state.SearchBottomSheetAction
 import com.example.features.presentation.search.state.hasFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +40,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel yang mengelola data pencarian dengan berbagai parameter
+ * Menggunakan single ProjectFilterState sebagai sumber kebenaran (SSOT),
+ * sehingga UI dapat mengamati state secara terpadu.
+ *
+ * ViewModel ini mendukung:
+ * - Caching province & city agar tidak fetch ulang
+ * - SharedFlow event untuk one-time event (snackbar, toast)
+ * - StateFlow untuk UI state yang stabil
+ */
+
+
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -49,38 +62,50 @@ class SearchViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
-    // State untuk chip (final, hanya berubah kalau tekan Cari)
-    // ✅ state final yang dipakai untuk chip + trigger search
+    /**
+     * State utama untuk UI.
+     * Berisi data province, city, start date, end date, category project dll.
+     */
     private val _appliedState = MutableStateFlow(ProjectFilterState())
     val appliedState = _appliedState.asStateFlow()
 
-    // ✅ state sementara yang dipakai di bottom sheet
+    /** ✅ State sementara yang dipakai di bottom sheet
+     * Berisi data province, city, start date, end date, category project dll.
+     */
     private val _draftState = MutableStateFlow(ProjectFilterState())
     val draftState = _draftState.asStateFlow()
 
+    /** Status pencarian */
     private val _hasSearched = MutableStateFlow(false)
     val hasSearched = _hasSearched.asStateFlow()
 
+    /** Event token expired*/
     private val _tokenExpired = MutableSharedFlow<Unit>()
 
+    /** Event data not found or empty data */
     private val _dataNotFound = MutableSharedFlow<Unit>()
 
+    /** Event data (Snack bar, toast ,dll) */
     private val _dataEvent = Channel<DataEvent>(Channel.BUFFERED)
     val dataEvent = _dataEvent.receiveAsFlow()
 
+    /** Data Favorite */
     private val _favorite = MutableStateFlow<List<FavoriteProject>>(emptyList())
     val favorite: StateFlow<List<FavoriteProject>> = _favorite
 
+    /** Initialized */
     private val _isInitialized = MutableStateFlow(false)
     val isInitialized = _isInitialized.asStateFlow()
 
+
     init {
-        observeFavorite()
+        observeFavorite() // Start observation favorite
         viewModelScope.launch {
             _isInitialized.value = true
         }
     }
 
+    /** Observation favorite item*/
     private fun observeFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
             favoriteUseCase().collect { fav ->
@@ -89,6 +114,107 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    /** Handle filter action*/
+    fun onAction(action: SearchBottomSheetAction) {
+        when (action) {
+            is SearchBottomSheetAction.SetWithPpr -> {
+                updateDraft {
+                    it.copy(
+                        withPpr = action.value,
+                        ppr = if (action.value) "PPR" else ""
+                    )
+                }
+            }
+
+            is SearchBottomSheetAction.SetStartDate -> {
+                updateDraft {
+                    it.copy(
+                        startDate = action.date
+                    )
+                }
+            }
+
+            is SearchBottomSheetAction.SetEndDate -> {
+                updateDraft {
+                    it.copy(
+                        endDate = action.date
+                    )
+                }
+            }
+
+            is SearchBottomSheetAction.ClearStartDate -> {
+                updateDraft {
+                    it.copy(
+                        startDate = ""
+                    )
+                }
+            }
+
+            is SearchBottomSheetAction.ClearEndDate -> {
+                updateDraft {
+                    it.copy(
+                        endDate = ""
+                    )
+                }
+            }
+
+            is SearchBottomSheetAction.SelectStatus -> {
+                updateDraft {
+                    it.copy(
+                        idProjectStatusCategory = action.id,
+                        statusCategory = action.name
+                    )
+                }
+            }
+
+            is SearchBottomSheetAction.SelectBuildingCategory -> {
+                    updateDraft {
+                        it.copy(
+                            idBuildingCategory = action.id,
+                            buildingCategoryName = action.name
+                        )
+                    }
+            }
+
+            is SearchBottomSheetAction.SelectProjectCategory -> {
+                updateDraft {
+                    it.copy(
+                        idProjectCategory = action.id,
+                        projectCategoryName = action.name
+                    )
+                }
+            }
+
+            is SearchBottomSheetAction.QueryChange -> {
+                updateDraft { it.copy(
+                    address = action.setAddress
+                ) }
+            }
+            is SearchBottomSheetAction.SelectProvince -> {
+                updateDraft { it.copy(
+                    idProvince = action.id,
+                    provinceName = action.name,
+                    idCity = null,
+                    cityName = ""
+                )}
+            }
+            is SearchBottomSheetAction.SelectCity -> {
+                updateDraft { it.copy(
+                    idCity = action.id,
+                    idProvince = action.provinceId,
+                    cityName = action.name
+                ) }
+            }
+
+            is SearchBottomSheetAction.Apply -> {
+                applyFilters()
+            }
+
+            else -> Unit
+        }
+    }
+
+    /** Handle favorite action*/
     fun toggleFavorite(fav: FavoriteProjectEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -108,8 +234,9 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    /** Observe paging data*/
     val dataPaging: Flow<PagingData<RecordData>> =
-        _appliedState.debounce(300).distinctUntilChanged()
+        _appliedState.debounce(1000).distinctUntilChanged()
             .flatMapLatest { state ->
 
                 if (state.hasFilter()) {
@@ -139,17 +266,18 @@ class SearchViewModel @Inject constructor(
             }.cachedIn(viewModelScope)
 
 
-    // dipanggil ketika user update filter di bottom sheet
+    /**dipanggil ketika user update filter di bottom sheet*/
     fun updateDraft(block: (ProjectFilterState) -> ProjectFilterState) {
         _draftState.update(block)
     }
 
-    // dipanggil ketika user tekan tombol Cari
+    /** dipanggil ketika user tekan tombol Cari*/
     fun applyFilters() {
         _appliedState.value = _draftState.value
         _hasSearched.value = true
     }
 
+    /** Clear date range state*/
     fun clearDateRange() {
         _appliedState.update {
             it.copy(
@@ -164,27 +292,27 @@ class SearchViewModel @Inject constructor(
             )
         }
     }
-
+    /** Clear Category state*/
     fun clearCategory() {
         _appliedState.update { it.copy(idProjectCategory = null, projectCategoryName = "") }
         _draftState.update { it.copy(idProjectCategory = null, projectCategoryName = "") }
     }
-
+    /** Clear PPR state*/
     fun clearPpr() {
         _appliedState.update { it.copy(withPpr = false, ppr = "") }
         _draftState.update { it.copy(withPpr = false, ppr = "") }
     }
-
+    /** Clear province state*/
     fun clearProvince() {
-        _appliedState.update { it.copy(idProvince = "", provinceName = "") }
-        _draftState.update { it.copy(idProvince = "", provinceName = "") }
+        _appliedState.update { it.copy(idProvince = null, provinceName = "") }
+        _draftState.update { it.copy(idProvince = null, provinceName = "") }
     }
-
+    /** Clear City state*/
     fun clearCity() {
-        _appliedState.update { it.copy(idCity = "", cityName = "") }
-        _draftState.update { it.copy(idCity = "", cityName = "") }
+        _appliedState.update { it.copy(idCity = null, cityName = "") }
+        _draftState.update { it.copy(idCity = null, cityName = "") }
     }
-
+    /** Clear status state*/
     fun clearStatus() {
         _appliedState.update {
             it.copy(
@@ -194,7 +322,7 @@ class SearchViewModel @Inject constructor(
         }
         _draftState.update { it.copy(idProjectStatusCategory = null, statusCategory = "") }
     }
-
+    /** Clear building state*/
     fun clearBuilding() {
         _appliedState.update {
             it.copy(
@@ -204,7 +332,7 @@ class SearchViewModel @Inject constructor(
         }
         _draftState.update { it.copy(idBuildingCategory = null, buildingCategoryName = "") }
     }
-
+    /** Handle action logout*/
     fun onLogoutClicked() {
         viewModelScope.launch(Dispatchers.IO) {
             logoutUseCase()

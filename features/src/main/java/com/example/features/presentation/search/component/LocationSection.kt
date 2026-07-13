@@ -10,38 +10,30 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core_ui.R
 import com.example.core_ui.component.CDATextField
-import com.example.features.presentation.search.viewmodel.CityViewModel
-import com.example.features.presentation.search.viewmodel.ProvinceViewModel
+import com.example.features.presentation.search.state.ProjectFilterState
+import com.example.features.presentation.search.state.SearchBottomSheetAction
+import com.example.features.presentation.search.viewmodel.LocationViewModel
 
 @Composable
 fun LocationSection(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onProvinceSelected: (String?, String) -> Unit,
-    onCitySelected: (String?, String?, String) -> Unit,
+    searchState: ProjectFilterState,
+    onAction: (SearchBottomSheetAction) -> Unit,
     modifier: Modifier = Modifier,
-    provinceViewModel: ProvinceViewModel,
-    cityViewModel: CityViewModel
+    locationVM: LocationViewModel = hiltViewModel()
 ) {
 
-    val selectedProvinceName by provinceViewModel.provinceStateViewModel.collectAsState()
-    val selectedCity by cityViewModel.cityState.collectAsState()
-    val cityList by cityViewModel.cityList.collectAsState()
-    var localQuery by remember { mutableStateOf(query) }
+    val state by locationVM.locationState.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -63,38 +55,38 @@ fun LocationSection(
             )
             Text(
                 text = stringResource(R.string.location),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
             )
         }
+
         ProvinceBottomSheet(
-            selectedProvince = selectedProvinceName.provinceName,
-            viewModel = provinceViewModel,
-            onProvinceSelected = { id, name ->
-                onProvinceSelected(id, name)
-                provinceViewModel.updateProvinces(id, name)
-                cityViewModel.setProvinceToCity(id)
-            }
+            selectedProvince = searchState.provinceName,
+            onGetProvince = locationVM::getProvinces,
+            onProvinceSelect = { id, name ->
+                onAction(SearchBottomSheetAction.SelectProvince(id, name))
+            },
+            state = state,
         )
 
         CityBottomSheet(
-            idProvince = selectedProvinceName.idProvince,
-            selectedCityName = selectedCity.cityName,
-            cityList = cityList,
-            onCitySelected = { idCity, idProv, city ->
-                onCitySelected(idCity, idProv, city)
-                cityViewModel.updateCity(idCity, idProv, city)
+            idProvince = searchState.idProvince,
+            selectedCityName = searchState.cityName,
+            onCitySelect = {  id,provinceId,city ->
+                onAction(SearchBottomSheetAction.SelectCity(id,provinceId,city))
             },
-            viewModel = cityViewModel
+            onGetCity = locationVM::getCity,
+            state = state,
         )
 
         CDATextField(
             icon = R.drawable.map_pin_house,
-            value =localQuery,
+            value = searchState.address,
             onValueChange = {
-                localQuery = it
-                onQueryChange(it)
+                onAction(
+                    SearchBottomSheetAction.QueryChange(it)
+                )
             },
             placeholder = stringResource(R.string.masukan_alamat)
         )

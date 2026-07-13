@@ -1,5 +1,6 @@
 package com.example.features.presentation.authentication.screen.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,44 +18,41 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.core_ui.R
 
 @Composable
 fun LoginButtonSection(
+    modifier: Modifier = Modifier,
     isLoading: Boolean,
     isSubmitEnabled: Boolean,
     onLoginClick: () -> Unit,
     onGoogleClick: () -> Unit
 
 ) {
-    val modifier = Modifier
-        .height(56.dp)
-        .fillMaxWidth()
 
     Column(
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(13.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
 
         LoginButton(
             isLoading = isLoading,
             isSubmitEnabled = isSubmitEnabled,
-            onLoginClick = onLoginClick,
-            modifier = modifier
+            onLoginClick = onLoginClick
         )
         TextDivider()
+
         OutlinedButtonSign(
-            onGoogleClick = onGoogleClick,
-            modifier = modifier
+            onGoogleClick = onGoogleClick
         )
     }
 }
@@ -67,7 +65,9 @@ private fun LoginButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(50.dp),
         onClick = onLoginClick,
         enabled = isSubmitEnabled
     ) {
@@ -81,9 +81,7 @@ private fun LoginButton(
         } else {
             Text(
                 text = stringResource(R.string.sign_in),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
             )
         }
     }
@@ -101,12 +99,10 @@ private fun TextDivider() {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            text = stringResource(R.string.or),
+            text = "Or",
             modifier = Modifier.padding(horizontal = 8.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.SansSerif
+            style = MaterialTheme.typography.bodySmall
         )
         HorizontalDivider(
             modifier = Modifier
@@ -119,11 +115,17 @@ private fun TextDivider() {
 
 @Composable
 private fun OutlinedButtonSign(onGoogleClick: () -> Unit, modifier: Modifier = Modifier) {
-    val painter = painterResource(id = R.drawable.google)
+    val painter = remember { R.drawable.google }
 
     OutlinedButton(
         onClick = onGoogleClick,
         modifier = modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        border = BorderStroke(
+            width = 1.5.dp,
+            color = MaterialTheme.colorScheme.outline
+        )
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -132,7 +134,7 @@ private fun OutlinedButtonSign(onGoogleClick: () -> Unit, modifier: Modifier = M
         ) {
 
             Icon(
-                painter = painter,
+                painter = painterResource(painter),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
                 tint = Color.Unspecified // Preserve original colors
@@ -141,9 +143,8 @@ private fun OutlinedButtonSign(onGoogleClick: () -> Unit, modifier: Modifier = M
 
             Text(
                 text = stringResource(R.string.login_with_google),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
 
             )
         }

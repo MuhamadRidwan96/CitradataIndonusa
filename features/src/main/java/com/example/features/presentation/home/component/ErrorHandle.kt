@@ -1,6 +1,5 @@
 package com.example.features.presentation.home.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,13 +18,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ErrorBottomSheet(
+    modifier: Modifier = Modifier,
     message: String,
     onDismiss: () -> Unit,
     sheetState: SheetState
@@ -36,7 +35,7 @@ fun ErrorBottomSheet(
         containerColor = MaterialTheme.colorScheme.surface
     ) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(24.dp)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -57,29 +56,13 @@ fun ErrorBottomSheet(
 }
 
 @Composable
-fun PagingErrorItem(message: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = message,
-            textAlign = TextAlign.Center,
-            color = Color.Red,
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Composable
 fun FullScreenError(
+    modifier: Modifier = Modifier,
     error: String,
     onRetry: () -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -92,11 +75,32 @@ fun FullScreenError(
 }
 
 @Composable
-fun FullScreenLoading() {
+fun FullScreenLoading(
+    modifier: Modifier = Modifier,
+) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
     }
 }
+
+/*@Composable
+fun PagingErrorItem(
+    message: String, modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = message,
+            textAlign = TextAlign.Center,
+            color = Color.Red,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}*/

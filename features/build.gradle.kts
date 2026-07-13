@@ -133,5 +133,18 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
 
+    implementation(libs.kotlinx.collections.immutable)
+
+    // Navigation Compose with Type Safety
+    implementation(libs.androidx.navigation.compose.v280) // atau versi terbaru
+
+    // Kotlin Serialization
+    implementation(libs.kotlinx.serialization.json)
+
+    //Vico chart
+    implementation(libs.core)
+    implementation(libs.compose.v200)
+    implementation(libs.compose.m3)
+
 
 }

@@ -5,7 +5,7 @@ import com.example.domain.preferences.UserPreferences
 import com.example.domain.utils.decodeJWTPayload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ProfileUseCase @Inject constructor(
@@ -14,9 +14,9 @@ class ProfileUseCase @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<UserProfile?> {
 
-        return userPref.getSession().mapLatest { session ->
-            if (session.token.isBlank()) return@mapLatest null
-            val payload = decodeJWTPayload(session.token) ?: return@mapLatest null
+        return userPref.getSession().map { session ->
+            if (session.token.isBlank()) return@map null
+            val payload = decodeJWTPayload(session.token) ?: return@map null
 
             val fullName = payload.optString("name", "")
             val firstName = fullName.split(" ").firstOrNull() ?: ""
@@ -27,7 +27,6 @@ class ProfileUseCase @Inject constructor(
                 fullName = payload.optString("full_name", ""),
                 email = payload.optString("email", ""),
                 photo = payload.optString("photo", ""),
-                idrole = payload.optString("idrole", ""),
                 roleName = payload.optString("role_name", ""),
                 idUser = payload.optString("",""),
                 idUserMaster = payload.optString("",""),

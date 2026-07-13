@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.domain.model.ProjectStatusCategoryModel
@@ -32,7 +31,7 @@ import com.example.feature_login.R
 @Composable
 fun ProjectStatusCategory(
     selectedStatusId: Int?,
-    onStatusSelected: (Int? , String) -> Unit,    // Event ke parent
+    onStatusSelect: (Int? , String) -> Unit,    // Event ke parent
     modifier: Modifier = Modifier
 ) {
     val statuses by produceState(initialValue = emptyList()) {
@@ -65,9 +64,9 @@ fun ProjectStatusCategory(
             )
             Text(
                 text = stringResource(R.string.project_status),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                )
             )
         }
 
@@ -79,7 +78,7 @@ fun ProjectStatusCategory(
                 FilterChip(
                     selected = isSelected,
                     onClick = {
-                        onStatusSelected(category.id, category.status)
+                        onStatusSelect(category.id, category.status)
                     },
                     shape = RoundedCornerShape(16.dp),
                     colors = FilterChipDefaults.filterChipColors(

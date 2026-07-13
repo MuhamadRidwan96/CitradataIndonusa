@@ -15,9 +15,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun IconBackground(@DrawableRes icon: Int){
+fun IconBackground(@DrawableRes icon: Int,modifier: Modifier = Modifier){
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(28.dp)
             .background(
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),

@@ -17,7 +17,7 @@ class NotificationRepositoryImpl @Inject constructor(private val dao: Notificati
         return dao.getAllNotifications().map { list -> list.map { it.toDomain() } }
     }
 
-    override fun getUnreadCount(): Flow<Int> {
+    override fun getUnreadCount():Int {
         return dao.getUnreadCount()
     }
 

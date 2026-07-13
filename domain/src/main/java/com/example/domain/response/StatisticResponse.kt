@@ -1,5 +1,6 @@
 package com.example.domain.response
 
+import com.example.domain.model.TrendProject
 import com.google.gson.annotations.SerializedName
 
 data class StatisticsResponse(
@@ -7,13 +8,16 @@ data class StatisticsResponse(
     val success: Boolean,
     @SerializedName("message")
     val message: String,
-    @SerializedName("data")
-    val data: StatisticsData,
+    @SerializedName("statistics")
+    val statistics: StatisticsData,
+    @SerializedName("dashboard")
+    val dashboard: Dashboard,
     @SerializedName("source_data_count")
     val sourceDataCount: Int
 )
 
 data class StatisticsData(
+
     @SerializedName("total_projects")
     val totalProjects: Int,
     @SerializedName("by_category")
@@ -23,3 +27,9 @@ data class StatisticsData(
     @SerializedName("by_province")
     val byProvince: Map<String, Int>
 )
+
+data class Dashboard(
+    @SerializedName("trend")
+    val trend: List<TrendProject>
+)
+

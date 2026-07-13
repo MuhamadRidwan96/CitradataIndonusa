@@ -1,11 +1,13 @@
 package com.example.features.nav
 
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -15,80 +17,69 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.features.nav.graph.Graph
+import com.example.core_ui.R
+import com.example.features.nav.destination.Screen
 
 
 @Composable
 fun MainBottomNavigation(
-    navController: NavHostController
+    modifier: Modifier = Modifier,
+    currentDestination: String?,
+    onDestinationSelect: (String) -> Unit
 ) {
-    val items = remember {
-        listOf(
-            BottomNavItem.Home,
-            BottomNavItem.Search,
-            BottomNavItem.Favorite,
-            BottomNavItem.Profile
-        )
-    }
-
-    val currentDestination by navController.currentBackStackEntryAsState()
-    val currentRoute = currentDestination?.destination?.route
+    val bottomItems = listOf(
+        BottomNavItem(Screen.Home.route, "Home", R.drawable.house),
+        BottomNavItem(Screen.Search.route,"Search",R.drawable.compass),
+        BottomNavItem(Screen.Favorite.route,"Favorite",R.drawable.folder_heart),
+        BottomNavItem(Screen.Profile.route,"Profile",R.drawable.hard_hat)
+    )
 
     Surface(
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp,
-        shadowElevation = 3.dp,
+        color = MaterialTheme.colorScheme.primary,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.navigationBars)
+        modifier = modifier.fillMaxWidth()
     ) {
-        NavigationBar(
-            containerColor = Color.Transparent,
-            tonalElevation = 0.dp, // 🔑 Hilangkan karena sudah ada di Surface
-            modifier = Modifier.height(65.dp),
-            windowInsets = WindowInsets(0.dp)// 🔑 Kembali ke default
-        ) {
-            items.forEach { navigate ->
-                val selected = currentRoute == navigate.route
+        NavigationBar{
+            bottomItems.forEach { navigate ->
+                val selected = currentDestination == navigate.destination
                 NavigationBarItem(
                     selected = selected,
                     icon = {
                         Icon(
                             painter = painterResource(navigate.icon),
                             contentDescription = navigate.title,
-                            modifier = Modifier.size(18.dp),
+                            modifier = Modifier.size(if (selected) 27.dp else 22.dp)
+                                .animateContentSize(),
                             tint = if (selected) MaterialTheme.colorScheme.onPrimary
                             else MaterialTheme.colorScheme.onSurface
                         )
                     },
                  label = {
-                        Text(
-                            navigate.title,
-                            color = if (selected) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontSize = 10.sp
-                        )
+                     AnimatedVisibility(
+                         visible = selected,
+                         enter = fadeIn() + expandHorizontally(),
+                         exit = fadeOut() + shrinkHorizontally()
+                     ) {
+                         Text(
+                             navigate.title,
+                             color = if (selected) MaterialTheme.colorScheme.primary
+                             else MaterialTheme.colorScheme.primary,
+                             style = MaterialTheme.typography.labelSmall,
+                             fontSize = 12.sp
+                         )
+                     }
+
                     },
                     onClick = {
-                        if (currentRoute != navigate.route) {
-                            navController.navigate(navigate.route) {
-                                popUpTo(Graph.HOME) { inclusive = true }
-                                launchSingleTop = true
-                            }
+                        if(!selected){
+                            onDestinationSelect(navigate.destination)
                         }
                     },
-                    alwaysShowLabel = true ,
+                    alwaysShowLabel = true,
                     colors = NavigationBarItemDefaults.colors(
                         indicatorColor = MaterialTheme.colorScheme.primary
                     )

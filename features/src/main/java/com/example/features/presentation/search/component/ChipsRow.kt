@@ -12,17 +12,18 @@ import androidx.compose.ui.unit.dp
 import com.example.features.presentation.search.state.ProjectFilterState
 import com.example.features.presentation.search.utils.hasValue
 import com.example.features.presentation.search.utils.hasValueInt
-import com.example.features.presentation.search.viewmodel.CityViewModel
-import com.example.features.presentation.search.viewmodel.ProvinceViewModel
-import com.example.features.presentation.search.viewmodel.SearchViewModel
 
 @Composable
 fun ChipsRow(
     modifier: Modifier = Modifier,
     searchState: ProjectFilterState,
-    viewModel: SearchViewModel,
-    cityVM: CityViewModel,
-    provinceVM : ProvinceViewModel
+    clearPpr:() -> Unit,
+    clearDateRange:() -> Unit,
+    clearStatus:() -> Unit,
+    clearBuilding:() -> Unit,
+    clearProvince:() -> Unit,
+    clearCity:() -> Unit,
+    clearCategory : () -> Unit
 ) {
     LazyRow(
         modifier = modifier
@@ -40,7 +41,7 @@ fun ChipsRow(
                             fontWeight = FontWeight.Bold
                         )
                     },
-                    onClick = { viewModel.clearPpr() }
+                    onClick = { clearPpr() }
                 )
             }
         }
@@ -55,10 +56,7 @@ fun ChipsRow(
                             fontWeight = FontWeight.Bold
                         )
                     },
-                    onClick = {
-                        viewModel.clearDateRange()
-
-                    }
+                    onClick = { clearDateRange() }
                 )
             }
         }
@@ -73,7 +71,7 @@ fun ChipsRow(
                             fontWeight = FontWeight.Bold
                         )
                     },
-                    onClick = { viewModel.clearStatus() }
+                    onClick = { clearStatus() }
                 )
             }
         }
@@ -88,7 +86,7 @@ fun ChipsRow(
                             fontWeight = FontWeight.Bold
                         )
                     },
-                    onClick = { viewModel.clearBuilding() }
+                    onClick = { clearBuilding() }
                 )
             }
         }
@@ -104,8 +102,7 @@ fun ChipsRow(
                         )
                     },
                     onClick = {
-                        provinceVM.clearProvince()
-                        viewModel.clearProvince()
+                        clearProvince()
                     }
                 )
             }
@@ -122,8 +119,7 @@ fun ChipsRow(
                         )
                     },
                     onClick = {
-                        viewModel.clearCity()
-                        cityVM.clearCity()
+                        clearCity()
                     })
             }
         }
@@ -139,7 +135,7 @@ fun ChipsRow(
                         )
                     },
                     onClick = {
-                        viewModel.clearCategory()
+                        clearCategory()
                     }
                 )
             }

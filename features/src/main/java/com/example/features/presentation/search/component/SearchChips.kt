@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SearchChips(
     selectedCategoryId: Int?,
-    onCategorySelected: (Int?, String) -> Unit,
+    onCategorySelect: (Int?, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val buildingCategories = remember {
@@ -59,14 +59,14 @@ fun SearchChips(
             CategoryChip(
                 category = category,
                 isSelected = category.id == selectedCategoryId,
-                onClick = { onCategorySelected(category.id, category.name) }
+                onClick = { onCategorySelect(category.id, category.name) }
             )
         }
     }
 }
 
 @Composable
-fun CategoryChip(category: BuildingCategory, isSelected: Boolean, onClick: () -> Unit) {
+fun CategoryChip(modifier  : Modifier = Modifier, category: BuildingCategory, isSelected: Boolean, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         color = if (isSelected) MaterialTheme.colorScheme.primary
@@ -75,7 +75,7 @@ fun CategoryChip(category: BuildingCategory, isSelected: Boolean, onClick: () ->
         tonalElevation = 2.dp,
         shadowElevation = 1.dp,
         border = BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface),
-        modifier = Modifier.padding(4.dp)
+        modifier = modifier.padding(4.dp)
             .height(42.dp),
 
     ) {

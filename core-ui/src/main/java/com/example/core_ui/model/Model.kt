@@ -1,7 +1,9 @@
 package com.example.core_ui.model
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 
+@Immutable
 data class SubscriptionPlan(
     val planName: String,
     val price: String,
@@ -11,19 +13,19 @@ data class SubscriptionPlan(
     val isEnabled: Boolean,
     val isMostPopular: Boolean = false // default false
 )
-
+@Immutable
 data class BenefitPlan(
     val planName: String,
     val description: String,
     val icon: ImageVector
 )
-
+@Immutable
 data class Feature(
     val name: String,
     val included: Boolean
 
 )
-
+@Immutable
 data class CompareFeature(
     val name: String,
     val availableIn: List<String>

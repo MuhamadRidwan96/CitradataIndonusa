@@ -72,4 +72,6 @@ data class ProfileState(
         val updatedBy: String = "",
         val status: String = ""
     )
+
+
 }

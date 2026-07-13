@@ -1,11 +1,13 @@
 package com.example.domain.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class UserProfile(
     val name: String,
     val fullName:String,
     val email: String,
     val photo: String,
-    val idrole :String,
     val roleName : String,
     val idUser: String,
     val idUserMaster: String?,

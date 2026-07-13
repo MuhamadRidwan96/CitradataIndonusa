@@ -20,12 +20,13 @@ import com.example.core_ui.component.CompactSearchBar
 
 @Composable
 fun SearchScreenMain(
+    modifier: Modifier = Modifier,
     query: String,
     onQueryChange: (String) -> Unit,
     onBottomSheet: () -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -35,7 +36,8 @@ fun SearchScreenMain(
             modifier = Modifier.weight(1f),
             query = query,
             onQueryChange = onQueryChange,
-            onClear = { onQueryChange("") }
+            onClear = { onQueryChange("") },
+            enabled = true
         )
         IconButton(
             onClick = { onBottomSheet() },

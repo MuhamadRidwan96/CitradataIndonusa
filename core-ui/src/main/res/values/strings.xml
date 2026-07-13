@@ -34,7 +34,7 @@
     <string name="login_with_google">Continue with Google</string>
     <string name="placeholder_search">Search Projects…</string>
     <string name="title_activity_screen_login">ScreenLogin</string>
-    <string name="sign">Sign in to continue to your dashboard</string>
+    <string name="sign">Let’s get you signed in</string>
     <string name="sign_ups">Sign up to get started with your dashboard</string>
     <string name="sign_in">Sign In</string>
     <string name="create_account">Create Account</string>
@@ -80,7 +80,7 @@
     <string name="consultant">Consultant</string>
     <string name="developer">Developer</string>
     <string name="last_update">Last update</string>
-    <string name="id_project">Id project : </string>
+    <string name="id_project">ID PROJECT : </string>
     <string name="pilih_kategori">Choose category</string>
     <string name="kategori_terpilih">Kategori terpilih</string>
     <string name="pilih_kategori_bangunan">Building Category</string>
@@ -100,5 +100,6 @@
     <string name="default_notification_channel_id">default_channel</string>
     <string name="latest">Latest Project</string>
     <string name="statistic">Statistic Project</string>
+    <string name="continue_to_login">Enter email and password to continue</string>
 
 </resources>

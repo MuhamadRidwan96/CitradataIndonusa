@@ -17,10 +17,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SpecificationItem(title: String, value: String) {
+fun SpecificationItem(modifier: Modifier = Modifier,title: String, value: String) {
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onSecondary),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
@@ -28,12 +28,12 @@ fun SpecificationItem(title: String, value: String) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray)
+                style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = value,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium)
             )
         }
     }

@@ -8,4 +8,5 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.spotless)
     id("com.google.gms.google-services") version "4.4.2" apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20"
 }

@@ -12,6 +12,7 @@ fun SearchSection(
     query: String,
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
+
 ) {
     CompactSearchBar(
         query = query,
@@ -20,5 +21,6 @@ fun SearchSection(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
             onClear = {onQueryChange("")},
+        enabled = false
     )
 }

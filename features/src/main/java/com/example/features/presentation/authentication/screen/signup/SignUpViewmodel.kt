@@ -4,11 +4,12 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.common.Result
+import com.example.domain.di.IoDispatcher
 import com.example.domain.usecase.authentication.RegisterUseCase
 import com.example.features.presentation.authentication.state.SignUpFormState
 import com.example.features.presentation.authentication.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewmodel @Inject constructor(
-    private val signUpUseCase: RegisterUseCase
+    private val signUpUseCase: RegisterUseCase,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _signUpEvent = Channel<SignUpEvent>()
@@ -93,7 +95,7 @@ class SignUpViewmodel @Inject constructor(
                     _formState.value.email,
                     _formState.value.password
                 )
-                    .flowOn(Dispatchers.IO)
+                    .flowOn(dispatcher)
                     .toUiState()
                     .collectLatest { result ->
                         when (result) {

@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.IconText
+import com.example.core_ui.component.ProjectCodeText
 import com.example.core_ui.component.StatusChip
 import com.example.features.presentation.home.state.DetailState
 import com.example.features.presentation.home.utils.BulletList
@@ -83,7 +83,7 @@ fun MainDetailProjectContent(
 @Composable
 private fun StatusRow(status: String, createDate: String) {
     val textStyle = MaterialTheme.typography.titleSmall
-    val textColor = MaterialTheme.colorScheme.onSurface
+    val textColor = MaterialTheme.colorScheme.onPrimary
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -114,17 +114,17 @@ private fun InfoRow(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconText(R.drawable.ic_apartement, projectRecord)
+        ProjectCodeText(R.drawable.ic_apartement, projectRecord)
         Icon(
             painter = painterResource(R.drawable.ic_chevron_r),
             contentDescription = null,
-            tint = Color.Gray,
-            modifier = Modifier.size(14.dp)
+            tint = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.size(18.dp)
         )
         Text(
             text = catProject,
-            color = Color.Gray,
-            style = MaterialTheme.typography.labelMedium
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = MaterialTheme.typography.titleSmall
         )
     }
 }
@@ -154,8 +154,7 @@ private fun ProjectName(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 4,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold
+                color = MaterialTheme.colorScheme.onSurface
             )
             IconText(R.drawable.ic_city, city)
             IconText(R.drawable.ic_category, province)
@@ -173,10 +172,10 @@ private fun ProjectOverview(
     catProjects: String,
     conSchedule: String,
     stage: String,
-    additionalInfo: @Composable () -> Unit,
     start: String,
     end: String,
-    expDate: String
+    expDate: String,
+    additionalInfo: @Composable () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -198,25 +197,37 @@ private fun ProjectOverview(
             )
 
             InfoItem(title = stringResource(R.string.budget)) {
-                CurrencyText(budget)
+                CurrencyText(
+                    budget
+                )
             }
 
             InfoItem(title = stringResource(R.string.funding_source)) {
-                TextMain(sourceFunding)
+                TextMain(
+                    sourceFunding
+                )
             }
 
             InfoItem(title = stringResource(R.string.location)) {
-                TextMain(location)
+                TextMain(
+                    location
+                )
             }
 
             InfoItem(title = stringResource(R.string.cat_project)) {
-                TextMain(catProjects)
+                TextMain(
+                    catProjects
+                )
             }
             InfoItem(title = stringResource(R.string.const_schedule)) {
-                TextMain(conSchedule)
+                TextMain(
+                    conSchedule
+                )
             }
             InfoItem(title = stringResource(R.string.stage)) {
-                TextMain(stage)
+                TextMain(
+                    stage
+                )
             }
             InfoItem(title = stringResource(R.string.add_info)) {
                 additionalInfo()
@@ -239,12 +250,32 @@ private fun DateRow(start: String, end: String, expDate: String) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            InfoItem(title = stringResource(R.string.month_start)) {}
-            IconText(R.drawable.ic_calendar, start)
+            InfoItem(title = stringResource(R.string.month_start)) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_calendar),
+                    contentDescription = "start date",
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = start,
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium)
+                )
+            }
+
             Spacer(modifier = Modifier.weight(1f))
-            InfoItem(title = stringResource(R.string.month_end)) {}
-            IconText(R.drawable.ic_calendar, end)
+            InfoItem(title = stringResource(R.string.month_end)) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_calendar),
+                    contentDescription = "End date",
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = end,
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium)
+                )
+            }
         }
+
         InfoItem(title = stringResource(R.string.exp_date)) {
             TextMain(expDate)
         }
