@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
@@ -57,25 +56,6 @@ fun ErrorBottomSheet(
 }
 
 @Composable
-fun PagingErrorItem(
-    message: String, modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = message,
-            textAlign = TextAlign.Center,
-            color = Color.Red,
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Composable
 fun FullScreenError(
     modifier: Modifier = Modifier,
     error: String,
@@ -105,3 +85,22 @@ fun FullScreenLoading(
         CircularProgressIndicator()
     }
 }
+
+/*@Composable
+fun PagingErrorItem(
+    message: String, modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = message,
+            textAlign = TextAlign.Center,
+            color = Color.Red,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}*/

@@ -40,8 +40,8 @@ fun TitleSection(
 }
 
 @Composable
-fun InfoItem(title: String, content: @Composable () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+fun InfoItem(modifier: Modifier = Modifier, title: String, content: @Composable () -> Unit) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
             text = title,
             color = Color.Gray,
@@ -52,8 +52,9 @@ fun InfoItem(title: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-fun CurrencyText(price: String?) {
+fun CurrencyText(price: String?, modifier: Modifier = Modifier) {
     Text(
+        modifier = modifier,
         text = formatToRupiah(price),
         style = MaterialTheme.typography.titleLarge,
         color = MaterialTheme.colorScheme.onSurface,

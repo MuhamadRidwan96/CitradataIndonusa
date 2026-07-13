@@ -25,6 +25,12 @@ data class DataState(
 data class HomeUiState(
     val isFavorite: Boolean = false,
     val isLoading: Boolean = false,
+    val isShowAll : Boolean = false,
     val selectedFilter: String? = "",
     val showDialog: Boolean = false
+
 )
+
+sealed interface HomeUiEvent {
+    data object LogoutSuccess : HomeUiEvent
+}

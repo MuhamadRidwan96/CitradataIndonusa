@@ -1,5 +1,7 @@
 package com.example.features.presentation.home.component
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,30 +20,34 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.core_ui.R
 import kotlin.math.abs
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun StatisticCard(
     modifier: Modifier = Modifier,
     title: String,
     count: Int,
-    icon: ImageVector? = null,
+    @DrawableRes image: Int,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
-    accentColor: Color = MaterialTheme.colorScheme.primary,
     showTrend: Boolean = false,
     trendValue: Int = 0
 ) {
@@ -49,35 +55,38 @@ fun StatisticCard(
 
     Card(
         modifier = modifier
-            .height(160.dp)
-            .width(120.dp),
+            .height(170.dp)
+            .width(125.dp)
+        /*    .border(
+                width = 0.5.dp,
+                color = Color.Gray,
+                shape = RoundedCornerShape(20.dp)
+            )*/,
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = RoundedCornerShape(20.dp),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
+                .padding(10.dp)
         ) {
             // Icon section
-            if (icon != null) {
+            if (true) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(42.dp)
                         .background(
-                            color = accentColor.copy(alpha = 0.15f),
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                             shape = CircleShape
                         )
                 ) {
-                    Icon(
-                        imageVector = icon,
+                    Image(
+                        painter = painterResource(image),
                         contentDescription = null,
-                        tint = accentColor,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             } else {
@@ -85,54 +94,109 @@ fun StatisticCard(
             }
 
             // Count section
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = count.toString(),
-                    color = textColor,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.headlineLarge,
-                )
 
-                Text("project", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            Text(
+                text = count.toString(),
+                color = textColor,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineLarge,
+            )
 
-                // Trend indicator (optional)
-                if (showTrend && trendValue != 0) {
-                    val trendIcon =
-                        if (trendValue > 0) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward
-                    val trendColor =
-                        if (trendValue > 0) Color(0xFF4CAF50) else Color(0xFFF44336)
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 2.dp)
-                    ) {
-                        Icon(
-                            imageVector = trendIcon,
-                            contentDescription = "Trend",
-                            tint = trendColor,
-                            modifier = Modifier.size(12.dp)
-                        )
-                        Text(
-                            text = "${abs(trendValue)}%",
-                            color = trendColor,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+            Text(
+                "project",
+                style = MaterialTheme.typography.labelSmallEmphasized,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            // Trend indicator (optional)
+            if (showTrend && trendValue != 0) {
+                val trendIcon =
+                    if (trendValue > 0) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward
+                val trendColor =
+                    if (trendValue > 0) Color(0xFF4CAF50) else Color(0xFFF44336)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 2.dp)
+                ) {
+                    Icon(
+                        imageVector = trendIcon,
+                        contentDescription = "Trend",
+                        tint = trendColor,
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Text(
+                        text = "${abs(trendValue)}%",
+                        color = trendColor,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
             // Title section
             Text(
                 text = title.uppercase(),
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelLarge,
                 textAlign = TextAlign.Center,
                 color = textColor.copy(alpha = 0.8f),
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 0.8.sp,
                 lineHeight = 12.sp
+            )
+        }
+    }
+}
+
+// Preview dengan berbagai variasi
+@Preview(name = "Light Mode", showBackground = true)
+@Composable
+private fun StatisticCardPreview() {
+    MaterialTheme {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.background
+                        )
+                    )
+                ),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Basic card without icon
+            StatisticCard(
+                title = "Total Users",
+                count = 1234,
+                image = R.drawable.building,
+            )
+
+            // Card with icon
+            StatisticCard(
+                title = "Total Sales",
+                count = 8942,
+                image = R.drawable.building_2
+            )
+
+            // Card with positive trend
+            StatisticCard(
+                title = "Active Users",
+                count = 5678,
+                image = R.drawable.factory,
+                showTrend = true,
+                trendValue = 15
+            )
+
+            // Card with negative trend
+            StatisticCard(
+                title = "Bounce Rate",
+                count = 32,
+                image = R.drawable.armchair,
+                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                showTrend = true,
+                trendValue = -5
             )
         }
     }

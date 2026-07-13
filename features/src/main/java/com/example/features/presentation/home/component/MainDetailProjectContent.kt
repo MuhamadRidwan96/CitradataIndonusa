@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.IconText
+import com.example.core_ui.component.ProjectCodeText
 import com.example.core_ui.component.StatusChip
 import com.example.features.presentation.home.state.DetailState
 import com.example.features.presentation.home.utils.BulletList
@@ -83,7 +83,7 @@ fun MainDetailProjectContent(
 @Composable
 private fun StatusRow(status: String, createDate: String) {
     val textStyle = MaterialTheme.typography.titleSmall
-    val textColor = MaterialTheme.colorScheme.onSurface
+    val textColor = MaterialTheme.colorScheme.onPrimary
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -114,17 +114,17 @@ private fun InfoRow(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconText(R.drawable.ic_apartement, projectRecord)
+        ProjectCodeText(R.drawable.ic_apartement, projectRecord)
         Icon(
             painter = painterResource(R.drawable.ic_chevron_r),
             contentDescription = null,
-            tint = Color.Gray,
-            modifier = Modifier.size(14.dp)
+            tint = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.size(18.dp)
         )
         Text(
             text = catProject,
-            color = Color.Gray,
-            style = MaterialTheme.typography.labelMedium
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = MaterialTheme.typography.titleSmall
         )
     }
 }
@@ -172,10 +172,10 @@ private fun ProjectOverview(
     catProjects: String,
     conSchedule: String,
     stage: String,
-    additionalInfo: @Composable () -> Unit,
     start: String,
     end: String,
-    expDate: String
+    expDate: String,
+    additionalInfo: @Composable () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -197,25 +197,37 @@ private fun ProjectOverview(
             )
 
             InfoItem(title = stringResource(R.string.budget)) {
-                CurrencyText(budget)
+                CurrencyText(
+                    budget
+                )
             }
 
             InfoItem(title = stringResource(R.string.funding_source)) {
-                TextMain(sourceFunding)
+                TextMain(
+                    sourceFunding
+                )
             }
 
             InfoItem(title = stringResource(R.string.location)) {
-                TextMain(location)
+                TextMain(
+                    location
+                )
             }
 
             InfoItem(title = stringResource(R.string.cat_project)) {
-                TextMain(catProjects)
+                TextMain(
+                    catProjects
+                )
             }
             InfoItem(title = stringResource(R.string.const_schedule)) {
-                TextMain(conSchedule)
+                TextMain(
+                    conSchedule
+                )
             }
             InfoItem(title = stringResource(R.string.stage)) {
-                TextMain(stage)
+                TextMain(
+                    stage
+                )
             }
             InfoItem(title = stringResource(R.string.add_info)) {
                 additionalInfo()

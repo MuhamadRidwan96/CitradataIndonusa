@@ -47,7 +47,7 @@ fun ProgressProjectComponent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .animateContentSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)

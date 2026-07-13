@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.IconText
 import com.example.domain.response.TeamMember
-import kotlin.collections.forEach
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun EntityCard(
@@ -40,7 +40,7 @@ fun EntityCard(
 
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 12.dp, bottom = 12.dp, start = 16.dp, end = 16.dp),
         shape = RoundedCornerShape(8.dp),
@@ -48,7 +48,7 @@ fun EntityCard(
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(
-            modifier = modifier.padding(16.dp),
+            modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
 
@@ -64,14 +64,14 @@ fun EntityCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
-            Spacer(modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
             IconText(R.drawable.ic_phone, phone)
             IconText(R.drawable.ic_mail, email)
             IconText(R.drawable.link_24px, web)
             IconText(R.drawable.ic_fax, fax)
 
 
-            Spacer(modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
             if (teamMembers.isNotEmpty()) {
 
@@ -80,11 +80,11 @@ fun EntityCard(
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
                     color = Color.Gray
                 )
-                Spacer(modifier.height(8.dp))
+                Spacer(Modifier.height(8.dp))
 
                 teamMembers.forEach { member ->
                     TeamMemberComponent(member)
-                    Spacer(modifier.height(4.dp))
+                    Spacer(Modifier.height(4.dp))
 
                 }
             }
@@ -127,10 +127,10 @@ private fun TeamMemberComponent(teamMember: TeamMember) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewEntityCard() {
+private fun PreviewEntityCard() {
 
     // Dummy Team Members
-    val dummyTeamMembers = listOf(
+    val dummyTeamMembers = persistentListOf(
         TeamMember(
             structureName = "Ridwan",
             position = "Manager",

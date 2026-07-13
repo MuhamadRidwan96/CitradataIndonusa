@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,60 +21,100 @@ import com.example.core_ui.AppTheme
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-fun DashboardShimmer() {
+fun DashboardShimmer(
+    modifier: Modifier = Modifier
+) {
     val baseColor = Color(0xFF2C2C2C)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
             .shimmer(),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Spacer(modifier = Modifier.height(90.dp))
-        //SearchBar
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Row(horizontalArrangement = Arrangement.SpaceBetween) {
+
+            Box(
+                modifier = Modifier
+                    .width(175.dp)
+                    .height(36.dp)
+                    .background(
+                        baseColor,
+                        RoundedCornerShape(12.dp)
+                    )
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Box(
+                modifier = Modifier
+                    .width(36.dp)
+                    .height(36.dp)
+                    .background(
+                        baseColor,
+                        RoundedCornerShape(12.dp)
+                    )
+            )
+        }
+
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(36.dp)
+                .width(200.dp)
+                .height(14.dp)
                 .background(
                     baseColor,
                     RoundedCornerShape(12.dp)
                 )
         )
 
-        //Image carousel
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(160.dp)
-                .background(
-                    baseColor,
-                    RoundedCornerShape(16.dp)
-                )
-        )
+        Spacer(modifier = Modifier.height(4.dp))
 
+        //Statistic Card
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Box(
+                modifier = Modifier
+                    .width(125.dp)
+                    .height(170.dp)
+                    .background(
+                        baseColor,
+                        RoundedCornerShape(16.dp)
+                    )
+            )
+            Box(
+                modifier = Modifier
+                    .width(125.dp)
+                    .height(170.dp)
+                    .background(
+                        baseColor,
+                        RoundedCornerShape(16.dp)
+                    )
+            )
+            Box(
+                modifier = Modifier
+                    .width(125.dp)
+                    .height(170.dp)
+                    .background(
+                        baseColor,
+                        RoundedCornerShape(16.dp)
+                    )
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .height(30.dp)
+                .height(36.dp)
                 .background(
                     baseColor,
                     RoundedCornerShape(8.dp)
                 )
         )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(0.6f)
-                .height(20.dp)
-                .background(
-                    baseColor,
-                    RoundedCornerShape(8.dp)
-                )
-        )
-
-        Spacer(modifier = Modifier.height(2.dp))
-        //Statistic
+        // Line Chart Statistic
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -86,24 +125,28 @@ fun DashboardShimmer() {
                 )
         )
 
-        repeat(2) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                repeat(2) {
-                    Box(
-                        modifier = Modifier
-                            .height(170.dp)
-                            .width(180.dp)
-                            .background(baseColor, RoundedCornerShape(12.dp))
-                    )
-                }
-            }
-        }
+        // Donut Chart
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .height(36.dp)
+                .background(
+                    baseColor,
+                    RoundedCornerShape(8.dp)
+                )
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(190.dp)
+                .background(
+                    baseColor,
+                    RoundedCornerShape(16.dp)
+                )
+        )
 
 
         Row(
@@ -118,13 +161,12 @@ fun DashboardShimmer() {
                     .background(baseColor, RoundedCornerShape(12.dp))
             )
         }
-
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun PreviewShimmer() {
+@Preview(showBackground = true)
+private fun Preview() {
     AppTheme {
         DashboardShimmer()
     }
