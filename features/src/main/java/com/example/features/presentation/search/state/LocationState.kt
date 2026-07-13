@@ -7,19 +7,12 @@ import com.example.domain.response.RegenciesResponse
 
 @Immutable
 data class LocationState(
-    val province:Result<ProvinceResponse> =Result.Loading,
-    val cities:Result<RegenciesResponse> = Result.Loading,
-
-    val selectedProvinceId: String? = null,
-    val selectedProvinceName: String = "",
-
-    val selectedCityId: String? = null,
-    val selectedCityName: String = "",
+    val province: Result<ProvinceResponse> = Result.Loading,
+    val cities: Result<RegenciesResponse> = Result.Loading,
 
     val error: String? = null,
 
     val provinceLoaded: Boolean = false,
     val cachedProvince: String? = null,
 
-    val idProvince : String? = null
 )

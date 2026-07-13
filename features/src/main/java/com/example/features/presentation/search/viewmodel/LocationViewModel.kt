@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -55,17 +54,6 @@ class LocationViewModel @Inject constructor(
     private val _locationEvent = MutableSharedFlow<LocationEvent>()
     val provinceEvent: SharedFlow<LocationEvent> = _locationEvent
 
-    /**
-     * Flag caching province agar tidak fetch berulang.
-     */
-    //private var provinceLoaded = false
-    /**
-     * Cache province terakhir yang digunakan untuk load city.
-     */
-
-    // -----------------------------------------------------------------------
-    // PROVINCE
-    // -----------------------------------------------------------------------
 
     /**
      * Load daftar provinsi sekali saja.
@@ -77,41 +65,18 @@ class LocationViewModel @Inject constructor(
         viewModelScope.launch(dispatcher) {
 
             provinceUseCase(
-                ProvinceModel(
-                    idProvince = _locationState.value.selectedProvinceId,
-                    name = _locationState.value.selectedProvinceName
-                )
-            )
-                .catch { e ->
-                    _locationEvent.emit(LocationEvent.Error(e.message ?: "Terjadi kesalahan"))
-                }
-                .collect { result ->
-                    // Update UI state
-                    _locationState.update { it.copy(province = result, provinceLoaded = true) }
-                    // Emit event
-                    _locationEvent.emit(LocationEvent.ProvinceLoaded)
-                    // Tandai sudah pernah di loaded
-                }
-        }
-    }
-    /**
-     * Mengubah province yang dipilih user.
-     */
+                ProvinceModel()
+            ).collect { result ->
+                // Update UI state
 
-    fun selectedProvinces(idProvince: String, province: String) {
-        _locationState.update {
-            it.copy(
-                selectedProvinceId = idProvince,
-                selectedProvinceName = province,
-            )
+                _locationState.update { it.copy(province = result, provinceLoaded = true) }
+                // Emit event
+                _locationEvent.emit(LocationEvent.ProvinceLoaded)
+                // Tandai sudah pernah di loaded
+            }
         }
     }
-    /**
-     * Menghapus data province dan reset state.
-     */
-    fun clearProvince() {
-        _locationState.update { LocationState() }
-    }
+
 
     // -----------------------------------------------------------------------
     // CITY
@@ -130,37 +95,17 @@ class LocationViewModel @Inject constructor(
         if (idProvince == state.cachedProvince && state.cities is Result.Success) return // ✅ kalau provinsi sama & data sudah ada, skip fetch
 
         viewModelScope.launch(dispatcher) {
-
             cityUseCase("", idProvince, "")
-                .onStart{
+                .onStart {
                     _locationState.update { it.copy(cities = Result.Loading) }
                 }
                 .catch { e ->
                     _locationEvent.emit(LocationEvent.Error(e.message ?: "Terjadi kesalahan"))
-                }.collectLatest { result ->
+                }.collect { result ->
                     _locationState.update { it.copy(cities = result, cachedProvince = idProvince) }
                     _locationEvent.emit(LocationEvent.CityLoaded)
                 }
         }
-    }
-
-    /**
-     * Mengubah kota yang dipilih user.
-     */
-    fun updateCity(idCity: String, idProvince: String?, city: String) {
-        _locationState.update {
-            it.copy(
-                selectedCityId = idCity,
-                selectedProvinceId = idProvince,
-                selectedCityName = city,
-            )
-        }
-    }
-    /**
-     * Menghapus data kota dan reset.
-     */
-    fun clearCity() {
-        _locationState.update { LocationState() }
     }
 }
 

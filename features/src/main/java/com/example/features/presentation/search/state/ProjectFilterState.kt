@@ -37,7 +37,6 @@ data class ProjectFilterState(
 
     val withPpr: Boolean = false,
     val ppr : String = "",
-    val query: String = "",
     val queryProvince: String = "",
     val queryCity: String = "",
     val isLoading: Boolean = false,
@@ -65,7 +64,7 @@ fun ProjectFilterState.hasFilter() : Boolean {
             idContractorCategory.isNotEmpty() ||
             withPpr || // boolean filter
             ppr.isNotEmpty() ||
-            query.isNotEmpty() ||
+            //query.isNotEmpty() ||
             queryProvince.isNotEmpty() ||
             queryCity.isNotEmpty()
 }

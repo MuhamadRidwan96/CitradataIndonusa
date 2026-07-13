@@ -187,7 +187,7 @@ class SearchViewModel @Inject constructor(
 
             is SearchBottomSheetAction.QueryChange -> {
                 updateDraft { it.copy(
-                    query = action.query
+                    address = action.setAddress
                 ) }
             }
             is SearchBottomSheetAction.SelectProvince -> {
@@ -236,7 +236,7 @@ class SearchViewModel @Inject constructor(
 
     /** Observe paging data*/
     val dataPaging: Flow<PagingData<RecordData>> =
-        _appliedState.debounce(300).distinctUntilChanged()
+        _appliedState.debounce(1000).distinctUntilChanged()
             .flatMapLatest { state ->
 
                 if (state.hasFilter()) {

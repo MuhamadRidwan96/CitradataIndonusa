@@ -1,9 +1,11 @@
 package com.example.features.presentation.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -20,6 +22,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,15 +35,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.example.core_ui.R
 import com.example.data.utils.DataNotFoundException
 import com.example.data.utils.TokenExpiredException
@@ -54,7 +61,6 @@ import com.example.features.presentation.search.component.SearchScreenMain
 import com.example.features.presentation.search.state.SearchBottomSheetAction
 import com.example.features.presentation.search.state.hasFilter
 import com.example.features.presentation.search.viewmodel.DataEvent
-import com.example.features.presentation.search.viewmodel.LocationViewModel
 import com.example.features.presentation.search.viewmodel.SearchViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -68,7 +74,6 @@ import kotlinx.coroutines.launch
  * @param modifier Modifier for the root composable
  * @param snackBarHostState State holder for showing snack bar messages
  * @param viewModel ViewModel for search operations and state management
- * @param locationViewModel ViewModel for location-related operations (provinces, cities)
  */
 
 @Suppress("EffectKeys")
@@ -81,7 +86,6 @@ fun SearchScreen(
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
 
     viewModel: SearchViewModel = hiltViewModel(),
-    locationViewModel: LocationViewModel = hiltViewModel(),
 
     ) {
     // ========== State Management ==========
@@ -89,11 +93,8 @@ fun SearchScreen(
     // Collect the applied search filters state from ViewModel
     val searchState by viewModel.appliedState.collectAsState()
 
-    // Collect the draft state for filters being edited in bottom sheet
+    //Collect the draft search filter state
     val draftState by viewModel.draftState.collectAsState()
-
-    // Collect location state (provinces and cities data)
-    val locationState by locationViewModel.locationState.collectAsState()
 
     // Collect list of favorite projects from ViewModel
     val favorites by viewModel.favorite.collectAsState()
@@ -126,7 +127,8 @@ fun SearchScreen(
     val showDataNotFound by remember {
         derivedStateOf {
             val hasError = lazyPagingItems.loadState.refresh is LoadState.Error
-            val errorIsNotFound = (lazyPagingItems.loadState.refresh as? LoadState.Error)?.error is DataNotFoundException
+            val errorIsNotFound =
+                (lazyPagingItems.loadState.refresh as? LoadState.Error)?.error is DataNotFoundException
 
             hasError && errorIsNotFound
         }
@@ -136,7 +138,6 @@ fun SearchScreen(
 
     /* -------------------- Paging Error Handling -------------------- */
     // Monitor load state changes and handle errors
-
 
 
     val loadState = lazyPagingItems.loadState
@@ -198,189 +199,204 @@ fun SearchScreen(
     }
 
     /* -------------------- UI -------------------- */
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.searh_disc),
-                        style = MaterialTheme.typography.titleLarge
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.background
                     )
-                },
-                modifier = Modifier.heightIn(min = 65.dp, max = 95.dp)
+                )
             )
-        },
-        snackbarHost = {
-            CustomSnackBarHost(snackBarHostState = snackBarHostState)
-        },
-    ) { paddingValues ->
-        if (!isInitialized) {
-            LoadingScreen()
-        } else {
+    ) {
 
-            if (showFilterSheet) {
-                val focusManager = LocalFocusManager.current
-                val keyboardController = LocalSoftwareKeyboardController.current
+        Scaffold(
+            containerColor = Color.Transparent,
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.searh_disc),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    },
+                    modifier = Modifier.heightIn(min = 65.dp, max = 95.dp),
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = Color.Transparent
+                    )
+                )
+            },
+            snackbarHost = {
+                CustomSnackBarHost(snackBarHostState = snackBarHostState)
+            },
+        ) { paddingValues ->
+            if (!isInitialized) {
+                LoadingScreen()
+            } else {
 
-                val onBottomSheetAction: (SearchBottomSheetAction) -> Unit = { action ->
-                    when (action) {
+                if (showFilterSheet) {
+                    val focusManager = LocalFocusManager.current
+                    val keyboardController = LocalSoftwareKeyboardController.current
 
-                        is SearchBottomSheetAction.Apply -> {
-                            // Clear focus and hide keyboard BEFORE closing sheet
+                    val onBottomSheetAction: (SearchBottomSheetAction) -> Unit = { action ->
+                        when (action) {
+
+                            is SearchBottomSheetAction.Apply -> {
+                                // Clear focus and hide keyboard BEFORE closing sheet
+                                focusManager.clearFocus()
+                                keyboardController?.hide()
+
+                                coroutineScope.launch {
+                                    filterSheetState.hide()
+                                    showFilterSheet = false
+                                }
+                                viewModel.onAction(action)
+                            }
+
+                            else -> viewModel.onAction(action)
+                        }
+                    }
+                    SearchBottomSheet(
+                        onAction = onBottomSheetAction,
+                        onDismiss = {
                             focusManager.clearFocus()
                             keyboardController?.hide()
 
                             coroutineScope.launch {
-                                delay(300)
+                                delay(150) // Wait for keyboard to hide
                                 filterSheetState.hide()
                                 showFilterSheet = false
                             }
-                            viewModel.onAction(action)
-                        }
 
-                        else -> viewModel.onAction(action)
-                    }
+                        },
+                        searchState = draftState
+                    )
                 }
-                SearchBottomSheet(
-                    selectedCity = draftState.cityName,
-                    selectedProvince = draftState.provinceName,
-                    searchState = draftState,
-                    locationState = locationState,
-                    sheetState = filterSheetState,
-                    onAction = onBottomSheetAction,
-                    onGetProvince = { locationViewModel.getProvinces() },
-                    onGetCity = { idProvinces ->
-                        locationViewModel.getCity(idProvinces)
-                    },
-                    onDismiss = {
-                        // Clear focus and hide keyboard when user swipes down
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
 
-                        coroutineScope.launch {
-                            delay(150) // Wait for keyboard to hide
-                            filterSheetState.hide()
-                            showFilterSheet = false
-                        }
-                    }
-                )
-            }
+                Column(
+                    modifier = modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
 
-            Column(
-                modifier = modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    SearchScreenMain(
+                        query = query,
+                        onQueryChange = { projectName ->
+                            query = projectName
+                            viewModel.updateDraft { it.copy(projectName = projectName) }
+                            viewModel.applyFilters()
+                        },
+                        onBottomSheet = { showFilterSheet = true },
+                    )
 
-            ) {
-                SearchScreenMain(
-                    query = query,
-                    onQueryChange = { projectName ->
-                        query = projectName
-                        viewModel.updateDraft { it.copy(projectName = projectName) }
-                        viewModel.applyFilters()
-                    },
-                    onBottomSheet = { showFilterSheet = true },
-                )
+                    ChipsRow(
+                        searchState = searchState,
+                        clearPpr = viewModel::clearPpr,
+                        clearDateRange = viewModel::clearDateRange,
+                        clearStatus = viewModel::clearStatus,
+                        clearBuilding = viewModel::clearBuilding,
+                        clearProvince = {
+                            viewModel.clearProvince()
+                        },
+                        clearCity = {
+                            viewModel.clearCity()
+                        },
+                        clearCategory = viewModel::clearCategory
+                    )
 
-                ChipsRow(
-                    searchState = searchState,
-                    clearPpr = viewModel::clearPpr,
-                    clearDateRange = viewModel::clearDateRange,
-                    clearStatus = viewModel::clearStatus,
-                    clearBuilding = viewModel::clearBuilding,
-                    clearProvince = {
-                        locationViewModel.clearProvince()
-                        viewModel.clearProvince()
-                    },
-                    clearCity = {
-                        viewModel.clearCity()
-                        locationViewModel.clearCity()
-                    },
-                    clearCategory = viewModel::clearCategory
-                )
-
-                val filterApplied = searchState.hasFilter()
-                when {
-                    showDataNotFound -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            LabelBackground(
-                                icon = R.drawable.folder_x,
-                                title = stringResource(R.string.data_not_found)
-                            )
-                        }
-                    }
-
-                    filterApplied && hasSearch -> {
-                        // ✅ Ada data -> show LazyColumn
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(
-                                top = 14.dp
-                            )
-                        ) {
-                            items(lazyPagingItems.itemCount) { index ->
-                                val recordData = lazyPagingItems[index]
-                                recordData?.let {
-                                    val no = index + 1
-                                    val state = it.toDataState(searchState.isFavorite, no)
-                                    val fav =
-                                        favorites.any { fav -> fav.idProject == it.idProject.toInt() }
-
-                                    ProjectCard(
-                                        project = state,
-                                        onClick = { onNavigateToDetail(state.idProject.toString()) },
-                                        isFavorite = fav,
-                                        onToggleFavorite = { favEntity ->
-                                            viewModel.toggleFavorite(favEntity)
-                                        }
-                                    )
-                                }
+                    val filterApplied = searchState.hasFilter()
+                    when {
+                        showDataNotFound -> {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                LabelBackground(
+                                    icon = R.drawable.folder_x,
+                                    title = stringResource(R.string.data_not_found)
+                                )
                             }
+                        }
 
-                            lazyPagingItems.apply {
-                                when {
-                                    loadState.refresh is LoadState.Loading -> {
-                                        item {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillParentMaxSize(),
-                                                contentAlignment = Alignment.Center
-                                            ) { CircularProgressIndicator() }
-                                        }
+                        filterApplied && hasSearch -> {
+                            // ✅ Ada data -> show LazyColumn
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(
+                                    top = 14.dp
+                                )
+                            ) {
+                                items(
+                                    count = lazyPagingItems.itemCount,
+                                    key = lazyPagingItems.itemKey {
+                                        it.idProject
                                     }
+                                ) { index ->
+                                    val recordData = lazyPagingItems[index]
+                                    recordData?.let {
+                                        val no = index + 1
+                                        val state = it.toDataState(searchState.isFavorite, no)
+                                        val fav =
+                                            favorites.any { fav -> fav.idProject == it.idProject.toInt() }
 
-                                    loadState.append is LoadState.Loading -> {
-                                        item {
-                                            CircularProgressIndicator(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(16.dp)
-                                                    .wrapContentSize(Alignment.Center)
-                                            )
+                                        ProjectCard(
+                                            project = state,
+                                            onClick = { onNavigateToDetail(state.idProject.toString()) },
+                                            isFavorite = fav,
+                                            onToggleFavorite = { favEntity ->
+                                                viewModel.toggleFavorite(favEntity)
+                                            }
+                                        )
+                                    }
+                                }
+
+                                lazyPagingItems.apply {
+                                    when {
+                                        loadState.refresh is LoadState.Loading -> {
+                                            item {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillParentMaxSize(),
+                                                    contentAlignment = Alignment.Center
+                                                ) { CircularProgressIndicator() }
+                                            }
+                                        }
+
+                                        loadState.append is LoadState.Loading -> {
+                                            item {
+                                                CircularProgressIndicator(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(16.dp)
+                                                        .wrapContentSize(Alignment.Center)
+                                                )
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    else -> {
+                        else -> {
 
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            LabelBackground(
-                                icon = R.drawable.funnel_plus,
-                                title = stringResource(R.string.anjuran_cari)
-                            )
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                LabelBackground(
+                                    icon = R.drawable.funnel_plus,
+                                    title = stringResource(R.string.anjuran_cari)
+                                )
+                            }
                         }
                     }
                 }

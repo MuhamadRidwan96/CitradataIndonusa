@@ -13,7 +13,7 @@ sealed interface SearchBottomSheetAction {
     data class SelectBuildingCategory(val id: Int?, val name: String) : SearchBottomSheetAction
     data class SelectProjectCategory(val id: Int?, val name: String) : SearchBottomSheetAction
 
-    data class QueryChange(val query: String) : SearchBottomSheetAction
+    data class QueryChange(val setAddress: String) : SearchBottomSheetAction
     data class SelectProvince(val id: String?, val name: String) : SearchBottomSheetAction
     data class SelectCity(val id: String?, val provinceId: String?, val name: String) : SearchBottomSheetAction
 

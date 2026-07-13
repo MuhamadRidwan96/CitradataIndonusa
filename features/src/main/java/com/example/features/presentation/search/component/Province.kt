@@ -1,5 +1,6 @@
 package com.example.features.presentation.search.component
 
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,8 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,15 +36,18 @@ import com.example.features.presentation.search.state.LocationState
 fun ProvinceBottomSheet(
     modifier: Modifier = Modifier,
     selectedProvince: String?,
-    onGetProvince: (String) -> Unit,
+    onGetProvince: () -> Unit,
     onProvinceSelect: (String, String) -> Unit,
-    state: LocationState
+    state: LocationState,
 ) {
-    val currentOnGetProvince by rememberUpdatedState(onGetProvince)
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        currentOnGetProvince("")
+    val currentGetProvince by rememberUpdatedState(onGetProvince)
+
+    LaunchedEffect(expanded) {
+        if (expanded){
+            currentGetProvince()
+        }
     }
 
     Surface(
@@ -63,7 +67,7 @@ fun ProvinceBottomSheet(
 
             TextField(
                 readOnly = true,
-                value = selectedProvince ?: "",
+                value = selectedProvince.orEmpty(),
                 onValueChange = {},
                 textStyle = MaterialTheme.typography.bodySmall,
                 placeholder = {
@@ -74,7 +78,7 @@ fun ProvinceBottomSheet(
                 },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
-                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable)
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                     .fillMaxWidth()
                     .height(45.dp),
                 colors = TextFieldDefaults.colors(

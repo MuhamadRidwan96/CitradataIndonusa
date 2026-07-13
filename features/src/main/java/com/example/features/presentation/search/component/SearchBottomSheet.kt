@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,7 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.SwitchPpr
-import com.example.features.presentation.search.state.LocationState
 import com.example.features.presentation.search.state.ProjectFilterState
 import com.example.features.presentation.search.state.SearchBottomSheetAction
 
@@ -25,44 +23,28 @@ import com.example.features.presentation.search.state.SearchBottomSheetAction
 @Composable
 fun SearchBottomSheet(
     modifier: Modifier = Modifier,
-    sheetState: SheetState,
-    searchState: ProjectFilterState,
-    locationState: LocationState,
-    selectedProvince: String,
-    selectedCity: String,
-    onGetProvince: (String) -> Unit,
-    onGetCity: (String) -> Unit,
     onAction: (SearchBottomSheetAction) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    searchState: ProjectFilterState
+
 
 ) {
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
-        sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier.fillMaxWidth()
     ) {
-        SearchBottomSheetContent(
-            searchState = searchState,
-            locationState = locationState,
-            selectedProvince = selectedProvince,
-            selectedCity = selectedCity,
-            onAction = onAction,
-            onGetProvince = onGetProvince,
-            onGetCity = onGetCity,
-        )
+      SearchBottomSheetContent(
+          searchState = searchState,
+          onAction = onAction
+      ) 
     }
 }
 
 @Composable
 private fun SearchBottomSheetContent(
     searchState: ProjectFilterState,
-    locationState: LocationState,
-    selectedProvince: String,
-    selectedCity: String,
-    onGetProvince: (String) -> Unit,
-    onGetCity: (String) -> Unit,
     onAction: (SearchBottomSheetAction) -> Unit
 ) {
 
@@ -107,22 +89,8 @@ private fun SearchBottomSheetContent(
 
         item {
             LocationSection(
-                query = searchState.address,
-                onQueryChange = { query ->
-                    onAction(SearchBottomSheetAction.QueryChange(query))
-                },
-                onProvinceSelect = { idProvince, name ->
-                    onAction(SearchBottomSheetAction.SelectProvince(idProvince, name))
-                },
-                onCitySelect = { idCity, idProvince, name ->
-                    onAction(SearchBottomSheetAction.SelectCity(idCity, idProvince, name))
-                },
-                onGetProvince = onGetProvince,
-                onGetCity = onGetCity,
-                state = locationState,
-                selectedProvince = selectedProvince,
-                selectedCity = selectedCity,
-                idProvince = searchState.idProvince,
+                searchState = searchState,
+                onAction = onAction,
             )
         }
 

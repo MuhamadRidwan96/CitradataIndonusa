@@ -53,7 +53,7 @@ fun BuildingCategory(
 
         SearchChips(
             selectedCategoryId = selectedCategoryId,
-            onCategorySelected = {id,name ->
+            onCategorySelect= {id,name ->
                 onCategorySelect(id,name) },
             modifier = Modifier.height(350.dp)
         )
