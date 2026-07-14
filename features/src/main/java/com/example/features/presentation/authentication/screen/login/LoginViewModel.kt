@@ -2,7 +2,6 @@ package com.example.features.presentation.authentication.screen.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.common.Result
 import com.example.domain.di.IoDispatcher
 import com.example.domain.response.AuthResponse
 import com.example.domain.usecase.authentication.CheckLoginUseCase
@@ -45,7 +44,7 @@ class LoginViewModel @Inject constructor(
     private val checkLoginUseCase: CheckLoginUseCase,
     private val googleSignInUseCase: GoogleSignInUseCase,
     private val saveTokenUseCase: SaveTokenUseCase,
-    @IoDispatcher private val dispatcher : CoroutineDispatcher
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _loginEvent =
@@ -134,10 +133,12 @@ class LoginViewModel @Inject constructor(
     fun checkLogin() {
         viewModelScope.launch {
             val isLoggedIn = checkLoginUseCase()
-            _processState.update { it.copy(
-                isLoggedIn = isLoggedIn,
-                isReady = true
-            ) }
+            _processState.update {
+                it.copy(
+                    isLoggedIn = isLoggedIn,
+                    isReady = true
+                )
+            }
         }
     }
 
@@ -163,21 +164,8 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val fcmToken = FirebaseMessaging.getInstance().token.await()
             Timber.tag("AuthViewModel").d("✅ FCM Token setelah login: $fcmToken")
-            saveTokenUseCase(userId, fcmToken).collect { result ->
-                when (result) {
-                    is Result.Success -> {
-                        Timber.tag("AuthViewModel").d("✅ Token berhasil dikirim ke server")
-                    }
+            saveTokenUseCase(userId, fcmToken)
 
-                    is Result.Loading -> {
-                        Timber.tag("AuthViewModel").d("⏳ Mengirim token...")
-                    }
-
-                    is Result.Error -> {
-                        Timber.tag("AuthViewModel").e(result.exception, "❌ Gagal kirim token")
-                    }
-                }
-            }
         }
     }
 }

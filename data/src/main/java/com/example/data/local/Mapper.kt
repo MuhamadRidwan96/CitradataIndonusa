@@ -41,6 +41,7 @@ fun NotificationEntity.toDomain() = NotificationModel(
     id,
     title,
     body,
+    idProject,
     isRead,
     timestamp
 )
@@ -49,6 +50,7 @@ fun NotificationModel.toEntity() = NotificationEntity(
     id ,
     title,
     body,
+    idProject,
     isRead,
     timestamp
 )

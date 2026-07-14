@@ -9,6 +9,7 @@ data class NotificationEntity(
     @PrimaryKey(autoGenerate = true) val id:Int = 0,
     val title :String,
     val body: String,
+    val idProject: String?,
     val isRead : Boolean,
     val timestamp: Long = System.currentTimeMillis()
 )

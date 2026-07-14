@@ -19,10 +19,12 @@ import javax.inject.Singleton
 class UserPreferencesImpl @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) : UserPreferences {
+
     override suspend fun saveSession(user: UserModel) {
         dataStore.edit { preferences ->
             preferences[TOKEN_KEY] = user.token
             preferences[IS_LOGGED_IN] = true
+            preferences[USER_ID_KEY] = user.idUser
 
         }
     }
@@ -33,7 +35,8 @@ class UserPreferencesImpl @Inject constructor(
             .map { preferences ->
                 UserModel(
                     token = preferences[TOKEN_KEY] ?: "",
-                    isLogin = preferences[IS_LOGGED_IN] == true
+                    isLogin = preferences[IS_LOGGED_IN] == true,
+                    idUser = preferences[USER_ID_KEY] ?:""
                 )
             }
     }
@@ -53,5 +56,6 @@ class UserPreferencesImpl @Inject constructor(
     companion object {
         private val TOKEN_KEY = stringPreferencesKey("password")
         private val IS_LOGGED_IN = booleanPreferencesKey("isLogin")
+        private val USER_ID_KEY = stringPreferencesKey("idUser")
     }
 }

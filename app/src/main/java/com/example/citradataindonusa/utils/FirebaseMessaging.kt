@@ -3,19 +3,24 @@ package com.example.citradataindonusa.utils
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
-import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.citradataindonusa.ui.MainActivity
 import com.example.core_ui.R
 import com.example.domain.model.NotificationModel
+import com.example.domain.preferences.UserPreferences
+import com.example.domain.usecase.authentication.SaveTokenUseCase
 import com.example.domain.usecase.notification.UpdateNotificationCountUseCase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class FirebaseMessaging : FirebaseMessagingService() {
@@ -23,17 +28,51 @@ class FirebaseMessaging : FirebaseMessagingService() {
     @Inject
     lateinit var updateNotificationCountUseCase: UpdateNotificationCountUseCase
 
+    @Inject
+    lateinit var userPreferences: UserPreferences
+
+    @Inject
+    lateinit var saveTokenUseCase: SaveTokenUseCase
+
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val session = userPreferences.getSession().first()
+            if (session.isLogin && session.idUser.isNotEmpty()) {
+                try {
+                    saveTokenUseCase(session.idUser, token)
+                } catch (e: Exception) {
+                    Log.d("e", "$e ,Failed to sync FCM token")
+                }
+            }
+        }
+
+        FirebaseMessaging.getInstance().token
+            .addOnSuccessListener {
+                Log.d("FCM", "Current Token = $it")
+            }
+            .addOnFailureListener {
+                Log.d("FCM","ERROR =  $it")
+            }
+
     }
 
     //jika pesan berisi payload data
     override fun onMessageReceived(message: RemoteMessage) {
 
-        val title = message.notification?.title ?:
-                    message.data["title"] ?: "New message"
-        val body =  message.notification?.body ?:
-                    message.data["body"] ?: "You have a new notification"
+        val title = message.data["title"] ?: "New message"
+        val body = message.data["body"] ?: "You have a new notification"
+        val projectId = message.data["project_id"]
+
+        Log.d("FCM","FCM diterima")
+
+        Log.d("Title :","${message.data["title"]}")
+
+        Log.d("Body : ","${message.data["body"]}")
+
+       Log.d("ProjectId :"," ${message.data["project_id"]}")
+
         showNotification(title, body)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -42,13 +81,12 @@ class FirebaseMessaging : FirebaseMessagingService() {
                     id = 0,
                     title = title,
                     body = body,
+                    idProject = projectId,
                     isRead = false,
                     timestamp = System.currentTimeMillis()
                 )
             )
         }
-
-
     }
 
 
@@ -57,11 +95,9 @@ class FirebaseMessaging : FirebaseMessagingService() {
 
         // Verifikasi channel exists
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = notificationManager.getNotificationChannel(channelId)
-            if (channel == null) {
-                return
-            }
+        val channel = notificationManager.getNotificationChannel(channelId)
+        if (channel == null) {
+            return
         }
 
         val intent = Intent(this, MainActivity::class.java).apply {
@@ -69,9 +105,11 @@ class FirebaseMessaging : FirebaseMessagingService() {
             putExtra("project_id", projectId)
         }
 
+        val requestCode = System.currentTimeMillis().toInt()
+
         val pendingIntent = PendingIntent.getActivity(
             this,
-            0,
+            requestCode,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

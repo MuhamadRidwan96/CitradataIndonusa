@@ -4,11 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.util.Log
-import com.google.firebase.FirebaseApp
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @HiltAndroidApp
 class MyApplication : Application() {
@@ -17,18 +13,6 @@ class MyApplication : Application() {
         super.onCreate()
 
         checkNotificationChannel()
-
-        CoroutineScope(Dispatchers.Default).launch {
-            FirebaseApp.initializeApp(this@MyApplication)
-        }
-
-    /*    startKoin {
-            androidContext(this@MyApplication)
-
-            // Add kotzilla analytics
-            analytics()
-        }*/
-
     }
 
     private fun checkNotificationChannel() {
@@ -37,7 +21,7 @@ class MyApplication : Application() {
         val channel = notificationManager.getNotificationChannel(channelId)
 
         if (channel != null) {
-            Log.d("Channel exists","${channel.id} - ${channel.name}")
+            Log.d("Channel exists", "${channel.id} - ${channel.name}")
         } else {
             // Force create channel jika tidak ditemukan
             createNotificationChannel()

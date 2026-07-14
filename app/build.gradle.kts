@@ -80,7 +80,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.litert.support.api)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
-    implementation(libs.firebase.messaging.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -100,9 +99,11 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     // Firebase Auth
-    implementation(libs.firebase.auth.ktx)
     implementation(platform(libs.firebase.bom))
+
+    implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
 
 
     //Credential Manager
@@ -111,8 +112,7 @@ dependencies {
     implementation(libs.androidx.credentials.v120alpha03)
     implementation(libs.androidx.credentials.play.services.auth.v120alpha03)
 
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.messaging)
+
 
     //test
     testImplementation (libs.kotlinx.coroutines.test)
