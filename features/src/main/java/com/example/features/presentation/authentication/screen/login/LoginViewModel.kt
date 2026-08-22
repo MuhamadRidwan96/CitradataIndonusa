@@ -1,40 +1,34 @@
 package com.example.features.presentation.authentication.screen.login
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil.network.HttpException
+import com.example.core_ui.architecture.action.ActionHandler
+import com.example.core_ui.architecture.base.BaseViewModel
 import com.example.domain.di.IoDispatcher
+import com.example.domain.preferences.UserPreferences
 import com.example.domain.response.AuthResponse
 import com.example.domain.usecase.authentication.CheckLoginUseCase
 import com.example.domain.usecase.authentication.GoogleSignInUseCase
 import com.example.domain.usecase.authentication.LoginUseCase
 import com.example.domain.usecase.authentication.SaveTokenUseCase
-import com.example.domain.utils.decodeJWTPayload
-import com.example.features.presentation.authentication.state.LoginFormState
-import com.example.features.presentation.authentication.state.LoginProcessState
-import com.example.features.presentation.authentication.state.UiState
+import com.example.features.presentation.authentication.state.login.LoginUiAction
+import com.example.features.presentation.authentication.state.login.LoginUiEvent
+import com.example.features.presentation.authentication.state.login.LoginUiState
 import com.example.features.presentation.authentication.utils.isValidEmail
 import com.example.features.presentation.authentication.utils.isValidPassword
-import com.example.features.presentation.authentication.utils.toUiState
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 
@@ -44,88 +38,85 @@ class LoginViewModel @Inject constructor(
     private val checkLoginUseCase: CheckLoginUseCase,
     private val googleSignInUseCase: GoogleSignInUseCase,
     private val saveTokenUseCase: SaveTokenUseCase,
+    private val userPreferences: UserPreferences,
     @IoDispatcher private val dispatcher: CoroutineDispatcher
-) : ViewModel() {
-
-    private val _loginEvent =
-        Channel<LoginEvent>(Channel.BUFFERED) // ✅ BUFFERED untuk mencegah kehilangan event
-    val loginEvent = _loginEvent.receiveAsFlow()
-
-    private val _formState = MutableStateFlow(LoginFormState())
-    val formState = _formState.asStateFlow()
-
-    private val _processState = MutableStateFlow(LoginProcessState())
-    val processState = _processState.asStateFlow()
+) : BaseViewModel<
+        LoginUiState,
+        LoginUiEvent
+        >
+    (initialState = LoginUiState()),
+    ActionHandler<LoginUiAction> {
 
     private val _authState = MutableStateFlow<AuthResponse?>(null)
     val authState = _authState.asStateFlow()
 
-    //make more simple with 1 combine
-    val isSubmitEnabled: StateFlow<Boolean> = formState.map { state ->
-        isValidEmail(state.email) && isValidPassword(state.password)
-
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = false
-    )
-
-
-    val onChangeEmail: (String) -> Unit = { newEmail ->
-        _formState.update {
-            it.copy(
-                email = newEmail,
-                isEmailWrong = newEmail.isNotEmpty() && !isValidEmail(newEmail),
-                errorMessage = null
-            )
-        }
-    }
-
-    val onChangePassword: (String) -> Unit = { newPassword ->
-        _formState.update {
-            it.copy(
-                password = newPassword,
-                isPassWordWrong = newPassword.isNotEmpty() && !isValidPassword(newPassword),
-                errorMessage = null
-            )
-        }
-    }
-
-    val login: () -> Unit = login@{
-        if (!isSubmitEnabled.value) return@login
-        viewModelScope.launch {
-            delay(500)
-            loginUseCase(_formState.value.email, _formState.value.password)
-                .flowOn(dispatcher)
-                .toUiState()
-                .onStart { setLoading(true) }
-                .onCompletion { setLoading(false) }
-                .collectLatest { result ->
-                    when (result) {
-                        is UiState.Success -> {
-
-                            val token = result.data.data.token
-                            val payload = decodeJWTPayload(token)
-                            val userId = payload?.optString("iduser", "")
-
-                            if (userId != null) {
-                                Timber.tag("AuthViewModel").d("✅ userId dari JWT: $userId")
-                                syncFcmToken(userId)
-                            } else {
-                                Timber.tag("AuthViewModel").w("⚠️ userId tidak ditemukan di JWT")
-                            }
-                            _processState.update { it.copy(isLoggedIn = true) }
-                            _loginEvent.send(LoginEvent.Success)
-                        }
-
-                        is UiState.Error -> {
-                            _formState.update { it.copy(errorMessage = result.message) }
-                            _loginEvent.send(LoginEvent.ShowSnackBar(result.message))
-                        }
-
-                        else -> Unit
-                    }
+    override fun action(action: LoginUiAction) {
+        when (action) {
+            is LoginUiAction.EmailChanged -> {
+                reduce {
+                    copy(
+                        email = action.email,
+                        isEmailWrong = !isValidEmail(action.email),
+                        errorMessage = null
+                    )
                 }
+            }
+
+            is LoginUiAction.PasswordChanged -> {
+                reduce {
+                    copy(
+                        password = action.password,
+                        isPassWordWrong = !isValidPassword(action.password),
+                        errorMessage = null
+                    )
+                }
+            }
+
+            is LoginUiAction.SignInWithGoogle -> {
+                signWithGoogle()
+            }
+
+            is LoginUiAction.Login -> {
+                login()
+            }
+        }
+    }
+
+
+    private fun login() {
+        val state = uiState.value
+
+        viewModelScope.launch {
+
+            loginUseCase(state.email, state.password)
+                .fold(
+                    onSuccess = {
+                        val session = userPreferences.getSession().first()
+
+                        if (session.idUser.isNotBlank()) {
+                            syncFcmToken(session.idUser)
+                        } else {
+                            Timber.tag("AuthViewModel").w("⚠️ userId tidak ditemukan di JWT")
+                        }
+                        reduce {
+                            copy(
+                                isLoggedIn = true
+                            )
+                        }
+                        sendEvent(LoginUiEvent.Success)
+
+                    },
+                    onFailure = { exception ->
+                        val message = exception.toLoginMessage()
+
+                        reduce {
+                            copy(
+                                errorMessage = message
+                            )
+                        }
+                        sendEvent(LoginUiEvent.ShowSnackBar(message))
+                    }
+                )
         }
     }
 
@@ -133,8 +124,9 @@ class LoginViewModel @Inject constructor(
     fun checkLogin() {
         viewModelScope.launch {
             val isLoggedIn = checkLoginUseCase()
-            _processState.update {
-                it.copy(
+
+            reduce {
+                copy(
                     isLoggedIn = isLoggedIn,
                     isReady = true
                 )
@@ -142,36 +134,39 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    val signWithGoogle: () -> Unit = {
+    fun signWithGoogle() {
         viewModelScope.launch {
-            try {
+            googleSignInUseCase()
+                .flowOn(dispatcher)
+                .collect { _authState.value = it }
 
-
-                googleSignInUseCase()
-                    .flowOn(dispatcher)
-                    .collect { _authState.value = it }
-            } catch (e: Exception) {
-                _loginEvent.send(LoginEvent.ShowSnackBar("Google Sign-In gagal: ${e.message}"))
-            }
         }
-    }
-
-    private fun setLoading(isLoading: Boolean) {
-        _processState.update { it.copy(isLoading = isLoading) }
     }
 
     private fun syncFcmToken(userId: String) {
         viewModelScope.launch {
             val fcmToken = FirebaseMessaging.getInstance().token.await()
-            Timber.tag("AuthViewModel").d("✅ FCM Token setelah login: $fcmToken")
             saveTokenUseCase(userId, fcmToken)
 
         }
     }
 }
 
+private fun Throwable.toLoginMessage(): String {
+    return when (this) {
+        is SocketTimeoutException ->
+            "Koneksi ke server timeout. Silakan coba lagi."
 
-sealed class LoginEvent {
-    data object Success : LoginEvent()
-    data class ShowSnackBar(val message: String) : LoginEvent()
+        is UnknownHostException ->
+            "Tidak ada koneksi internet."
+
+        is ConnectException ->
+            "Tidak dapat terhubung ke server."
+
+        is HttpException ->
+            "Terjadi kesalahan pada server."
+
+        else ->
+            "Login gagal. Silakan coba lagi."
+    }
 }

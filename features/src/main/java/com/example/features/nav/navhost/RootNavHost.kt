@@ -1,6 +1,7 @@
 package com.example.features.nav.navhost
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -10,7 +11,6 @@ import com.example.features.presentation.MainScreen
 import com.example.features.presentation.authentication.screen.login.ScreenLogin
 import com.example.features.presentation.authentication.screen.login.SplashScreen
 import com.example.features.presentation.authentication.screen.signup.SignUpScreen
-import androidx.compose.ui.Modifier
 
 
 @Composable
@@ -60,7 +60,10 @@ fun RootNavHost(modifier: Modifier = Modifier) {
 
             composable(Screen.SignUp.route) {
                 SignUpScreen(
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { navController.popBackStack() },
+                    onSignInClick = {
+                        navController.navigate(Screen.Login.route)
+                    },
                 )
             }
         }
@@ -70,8 +73,10 @@ fun RootNavHost(modifier: Modifier = Modifier) {
         composable(Screen.Main.route) {
             MainScreen(
                 onLogout = {
+
                     navController.navigate(Screen.Login.route){
                         popUpTo(Screen.Main.route){ inclusive = true }
+                        launchSingleTop = true
                     }
                 }
             )

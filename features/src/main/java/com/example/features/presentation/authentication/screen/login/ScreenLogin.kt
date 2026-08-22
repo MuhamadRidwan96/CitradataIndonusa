@@ -12,11 +12,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.response.AuthResponse
 import com.example.features.presentation.authentication.screen.component.LoginContent
+import com.example.features.presentation.authentication.state.login.LoginUiEvent
 import kotlinx.coroutines.flow.collectLatest
 
 
@@ -30,18 +32,18 @@ fun ScreenLogin(
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
 
-    val formState by viewModel.formState.collectAsStateWithLifecycle()
-    val processState by viewModel.processState.collectAsStateWithLifecycle()
-    val isSubmitted by viewModel.isSubmitEnabled.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
 
     // === Event Listener ===
-    LaunchedEffect(onLoginSuccess) {
-        viewModel.loginEvent.collectLatest { event ->
+    LaunchedEffect(Unit,onLoginSuccess) {
+        viewModel.uiEvent.collectLatest { event ->
             when (event) {
-                is LoginEvent.Success -> {
+                is LoginUiEvent.Success -> {
                     onLoginSuccess()
                 }
-                is LoginEvent.ShowSnackBar -> {
+
+                is LoginUiEvent.ShowSnackBar -> {
                     snackBarHostState.showSnackbar(event.message)
                 }
             }
@@ -66,7 +68,7 @@ fun ScreenLogin(
 
 
     Scaffold(
-        containerColor = androidx.compose.ui.graphics.Color.Transparent,
+        containerColor = Color.Transparent,
         snackbarHost = {
             SnackbarHost(
                 hostState = snackBarHostState,
@@ -84,15 +86,10 @@ fun ScreenLogin(
     ) { padding ->
 
         LoginContent(
-            formState = formState,
-            processState = processState,
-            isSubmitEnabled = isSubmitted,
-            onEmailChange = viewModel.onChangeEmail,
-            onPasswordChange = viewModel.onChangePassword,
-            onLoginClick = viewModel.login,
-            onGoogleClick = viewModel.signWithGoogle,
+            onAction = viewModel::action,
             onSignUpClick = onSignUpClick,
-            contentPadding = padding
+            contentPadding = padding,
+            state = state,
         )
     }
 }

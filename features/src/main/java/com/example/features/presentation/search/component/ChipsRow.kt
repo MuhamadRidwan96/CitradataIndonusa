@@ -51,7 +51,7 @@ fun ChipsRow(
                 Chip(
                     label = {
                         Text(
-                            text = searchState.startDate + "-" + searchState.endDate,
+                            text = searchState.startDate + "/" + searchState.endDate,
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold
                         )

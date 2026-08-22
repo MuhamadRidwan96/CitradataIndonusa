@@ -17,18 +17,18 @@ import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.SwitchPpr
 import com.example.features.presentation.search.state.ProjectFilterState
-import com.example.features.presentation.search.state.SearchBottomSheetAction
+import com.example.features.presentation.search.state.search.SearchUiAction
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBottomSheet(
-    modifier: Modifier = Modifier,
-    onAction: (SearchBottomSheetAction) -> Unit,
-    onDismiss: () -> Unit,
-    searchState: ProjectFilterState
+    fun SearchBottomSheet(
+        modifier: Modifier = Modifier,
+        onAction: (SearchUiAction) -> Unit,
+        onDismiss: () -> Unit,
+        searchState: ProjectFilterState
 
 
-) {
+    ) {
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
@@ -45,7 +45,7 @@ fun SearchBottomSheet(
 @Composable
 private fun SearchBottomSheetContent(
     searchState: ProjectFilterState,
-    onAction: (SearchBottomSheetAction) -> Unit
+    onAction: (SearchUiAction) -> Unit
 ) {
 
     LazyColumn(
@@ -68,7 +68,7 @@ private fun SearchBottomSheetContent(
             SwitchPpr(
                 checked = searchState.withPpr,
                 onCheckedChange = {
-                    onAction(SearchBottomSheetAction.SetWithPpr(it))
+                    onAction(SearchUiAction.SetWithPpr(it))
                 }
             )
         }
@@ -77,13 +77,13 @@ private fun SearchBottomSheetContent(
                 startDate = searchState.startDate,
                 endDate = searchState.endDate,
                 onStartDateSelect = { date ->
-                    onAction(SearchBottomSheetAction.SetStartDate(date))
+                    onAction(SearchUiAction.SetStartDate(date))
                 },
                 onEndDateSelect = { endDate ->
-                    onAction(SearchBottomSheetAction.SetEndDate(endDate))
+                    onAction(SearchUiAction.SetEndDate(endDate))
                 },
-                onClearStartDate = { onAction(SearchBottomSheetAction.ClearStartDate) },
-                onClearEndDate = { onAction(SearchBottomSheetAction.ClearEndDate) }
+                onClearStartDate = { onAction(SearchUiAction.ClearDateRange) },
+                onClearEndDate = { onAction(SearchUiAction.ClearDateRange) }
             )
         }
 
@@ -98,7 +98,7 @@ private fun SearchBottomSheetContent(
             ProjectCategory(
                 categorySelected = searchState.idProjectCategory,
                 onCategorySelect = { id, name ->
-                    onAction(SearchBottomSheetAction.SelectProjectCategory(id, name))
+                    onAction(SearchUiAction.SetProjectCategory(id, name))
                 }
             )
         }
@@ -106,7 +106,7 @@ private fun SearchBottomSheetContent(
             BuildingCategory(
                 selectedCategoryId = searchState.idBuildingCategory,
                 onCategorySelect = { id, name ->
-                    onAction(SearchBottomSheetAction.SelectBuildingCategory(id, name))
+                    onAction(SearchUiAction.SetBuildingCategory(id, name))
                 }
             )
         }
@@ -115,7 +115,7 @@ private fun SearchBottomSheetContent(
             ProjectStatusCategory(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 onStatusSelect = { id, name ->
-                    onAction(SearchBottomSheetAction.SelectStatus(id, name))
+                    onAction(SearchUiAction.SetStatus(id, name))
                 },
                 selectedStatusId = searchState.idProjectStatusCategory,
             )
@@ -126,8 +126,9 @@ private fun SearchBottomSheetContent(
             SimpleButton(
                 text = stringResource(R.string.cari),
                 onClick = {
-                    onAction(SearchBottomSheetAction.Apply)
-                    onAction(SearchBottomSheetAction.Dismiss)
+                    onAction(SearchUiAction.ApplyFilter)
+                    //Cek lagi
+                    onAction(SearchUiAction.Dismiss)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

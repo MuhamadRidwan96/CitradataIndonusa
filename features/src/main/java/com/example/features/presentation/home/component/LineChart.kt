@@ -125,17 +125,12 @@ fun LineChart(
 
     Card(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(20.dp),
-     /*   modifier = modifier.border(
-            width = 0.5.dp,
-            color = Color.Gray,
-            shape = RoundedCornerShape(20.dp)
-        )
-*/
+        shape = RoundedCornerShape(20.dp)
+
     ) {
         Column(
-            modifier = modifier
-                .padding(10.dp)
+            modifier = Modifier
+                .padding(18.dp)
                 .fillMaxWidth()
         ) {
             Text(

@@ -6,10 +6,10 @@ import com.example.data.local.dao.AppDatabase
 import com.example.data.local.dao.FavoriteDAO
 import com.example.data.local.dao.NotificationDao
 import com.example.data.local.dao.ProfileDAO
-import com.example.data.remote.api.ApiHelper
-import com.example.data.remote.api.ApiHelperImpl
-import com.example.data.remote.api.ApiService
-import com.example.data.remote.google.GoogleAuthManager
+import com.example.data.network.api.ApiHelper
+import com.example.data.network.api.ApiHelperImpl
+import com.example.data.network.api.ApiService
+import com.example.data.network.google.GoogleAuthManager
 import com.example.data.repositoryImpl.AuthenticationRepositoryImpl
 import com.example.data.repositoryImpl.DataRepositoryImpl
 import com.example.data.repositoryImpl.DetailDataRepositoryImpl
@@ -127,8 +127,8 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideNotificationRepository(dao: NotificationDao): NotificationRepository {
-        return NotificationRepositoryImpl(dao)
+    fun provideNotificationRepository(apiHelper: ApiHelper,dao: NotificationDao,): NotificationRepository {
+        return NotificationRepositoryImpl(apiHelper,dao)
     }
 
     @Provides

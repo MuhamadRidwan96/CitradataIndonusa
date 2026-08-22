@@ -1,20 +1,16 @@
 package com.example.domain.usecase.room
 
-import com.example.domain.di.IoDispatcher
 import com.example.domain.model.FavoriteProject
 import com.example.domain.repository.FavoriteRepository
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
 class GetAllFavoriteUseCase @Inject constructor(
     private val favoriteRepository: FavoriteRepository,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) {
-    suspend operator fun invoke(): Flow<List<FavoriteProject>> {
-        return withContext(dispatcher) { favoriteRepository.getAllFavorites() }
+    operator fun invoke(): Flow<List<FavoriteProject>> {
+        return  favoriteRepository.getAllFavorites()
     }
 }
 

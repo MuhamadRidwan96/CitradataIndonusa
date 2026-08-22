@@ -38,12 +38,7 @@ fun DonutChartScreen(
 ) {
 
     Card(
-        modifier = modifier.fillMaxSize()
-          /*  .border(
-                width = 0.5.dp,
-                color = Color.Gray,
-                shape = RoundedCornerShape(20.dp)
-            )*/,
+        modifier = modifier.fillMaxSize(),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
 
@@ -51,7 +46,7 @@ fun DonutChartScreen(
         ) {
         Column(
             modifier = Modifier
-                .padding(10.dp)
+                .padding(18.dp)
                 .fillMaxWidth()
         ) {
             Text(

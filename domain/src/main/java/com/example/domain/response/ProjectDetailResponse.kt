@@ -1,7 +1,9 @@
 package com.example.domain.response
 
+import androidx.compose.runtime.Stable
 import com.google.gson.annotations.SerializedName
 
+@Stable
 data class ProjectDetailResponse(
     @SerializedName("success") val success: Boolean,
     @SerializedName("status") val status: Int,
@@ -9,6 +11,7 @@ data class ProjectDetailResponse(
     @SerializedName("data") val data: DataProject
 )
 
+@Stable
 data class DataProject(
     @SerializedName("project") val project: Project,
     @SerializedName("developer") val developer: List<Developer>,
@@ -23,6 +26,7 @@ data class DataProject(
     @SerializedName("member_comment") val memberComment: List<Any>
 )
 
+@Stable
 data class Project(
     @SerializedName("idproject") val idProject: String,
     @SerializedName("iddeveloper") val idDeveloper: String?,
@@ -67,6 +71,7 @@ data class Project(
     @SerializedName("project_created") val projectCreated: String
 )
 
+@Stable
 data class Developer(
     @SerializedName("name") val name: String,
     @SerializedName("sector") val sector: String,
@@ -79,6 +84,7 @@ data class Developer(
     @SerializedName("note") val note: String
 )
 
+@Stable
 data class Contractor(
     @SerializedName("name") val name: String,
     @SerializedName("sector") val sector: String,
@@ -91,6 +97,7 @@ data class Contractor(
     @SerializedName("note") val note: String
 )
 
+@Stable
 data class Consultant(
     @SerializedName("name") val name: String,
     @SerializedName("sector") val sector: String,
@@ -103,6 +110,7 @@ data class Consultant(
     @SerializedName("note") val note: String
 )
 
+@Stable
 data class TeamMember(
     @SerializedName("structure_name") val structureName: String,
     @SerializedName("position") val position: String,
@@ -110,6 +118,7 @@ data class TeamMember(
     @SerializedName("email") val email: String
 )
 
+@Stable
 data class ProjectSpecification(
     @SerializedName("idproject_specification") val idProjectSpecification: String,
     @SerializedName("idproject") val idProject: String,
@@ -122,11 +131,13 @@ data class ProjectSpecification(
     @SerializedName("status") val status: String
 )
 
+@Stable
 data class ProjectUpdateStatus(
     @SerializedName("update_status") val updateStatus: String,
     @SerializedName("date") val date: String
 )
 
+@Stable
 data class ProjectPpr(
     @SerializedName("id") val id: String,
     @SerializedName("ppr_code") val pprCode: String,

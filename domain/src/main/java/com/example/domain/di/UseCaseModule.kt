@@ -23,10 +23,10 @@ import com.example.domain.usecase.data.FilteredUseCase
 import com.example.domain.usecase.location.CityUseCase
 import com.example.domain.usecase.location.ProvinceUseCase
 import com.example.domain.usecase.notification.DeleteNotificationUseCase
-import com.example.domain.usecase.notification.GetAllNotificationUseCase
-import com.example.domain.usecase.notification.GetNotificationCountUseCase
-import com.example.domain.usecase.notification.ResetNotificationCountUseCase
-import com.example.domain.usecase.notification.UpdateNotificationCountUseCase
+import com.example.domain.usecase.notification.MarkNotificationReadUseCase
+import com.example.domain.usecase.notification.ObserveNotificationUseCase
+import com.example.domain.usecase.notification.ObserveUnreadCountUseCase
+import com.example.domain.usecase.notification.SyncNotificationUseCase
 import com.example.domain.usecase.profile.ClearProfileUseCase
 import com.example.domain.usecase.profile.ObserverProfileUseCase
 import com.example.domain.usecase.profile.RefreshProfileUseCase
@@ -126,8 +126,8 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideGetAllFavoriteUseCase(repository: FavoriteRepository, @IoDispatcher dispatcher: CoroutineDispatcher): GetAllFavoriteUseCase {
-        return GetAllFavoriteUseCase(repository, dispatcher)
+    fun provideGetAllFavoriteUseCase(repository: FavoriteRepository): GetAllFavoriteUseCase {
+        return GetAllFavoriteUseCase(repository)
     }
 
     @Provides
@@ -154,28 +154,19 @@ object UseCaseModule {
         return SaveTokenUseCase(repository)
     }
 
-    @Provides
-    @Singleton
-    fun provideGetNotificationCountUseCase(repository: NotificationRepository,  @IoDispatcher dispatcher: CoroutineDispatcher): GetNotificationCountUseCase {
-        return GetNotificationCountUseCase(repository, dispatcher)
-    }
 
     @Provides
     @Singleton
-    fun provideResetNotificationCountUseCase(repository: NotificationRepository): ResetNotificationCountUseCase {
-        return ResetNotificationCountUseCase(repository)
+    fun provideResetNotificationCountUseCase(repository: NotificationRepository): MarkNotificationReadUseCase {
+        return MarkNotificationReadUseCase(repository)
     }
+
+
 
     @Provides
     @Singleton
-    fun provideUpdateNotificationCountUseCase(repository: NotificationRepository): UpdateNotificationCountUseCase {
-        return UpdateNotificationCountUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGetAllNotificationUseCase(repository: NotificationRepository): GetAllNotificationUseCase {
-        return GetAllNotificationUseCase(repository)
+    fun provideGetAllNotificationUseCase(repository: NotificationRepository): ObserveNotificationUseCase {
+        return ObserveNotificationUseCase(repository)
     }
 
     @Provides
@@ -183,6 +174,7 @@ object UseCaseModule {
     fun provideDeleteUseCase(repository: NotificationRepository): DeleteNotificationUseCase {
         return DeleteNotificationUseCase(repository)
     }
+
 
     @Provides
     @Singleton
@@ -216,5 +208,17 @@ object UseCaseModule {
     repository: ProfileRepository,
     @IoDispatcher dispatcher: CoroutineDispatcher) : ClearProfileUseCase{
         return ClearProfileUseCase(repository,dispatcher)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncNotificationUseCase(repository: NotificationRepository) : SyncNotificationUseCase{
+        return SyncNotificationUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUnreadNotificationUseCase(repository: NotificationRepository): ObserveUnreadCountUseCase{
+        return ObserveUnreadCountUseCase(repository)
     }
 }

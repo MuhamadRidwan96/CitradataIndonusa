@@ -43,10 +43,14 @@ fun MainBottomNavigation(
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        NavigationBar{
+        NavigationBar(
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp
+        ){
             bottomItems.forEach { navigate ->
                 val selected = currentDestination == navigate.destination
                 NavigationBarItem(
+
                     selected = selected,
                     icon = {
                         Icon(

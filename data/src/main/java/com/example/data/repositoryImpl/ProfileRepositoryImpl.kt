@@ -3,7 +3,7 @@ package com.example.data.repositoryImpl
 import com.example.data.local.dao.ProfileDAO
 import com.example.data.local.toDomain
 import com.example.data.local.toEntity
-import com.example.data.remote.api.ApiHelper
+import com.example.data.network.api.ApiHelper
 import com.example.domain.model.UserProfile
 import com.example.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +27,13 @@ class ProfileRepositoryImpl @Inject constructor(
             response.body()?.let { profileResponse ->
                 dao.insert(profileResponse.data.toEntity())
             }
+        }
+        if (!response.isSuccessful){
+            throw Exception(
+                response.message().ifEmpty {
+                    "Failed load profile"
+                }
+            )
         }
     }
 

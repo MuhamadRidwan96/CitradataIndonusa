@@ -29,14 +29,14 @@ import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.StatusChip
 import com.example.domain.response.ProjectPpr
-import com.example.features.presentation.home.state.DetailState
+import com.example.features.presentation.detail.state.DetailUiState
 import com.example.features.presentation.home.utils.cleanInfo
 import com.example.features.presentation.home.utils.formatToFullDate
 
 @Composable
 fun ProgressProjectComponent(
     modifier: Modifier = Modifier,
-    status: DetailState
+    status: DetailUiState
 ) {
     val statusProgress = status.ppr
     Column(modifier = modifier.padding(16.dp)) {

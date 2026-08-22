@@ -2,6 +2,7 @@ package com.example.features.presentation.profile.screen.state
 
 import androidx.compose.runtime.Immutable
 
+
 @Immutable
 data class CardInfo(
     val name: String,

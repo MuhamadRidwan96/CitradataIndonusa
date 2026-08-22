@@ -22,18 +22,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core_ui.R
 import com.example.core_ui.component.CDATextField
 import com.example.features.presentation.search.state.ProjectFilterState
-import com.example.features.presentation.search.state.SearchBottomSheetAction
+import com.example.features.presentation.search.state.location.LocationUiAction
+import com.example.features.presentation.search.state.search.SearchUiAction
 import com.example.features.presentation.search.viewmodel.LocationViewModel
 
 @Composable
 fun LocationSection(
     searchState: ProjectFilterState,
-    onAction: (SearchBottomSheetAction) -> Unit,
+    onAction: (SearchUiAction) -> Unit,
     modifier: Modifier = Modifier,
     locationVM: LocationViewModel = hiltViewModel()
 ) {
 
-    val state by locationVM.locationState.collectAsStateWithLifecycle()
+    val state by locationVM.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -63,9 +64,17 @@ fun LocationSection(
 
         ProvinceBottomSheet(
             selectedProvince = searchState.provinceName,
-            onGetProvince = locationVM::getProvinces,
+            onGetProvince = {
+                locationVM.action(
+                    LocationUiAction.LoadProvince
+                )
+            },
             onProvinceSelect = { id, name ->
-                onAction(SearchBottomSheetAction.SelectProvince(id, name))
+
+                // Update filter/search state
+                onAction(
+                    SearchUiAction.SetProvince(id, name)
+                )
             },
             state = state,
         )
@@ -73,10 +82,14 @@ fun LocationSection(
         CityBottomSheet(
             idProvince = searchState.idProvince,
             selectedCityName = searchState.cityName,
-            onCitySelect = {  id,provinceId,city ->
-                onAction(SearchBottomSheetAction.SelectCity(id,provinceId,city))
+            onCitySelect = { id, idProvince, city ->
+                onAction(SearchUiAction.SetCity(id, idProvince, city))
             },
-            onGetCity = locationVM::getCity,
+            onGetCity = { idProvince ->
+                locationVM.action(
+                    LocationUiAction.LoadCity(idProvince ?: "")
+                )
+            },
             state = state,
         )
 
@@ -85,7 +98,7 @@ fun LocationSection(
             value = searchState.address,
             onValueChange = {
                 onAction(
-                    SearchBottomSheetAction.QueryChange(it)
+                    SearchUiAction.QueryChanged(it)
                 )
             },
             placeholder = stringResource(R.string.masukan_alamat)

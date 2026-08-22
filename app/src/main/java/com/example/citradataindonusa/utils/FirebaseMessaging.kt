@@ -3,14 +3,12 @@ package com.example.citradataindonusa.utils
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.citradataindonusa.ui.MainActivity
 import com.example.core_ui.R
-import com.example.domain.model.NotificationModel
 import com.example.domain.preferences.UserPreferences
 import com.example.domain.usecase.authentication.SaveTokenUseCase
-import com.example.domain.usecase.notification.UpdateNotificationCountUseCase
+import com.example.domain.usecase.notification.SyncNotificationUseCase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -19,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -26,13 +25,14 @@ import javax.inject.Inject
 class FirebaseMessaging : FirebaseMessagingService() {
 
     @Inject
-    lateinit var updateNotificationCountUseCase: UpdateNotificationCountUseCase
+    lateinit var syncNotificationUseCase: SyncNotificationUseCase
 
     @Inject
     lateinit var userPreferences: UserPreferences
 
     @Inject
     lateinit var saveTokenUseCase: SaveTokenUseCase
+
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
@@ -43,52 +43,50 @@ class FirebaseMessaging : FirebaseMessagingService() {
                 try {
                     saveTokenUseCase(session.idUser, token)
                 } catch (e: Exception) {
-                    Log.d("e", "$e ,Failed to sync FCM token")
+                    Timber.tag("e").d("$e ,Failed to sync FCM token")
                 }
             }
         }
 
         FirebaseMessaging.getInstance().token
             .addOnSuccessListener {
-                Log.d("FCM", "Current Token = $it")
+                Timber.tag("FCM").d("Current Token = $it")
             }
             .addOnFailureListener {
-                Log.d("FCM","ERROR =  $it")
+                Timber.tag("FCM").d("ERROR =  $it")
             }
 
     }
 
     //jika pesan berisi payload data
     override fun onMessageReceived(message: RemoteMessage) {
+        super.onMessageReceived(message)
 
-        val title = message.data["title"] ?: "New message"
-        val body = message.data["body"] ?: "You have a new notification"
-        val projectId = message.data["project_id"]
+        val data = message.data
 
-        Log.d("FCM","FCM diterima")
+        // Extract data
+        val id = data["id"]?.toIntOrNull()
+        val title = data["title"] ?: message.notification?.title ?: ""
+        val body = data["body"] ?: message.notification?.body ?: ""
+        val projectId = data["project_id"]
 
-        Log.d("Title :","${message.data["title"]}")
 
-        Log.d("Body : ","${message.data["body"]}")
 
-       Log.d("ProjectId :"," ${message.data["project_id"]}")
-
-        showNotification(title, body)
-
-        CoroutineScope(Dispatchers.IO).launch {
-            updateNotificationCountUseCase(
-                NotificationModel(
-                    id = 0,
-                    title = title,
-                    body = body,
-                    idProject = projectId,
-                    isRead = false,
-                    timestamp = System.currentTimeMillis()
-                )
-            )
+        if (id != null) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val session = userPreferences.getSession().first()
+                if (session.isLogin){
+                    syncNotificationUseCase(session.idUser)
+                }
+            }
         }
-    }
+        // NOTIFICATION SUDAH DITAMPILKAN OTOMATIS OLEH SISTEM
+        // Hanya tampilkan manual jika ini adalah data message (tanpa notification)
+        if (message.notification == null) {
+            showNotification(title, body, projectId)
+        }
 
+    }
 
     private fun showNotification(title: String, message: String, projectId: String? = null) {
         val channelId = "default_channel"
@@ -101,8 +99,12 @@ class FirebaseMessaging : FirebaseMessagingService() {
         }
 
         val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+
             putExtra("project_id", projectId)
+            putExtra("from_notification", true)
         }
 
         val requestCode = System.currentTimeMillis().toInt()
@@ -129,3 +131,8 @@ class FirebaseMessaging : FirebaseMessagingService() {
     }
 
 }
+
+
+
+
+

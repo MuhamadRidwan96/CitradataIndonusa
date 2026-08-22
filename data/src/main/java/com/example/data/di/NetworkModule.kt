@@ -1,6 +1,6 @@
 package com.example.data.di
 
-import com.example.data.remote.api.ApiService
+import com.example.data.network.api.ApiService
 import com.example.data.utils.HttpsRequestInterceptor
 import com.example.data.utils.Constant
 import dagger.Module

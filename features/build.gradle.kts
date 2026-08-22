@@ -45,10 +45,9 @@ android {
 
 dependencies {
 
-    implementation(project(":domain"))  // Bergantung pada modul domain
-    implementation(project(":data"))    // Bergantung pada modul data
-    implementation(project(":core-ui")) // Bergantung pada module core-ui
-    implementation(project(":common"))
+    implementation(project(":domain"))  
+    implementation(project(":data"))
+    implementation(project(":core"))
 
 
 

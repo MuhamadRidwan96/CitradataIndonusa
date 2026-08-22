@@ -49,7 +49,7 @@ android {
     buildFeatures{
         compose = true
         aidl = false
-        buildConfig = false
+        buildConfig = true
         renderScript = false
         shaders = false
     }
@@ -59,11 +59,11 @@ android {
 dependencies {
 
     implementation (project(":domain"))  // Bergantung pada modul domain
-    implementation (project(":data")) // Bergantung pada modul data
-    implementation(project(":core-ui"))//Bergantung pada modul core-ui
+    implementation (project(":data"))
+    implementation(project(":core"))
+    // Bergantung pada modul data
+    //Bergantung pada modul core-ui
     implementation(project(":features"))
-    implementation(project(":common"))
-    testImplementation(project(":common"))
 
 
     implementation(libs.androidx.core.ktx)
@@ -119,6 +119,8 @@ dependencies {
     testImplementation (libs.turbine)
     testImplementation (libs.mockk)
     testImplementation(kotlin("test"))
+
+    implementation(libs.timber)
 
 
 }

@@ -41,19 +41,7 @@ fun DashboardShimmer(
             Box(
                 modifier = Modifier
                     .width(175.dp)
-                    .height(36.dp)
-                    .background(
-                        baseColor,
-                        RoundedCornerShape(12.dp)
-                    )
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Box(
-                modifier = Modifier
-                    .width(36.dp)
-                    .height(36.dp)
+                    .height(30.dp)
                     .background(
                         baseColor,
                         RoundedCornerShape(12.dp)
@@ -63,7 +51,7 @@ fun DashboardShimmer(
 
         Box(
             modifier = Modifier
-                .width(200.dp)
+                .width(250.dp)
                 .height(14.dp)
                 .background(
                     baseColor,
@@ -105,15 +93,6 @@ fun DashboardShimmer(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .height(36.dp)
-                .background(
-                    baseColor,
-                    RoundedCornerShape(8.dp)
-                )
-        )
         // Line Chart Statistic
         Box(
             modifier = Modifier
@@ -128,16 +107,6 @@ fun DashboardShimmer(
         // Donut Chart
 
         Spacer(modifier = Modifier.height(8.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .height(36.dp)
-                .background(
-                    baseColor,
-                    RoundedCornerShape(8.dp)
-                )
-        )
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()

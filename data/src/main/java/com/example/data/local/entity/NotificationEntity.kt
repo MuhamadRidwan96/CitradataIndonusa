@@ -6,10 +6,13 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "notification")
 data class NotificationEntity(
-    @PrimaryKey(autoGenerate = true) val id:Int = 0,
+    @PrimaryKey val id:Int,
+    val userId : String,
     val title :String,
     val body: String,
-    val idProject: String?,
+    val projectId: String?,
+    val projectName: String,
     val isRead : Boolean,
-    val timestamp: Long = System.currentTimeMillis()
+    val createdAt: String
+
 )

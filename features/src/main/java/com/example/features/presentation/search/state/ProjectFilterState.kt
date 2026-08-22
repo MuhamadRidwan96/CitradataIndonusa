@@ -45,26 +45,3 @@ data class ProjectFilterState(
     val isFavorite: Boolean = false,
 )
 
-fun ProjectFilterState.hasFilter() : Boolean {
-    return startDate.isNotEmpty() ||
-            endDate.isNotEmpty() ||
-            idProject.isNotEmpty() ||
-            projectName.isNotEmpty() ||
-            idProjectCategory != null ||
-            idBuildingCategory != null ||
-            address.isNotEmpty() ||
-            !idProvince.isNullOrEmpty() ||
-            !idCity.isNullOrEmpty() ||
-            idDeveloper != null ||
-            idConsultant.isNotEmpty() ||
-            idContractor.isNotEmpty() ||
-            idSectorCategory.isNotEmpty() ||
-            idProjectStatusCategory != null ||
-            idConsultantCategory.isNotEmpty() ||
-            idContractorCategory.isNotEmpty() ||
-            withPpr || // boolean filter
-            ppr.isNotEmpty() ||
-            //query.isNotEmpty() ||
-            queryProvince.isNotEmpty() ||
-            queryCity.isNotEmpty()
-}

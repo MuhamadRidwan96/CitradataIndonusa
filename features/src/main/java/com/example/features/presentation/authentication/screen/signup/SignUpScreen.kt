@@ -22,7 +22,9 @@ import com.example.feature_login.R
 import com.example.features.presentation.authentication.screen.signup.component.ButtonSection
 import com.example.features.presentation.authentication.screen.signup.component.MyTopAppBar
 import com.example.features.presentation.authentication.screen.signup.component.SignUpFormSection
-import com.example.features.presentation.authentication.state.SignUpFormState
+import com.example.features.presentation.authentication.state.signup.SignUpUiAction
+import com.example.features.presentation.authentication.state.signup.SignUpUiEvent
+import com.example.features.presentation.authentication.state.signup.SignUpUiState
 import kotlinx.coroutines.flow.collectLatest
 
 
@@ -31,10 +33,27 @@ import kotlinx.coroutines.flow.collectLatest
 fun SignUpScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
+    onSignInClick: () -> Unit,
     viewmodel: SignUpViewmodel = hiltViewModel()
 ) {
-    val state by viewmodel.formState.collectAsStateWithLifecycle()
+    val state by viewmodel.uiState.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewmodel.uiEvent.collectLatest { event ->
+            when (event) {
+                is SignUpUiEvent.Success -> {
+                    snackBarHostState.showSnackbar("Sign UP Success")
+                }
+
+                is SignUpUiEvent.ShowSnackBar -> {
+                    snackBarHostState.showSnackbar(event.message)
+                }
+            }
+
+        }
+    }
+
     Scaffold(
         topBar = {
             MyTopAppBar(
@@ -50,40 +69,21 @@ fun SignUpScreen(
             ) {
                 SignUpScreenContent(
                     state = state,
-                    onUsernameChange = viewmodel.onChangeUsername,
-                    onEmailChange = viewmodel.onChangeEmail,
-                    onPasswordChange = viewmodel.onChangePassword,
-                    onSignUpClick = viewmodel.signUp,
-                    onSignInClick = onBackClick
+                    onAction = viewmodel::action,
+                    onSignInClick = onSignInClick
                 )
             }
         }
     )
 
-    LaunchedEffect(Unit) {
-        viewmodel.signUpEvent.collectLatest { event ->
-            when (event) {
-                is SignUpEvent.Success -> {
-                    " Sign up success!"
-                }
 
-                is SignUpEvent.ShowSnackBar -> {
-                    snackBarHostState.showSnackbar(event.message)
-                }
-            }
-
-        }
-    }
 }
 
 @Composable
 fun SignUpScreenContent(
     modifier : Modifier = Modifier,
-    state: SignUpFormState,
-    onUsernameChange: (String) -> Unit,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onSignUpClick: () -> Unit,
+    state: SignUpUiState,
+    onAction: (SignUpUiAction) -> Unit,
     onSignInClick: () -> Unit
 ) {
     Column(
@@ -94,13 +94,29 @@ fun SignUpScreenContent(
     ) {
         SignUpFormSection(
             state = state,
-            onUsernameChange = onUsernameChange,
-            onEmailChange = onEmailChange,
-            onPasswordChange = onPasswordChange
+            onUsernameChange = {
+                onAction(
+                SignUpUiAction.UsernameChanged(it))
+
+            },
+            onEmailChange = {
+                onAction(
+                    SignUpUiAction.EmailChanged(it)
+                )
+            },
+            onPasswordChange = {
+                onAction(
+                    SignUpUiAction.PasswordChanged(it)
+                )
+            }
         )
         Spacer(modifier = Modifier.height(16.dp))
         ButtonSection(
-            onSignUpClick = onSignUpClick,
+            onSignUpClick = {
+                onAction(
+                    SignUpUiAction.SignUp
+                )
+            },
             onSignInClick = onSignInClick
         )
     }

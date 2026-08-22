@@ -3,16 +3,20 @@ package com.example.citradataindonusa
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.util.Log
 import dagger.hilt.android.HiltAndroidApp
+import timber.log.Timber
 
 @HiltAndroidApp
 class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
+       if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())   // <- WAJIB ada baris ini
+        }
         checkNotificationChannel()
+
+
     }
 
     private fun checkNotificationChannel() {
@@ -21,7 +25,7 @@ class MyApplication : Application() {
         val channel = notificationManager.getNotificationChannel(channelId)
 
         if (channel != null) {
-            Log.d("Channel exists", "${channel.id} - ${channel.name}")
+            Timber.tag("Channel exists").d("${channel.id} - ${channel.name}")
         } else {
             // Force create channel jika tidak ditemukan
             createNotificationChannel()

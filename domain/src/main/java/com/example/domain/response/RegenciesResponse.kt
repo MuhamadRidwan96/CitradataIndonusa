@@ -15,10 +15,19 @@ data class RegenciesResponse(
 )
 
 data class DataRegencies (
-    @SerializedName("idCity")
+    @SerializedName("id_city")
     val idCity:String,
-    @SerializedName("idProvince")
-    val idProvince:String?,
-    @SerializedName("cityName")
+    @SerializedName("id_province")
+    val idProvince:String ?,
+    @SerializedName("city_name")
     val cityName:String
+)
+
+data class CityRequest(
+    @SerializedName("id_city")
+    val idCity:String ?,
+    @SerializedName("id_province")
+    val idProvince:String ?,
+    @SerializedName("city_name")
+    val cityName:String ?
 )

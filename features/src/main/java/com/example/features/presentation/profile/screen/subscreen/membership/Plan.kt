@@ -7,10 +7,10 @@ import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.example.core_ui.model.BenefitPlan
-import com.example.core_ui.model.CompareFeature
-import com.example.core_ui.model.Feature
-import com.example.core_ui.model.SubscriptionPlan
+import com.example.domain.model.BenefitPlan
+import com.example.domain.model.CompareFeature
+import com.example.domain.model.Feature
+import com.example.domain.model.SubscriptionPlan
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList

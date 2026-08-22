@@ -13,22 +13,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core_ui.R
 import com.example.core_ui.component.NotificationBadge
-import com.example.features.presentation.home.screen.NotificationViewModel
 
+@Suppress("EffectKeys")
 @Composable
 fun NotificationWithBadge(
+    unreadCount:Int,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    notifVm : NotificationViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
 
 ) {
 
-    val notif by notifVm.unreadCount.collectAsStateWithLifecycle()
     Box(
         modifier = modifier
             .size(38.dp)
@@ -47,7 +43,7 @@ fun NotificationWithBadge(
             modifier = Modifier.size(24.dp)
         )
 
-        if (notif > 0) {
+        if (unreadCount > 0) {
             NotificationBadge(
                 modifier = Modifier
                     .align(Alignment.TopEnd)

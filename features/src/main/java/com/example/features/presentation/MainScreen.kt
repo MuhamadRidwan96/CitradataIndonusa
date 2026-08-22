@@ -1,5 +1,6 @@
 package com.example.features.presentation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -13,11 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -27,18 +24,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.features.nav.MainBottomNavigation
 import com.example.features.nav.destination.Screen
-import com.example.features.presentation.favorite.FavoriteScreen
+import com.example.features.presentation.favorite.screen.FavoriteScreen
 import com.example.features.presentation.home.screen.dashboard.HomeScreen
-import com.example.features.presentation.home.screen.detail.ProjectDetailScreen
+import com.example.features.presentation.detail.screen.ProjectDetailScreen
 import com.example.features.presentation.home.screen.notification.NotificationScreen
-import com.example.features.presentation.home.state.HomeNavigation
-import com.example.features.presentation.home.state.ProfileNavigation
-import com.example.features.presentation.profile.screen.main.ProfileScreen
+import com.example.features.presentation.home.utils.HomeCallbacks
+import com.example.features.presentation.home.utils.ProfileCallbacks
+import com.example.features.presentation.profile.screen.screen_main.ProfileScreen
 import com.example.features.presentation.profile.screen.subscreen.contact_us.ContactUsScreen
 import com.example.features.presentation.profile.screen.subscreen.membership.MembershipScreen
 import com.example.features.presentation.profile.screen.subscreen.policy.PrivacyPolicyScreen
 import com.example.features.presentation.profile.screen.subscreen.terms.TermsAndConditionScreen
 import com.example.features.presentation.profile.screen.subscreen.update.UpdateProfileScreen
+
 import com.example.features.presentation.search.SearchScreen
 
 /**
@@ -68,7 +66,7 @@ import com.example.features.presentation.search.SearchScreen
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    onLogout : () -> Unit
+    onLogout: () -> Unit
 ) {
 
     val navController = rememberNavController()
@@ -76,33 +74,29 @@ fun MainScreen(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination?.route
 
-    var isBottomNavVisible by remember { mutableStateOf(true) }
+    val isBottomNavVisible = when (currentDestination) {
+        Screen.Home.route,
+        Screen.Search.route,
+        Screen.Favorite.route,
+        Screen.Profile.route -> true
 
-    LaunchedEffect(currentDestination) {
-        isBottomNavVisible = when (currentDestination) {
-            Screen.Home.route,
-            Screen.Search.route,
-            Screen.Favorite.route,
-            Screen.Profile.route -> true
-
-            else -> false
-        }
+        else -> false
     }
 
     /**✅ Scaffold hanya untuk content, tanpa bottom bar**/
     Scaffold(
-        contentWindowInsets = WindowInsets(0,0,0,0),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
                 visible = isBottomNavVisible,
                 enter = slideInVertically(
                     initialOffsetY = { it },
-                    animationSpec = tween(550, easing = LinearOutSlowInEasing)
+                    animationSpec = tween(200, easing = LinearOutSlowInEasing)
                 ) + fadeIn(),
                 exit = slideOutVertically(
                     targetOffsetY = { it },
-                    animationSpec = tween(550, easing = FastOutLinearInEasing)
+                    animationSpec = tween(150, easing = FastOutLinearInEasing)
                 ) + fadeOut()
             ) {
 
@@ -124,37 +118,80 @@ fun MainScreen(
 
         NavHost(
             navController = navController,
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             startDestination = Screen.Home.route
         ) {
 
 
-
-                composable(Screen.Home.route) {
-                    HomeScreen(
-                        homeNavigation = HomeNavigation(
-                            toDetail = { idProject ->
-                                navController.navigate(Screen.Detail.createRoute(idProject))
-                            },
-                            toNotification = {
-                                navController.navigate(Screen.Notification.route)
-                            },
-                            toLogout = { onLogout()}
-
-                        ),
-                        onScrollChange = {}
+            composable(
+                route = Screen.Home.route,
+                enterTransition = {
+                    fadeIn(
+                        animationSpec = tween(150)
+                    ) + slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    )
+                },
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(150)
                     )
                 }
+            ) {
+                HomeScreen(
+                    homeCallbacks = HomeCallbacks(
+                        navigateToDetail = { idProject ->
+                            navController.navigate(Screen.Detail.createRoute(idProject))
+                        },
+                        navigateToNotification = {
+                            navController.navigate(Screen.Notification.route)
+                        },
+                        navigateToLogout = { onLogout() }
+                    ),
+                    onScrollChange = {}
+                )
+            }
 
-            composable(Screen.Search.route) {
+            composable(
+                route = Screen.Search.route,
+                enterTransition = {
+                    fadeIn(
+                        animationSpec = tween(150)
+                    ) + slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    )
+                },
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(150)
+                    )
+                }) {
                 SearchScreen(
                     onNavigateToDetail = { idProject ->
                         navController.navigate(Screen.Detail.createRoute(idProject))
+                    },
+                    onNavigateToLogOut = {
+                        onLogout()
                     }
                 )
             }
 
-            composable(Screen.Favorite.route) {
+            composable(
+                route = Screen.Favorite.route,
+                enterTransition = {
+                    fadeIn(
+                        animationSpec = tween(150)
+                    ) + slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    )
+                },
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(150)
+                    )
+                }) {
                 FavoriteScreen(
                     onNavigateToDetail = { idProject ->
                         navController.navigate(Screen.Detail.createRoute(idProject))
@@ -162,20 +199,48 @@ fun MainScreen(
                 )
             }
 
-            composable(Screen.Profile.route) {
+            composable(
+                route = Screen.Profile.route,
+                enterTransition = {
+                    fadeIn(
+                        animationSpec = tween(150)
+                    ) + slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    )
+                },
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(150)
+                    )
+                }) {
                 ProfileScreen(
-                    profileNavigation = ProfileNavigation(
+                    profileCallbacks = ProfileCallbacks(
                         toNavigateToEdit = { navController.navigate(Screen.EditProfile.route) },
                         toNavigateToMembership = { navController.navigate(Screen.Membership.route) },
                         toNavigateToContact = { navController.navigate(Screen.Contact.route) },
                         toNavigateToPrivacy = { navController.navigate(Screen.Policy.route) },
                         toNavigateToTerms = { navController.navigate(Screen.Terms.route) },
-                        toLogout = { onLogout() }
+                        toLogout = {
+                            onLogout()
+                        }
                     )
                 )
             }
 
-            composable(Screen.EditProfile.route) {
+            composable(
+                route = Screen.EditProfile.route,
+                enterTransition = {
+                    fadeIn(
+                        animationSpec = tween(150)
+                    ) + slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    )
+                },
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(150)
+                    )
+                }) {
                 UpdateProfileScreen(
                     onBackClick = {
                         navController.popBackStack()
@@ -183,7 +248,22 @@ fun MainScreen(
                 )
             }
 
-            composable(Screen.Membership.route) {
+            composable(
+                route = Screen.Membership.route,
+                enterTransition = {
+                    fadeIn(
+                        animationSpec = tween(150)
+                    ) + slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    )
+                },
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(150)
+                    )
+                }
+            ) {
+
                 MembershipScreen(
                     onNavigateBack = {
                         navController.popBackStack()
@@ -191,7 +271,22 @@ fun MainScreen(
                 )
             }
 
-            composable(Screen.Policy.route) {
+            composable(
+                route = Screen.Policy.route,
+                enterTransition = {
+                    fadeIn(
+                        animationSpec = tween(150)
+                    ) + slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    )
+                },
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(150)
+                    )
+                }
+            ) {
+
                 PrivacyPolicyScreen(
                     onNavigateBack = {
                         navController.popBackStack()
@@ -216,7 +311,19 @@ fun MainScreen(
 
 
             composable(
-                Screen.Detail.route,
+                route = Screen.Detail.route,
+                enterTransition = {
+                    fadeIn(
+                        animationSpec = tween(150)
+                    ) + slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    )
+                },
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(150)
+                    )
+                },
                 arguments = listOf(navArgument("projectId") { type = NavType.StringType })
             ) {
                 ProjectDetailScreen(
@@ -227,10 +334,26 @@ fun MainScreen(
                 )
             }
 
-            composable(Screen.Notification.route) {
+            composable(
+                route = Screen.Notification.route,
+                enterTransition = {
+                    fadeIn(
+                        animationSpec = tween(200)
+                    ) + slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left)
+                },
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(150)
+                    )
+                }
+            ) {
                 NotificationScreen(
+
                     onBackClick = {
                         navController.popBackStack()
+                    },
+                    onNavigateToProject = { idProject ->
+                        navController.navigate(Screen.Detail.createRoute(idProject))
                     }
                 )
             }

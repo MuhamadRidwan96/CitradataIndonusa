@@ -2,12 +2,10 @@ package com.example.data.pagingSource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.common.Result
-import com.example.data.utils.Constant
 import com.example.data.utils.TokenExpiredException
+import com.example.domain.model.Project
 import com.example.domain.repository.DataRepository
-import com.example.domain.response.RecordData
-import kotlinx.coroutines.flow.first
+import com.example.domain.utils.toDomain
 import javax.inject.Inject
 
 class DataPagingSource @Inject constructor(
@@ -15,48 +13,48 @@ class DataPagingSource @Inject constructor(
     private val filters: Map<String, String> = emptyMap(),
     private val limit: Int = 10,
     private val onTokenExpired: () -> Unit
-) : PagingSource<Int, RecordData>() {
-    override fun getRefreshKey(state: PagingState<Int, RecordData>): Int? {
+) : PagingSource<Int, Project>() {
+    override fun getRefreshKey(state: PagingState<Int, Project>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, RecordData> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Project> {
         val page = params.key ?: 1
+
         return try {
 
-            val result = if (filters.isEmpty()) {dataRepository.getData(page, limit).first()} else {
-                dataRepository.searchData(page,limit, filters)
+            val result = if (filters.isEmpty()) {
+                dataRepository.getData(page, limit)
+            } else {
+                dataRepository.searchData(page, limit, filters)
             }
 
-            when (result) {
-                is Result.Success -> {
-                    val data = result.data.data ?: emptyList()
+            result.fold(
+                onSuccess = { response ->
+                    val data = response.data.orEmpty()
+                        .map { it.toDomain() }
                     LoadResult.Page(
                         data = data,
                         prevKey = if (page == 1) null else page - 1,
                         nextKey = if (data.isEmpty()) null else page + 1
                     )
-                }
 
-                is Result.Error -> {
-                    if (result.exception is TokenExpiredException) {
-                        onTokenExpired() //Throw tokenExpiredException
+                },
+                onFailure = { exception ->
+                    if (exception is TokenExpiredException) {
+                        onTokenExpired()
                     }
-                    LoadResult.Error(result.exception)
-                }
-
-                is Result.Loading -> {
-                    // Ini sebenarnya tidak relevan di PagingSource, tapi harus di-handle
-                    LoadResult.Error(Exception(Constant.UNKNOWN_ERROR))
-                }
-            }
-        } catch (e:TokenExpiredException){
-            onTokenExpired() // kirim sinyal ke viewmodel
-            LoadResult.Error(e)
+                    LoadResult.Error(exception)
+                })
         } catch (e: Exception) {
+
+            if (e is TokenExpiredException) {
+                onTokenExpired()
+            }
+
             LoadResult.Error(e)
         }
     }

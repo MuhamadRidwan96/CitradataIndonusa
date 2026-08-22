@@ -2,8 +2,8 @@ package com.example.domain.usecase.data
 
 import androidx.paging.PagingData
 import com.example.domain.di.IoDispatcher
+import com.example.domain.model.Project
 import com.example.domain.repository.DataRepository
-import com.example.domain.response.RecordData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -16,7 +16,7 @@ class DataUseCase @Inject constructor(
     operator fun invoke(
         limit: Int = 10,
         filters : Map<String, String>
-    ): Flow<PagingData<RecordData>> {
+    ): Flow<PagingData<Project>> {
         return dataRepository.getDataPaging(limit, filters).flowOn(dispatcher)
     }
 }

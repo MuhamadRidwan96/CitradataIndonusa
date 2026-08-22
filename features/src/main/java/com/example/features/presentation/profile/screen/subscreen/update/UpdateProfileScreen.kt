@@ -31,7 +31,7 @@ fun UpdateProfileScreen(
     vm: ProfileViewModel = hiltViewModel()
 ) {
 
-    val profile by vm.userProfile.collectAsState()
+    val profile by vm.uiState.collectAsState()
 
     Box(
         modifier = modifier

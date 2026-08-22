@@ -30,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -49,10 +50,10 @@ import com.example.features.presentation.home.component.LineChart
 import com.example.features.presentation.home.component.NotificationWithBadge
 import com.example.features.presentation.home.component.ProfileHeaders
 import com.example.features.presentation.home.component.SearchSection
-import com.example.features.presentation.home.screen.DataEvent
 import com.example.features.presentation.home.screen.HomeViewModel
-import com.example.features.presentation.home.state.HomeNavigation
-import com.example.features.presentation.home.state.HomeUiEvent
+import com.example.features.presentation.home.state.dashboard.DashboardUiAction
+import com.example.features.presentation.home.state.dashboard.DashboardUiEvent
+import com.example.features.presentation.home.utils.HomeCallbacks
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -63,59 +64,77 @@ import kotlin.math.abs
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    homeNavigation: HomeNavigation,
+    homeCallbacks: HomeCallbacks,
 
     onScrollChange: (Boolean) -> Unit,
-    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
 
-    homeVm: HomeViewModel = hiltViewModel(),
-
+    viewmodel: HomeViewModel = hiltViewModel(),
 
     ) {
 
-    val statistic by homeVm.statisticState.collectAsStateWithLifecycle()
+    val state by viewmodel.uiState.collectAsStateWithLifecycle()
+    val unread by viewmodel.unread.collectAsStateWithLifecycle()
 
+    val snackBarHostState = remember { SnackbarHostState() }
     val sheetState = rememberModalBottomSheetState()
+
     val coroutineScope = rememberCoroutineScope()
+    var errorMessage by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+
     var showErrorSheet by remember { mutableStateOf(false) }
-    var searchQuery by rememberSaveable { mutableStateOf("") }
     var scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
 
+    var showCharts by remember { mutableStateOf(false) }
 
-    val isInitialized = statistic.isLoaded
 
-
-  /*  LaunchedEffect(pagingItems.loadState) {
-        val error = pagingItems.loadState.refresh as? LoadState.Error
-        if (error?.error is TokenExpiredException) {
-            showErrorSheet = true
+    var visibleProvince = remember(
+        state.byProvince,
+        state.isShowAll
+    ) {
+        if (state.isShowAll) {
+            state.byProvince
+        } else {
+            state.byProvince.take(5).toImmutableList()
         }
-    }*/
+
+    }
+
 
     LaunchedEffect(Unit) {
-        homeVm.uiEvent.collect { event ->
+        viewmodel.uiEvent.collect { event ->
             when (event) {
-                HomeUiEvent.LogoutSuccess -> {
-                    homeNavigation.toLogout()
+                is DashboardUiEvent.Error -> {
+                    errorMessage = event.message
+                    showErrorSheet = true
+                }
+
+                is DashboardUiEvent.SnackBar -> {
+                    snackBarHostState.showSnackbar(
+                        message = event.message
+                    )
+                }
+
+                is DashboardUiEvent.NavigateToNotification -> {
+                    homeCallbacks.navigateToNotification()
+                }
+
+                is DashboardUiEvent.NavigateToProjectByCategory -> {
+
+                }
+
+                is DashboardUiEvent.NavigateToProjectByCity -> {}
+                is DashboardUiEvent.NavigateToProjectByStatus -> {}
+                is DashboardUiEvent.Logout -> {
+                    homeCallbacks.navigateToLogout()
                 }
             }
+
         }
     }
 
-    if (showErrorSheet) {
-        ErrorBottomSheet(
-            message = stringResource(R.string.end_session),
-            sheetState = sheetState,
-            onDismiss = {
-                coroutineScope.launch {
-                    sheetState.hide()
-                    showErrorSheet = false
-                    homeVm.onLogoutClicked()
-                }
-            }
-        )
-    }
 
     //Detect direction scroll
     LaunchedEffect(listState, onScrollChange) {
@@ -131,27 +150,35 @@ fun HomeScreen(
             }
     }
 
-
-    // Listen to UI Events
-    LaunchedEffect(Unit) {
-        homeVm.dataEvent.collect { event ->
-            when (event) {
-                is DataEvent.ShowSnackBar -> {
-                    snackBarHostState.showSnackbar(event.message)
-                }
-
-                is DataEvent.Success -> {}
-            }
+    LaunchedEffect(state.isInitialized) {
+        if (state.isInitialized) {
+            withFrameNanos { }
+            showCharts = true
         }
     }
+
+    if (showErrorSheet) {
+        ErrorBottomSheet(
+            message = stringResource(R.string.end_session),
+            sheetState = sheetState,
+            onDismiss = {
+                coroutineScope.launch {
+                    sheetState.hide()
+                    showErrorSheet = false
+                }
+            }
+        )
+    }
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
                     listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 1f),
-                        MaterialTheme.colorScheme.surface
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.background
                     )
                 )
             )
@@ -169,7 +196,12 @@ fun HomeScreen(
                     actions = {
                         NotificationWithBadge(
                             modifier = Modifier.padding(end = 8.dp),
-                            onClick = { homeNavigation.toNotification() }
+                            onClick = {
+                                viewmodel.action(
+                                    DashboardUiAction.OnNotificationClick
+                                )
+                            },
+                            unreadCount = unread
                         )
                     },
 
@@ -199,8 +231,7 @@ fun HomeScreen(
             },
         ) { paddingValues ->
 
-
-            if (!isInitialized) {
+            if (!state.isInitialized) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -217,57 +248,62 @@ fun HomeScreen(
                 ) {
 
                     SearchSection(
-                        query = searchQuery,
-                        onQueryChange = {
-                            searchQuery = it
-                          /*  homeVm.applyProjectName(
-                                mapOf("project_name" to it)
-                            )*/
+                        query = "",
+                        onQueryChange = { query ->
+
+                            viewmodel.action(
+                                DashboardUiAction.OnSearchQueryChanged(query)
+                            )
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     LazyColumn(
                         state = listState,
-                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(18.dp),
                         contentPadding = PaddingValues(
-                            bottom = 0.dp
+                            top = 14.dp,
+                            bottom = paddingValues.calculateBottomPadding() + 16.dp
                         ),
                         modifier = Modifier
-                            .padding(top = 14.dp , bottom = 0.dp, start = 14.dp, end = 14.dp)
+                            .padding(top = 0.dp, bottom = 0.dp, start = 16.dp, end = 16.dp)
                             .fillMaxSize()
-
                     ) {
 
                         item(contentType = "Statistic Card") {
-                            LazyRowCardStatistic(statistic = statistic)
+
+                            if (showCharts) {
+                                LazyRowCardStatistic(
+                                    byCategory = state.byCategory,
+                                    categoryTrend = state.categoryTrend
+                                )
+                            }
                         }
 
                         item(contentType = "Line Chart") {
-                            LineChart(trendIProject = statistic.dashboard)
+                            if (showCharts) {
+                                LineChart(trendIProject = state.dashboard)
+                            }
                         }
 
                         item(contentType = "Donut Chart") {
-                            DonutChartScreen(
-                                modifier = Modifier.fillMaxWidth(),
-                                status = statistic.byStatus
-                            )
+                            if (showCharts) {
+                                DonutChartScreen(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    status = state.byStatus
+                                )
+                            }
                         }
 
                         item(contentType = "TopProvinceCard") {
-                            TopProvinceCard(
-                                modifier = Modifier.fillMaxWidth(),
-                                provinces = if (statistic.isShowAll) {
-                                    statistic.byProvince
-                                } else {
-                                   statistic.byProvince
-                                            .take(5)
-                                        .toImmutableList()
-
-                                },
-                                onSeeAllClick = homeVm::toggleProvince,
-                                isShowAll = statistic.isShowAll,
-                            )
+                            if (showCharts) {
+                                TopProvinceCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    provinces = visibleProvince,
+                                    onSeeAllClick = { viewmodel.action(DashboardUiAction.OnToggleProvince) },
+                                    isShowAll = state.isShowAll,
+                                )
+                            }
                         }
                     }
                 }
@@ -275,71 +311,6 @@ fun HomeScreen(
         }
     }
 }
-
-
-/* item(contentType = "Latest") {
-     TextTitle(
-         icon = R.drawable.fire,
-         title = stringResource(R.string.latest),
-         desc = ""
-     )
-
-     Spacer(modifier = Modifier.height(16.dp))
- }*/
-
-/*items(
-    count = pagingItems.itemCount,
-    key = { index -> pagingItems[index]?.idProject ?: index },
-    contentType = { "Data" }) { index: Int ->
-    val recordData = pagingItems[index]
-    recordData?.let {
-        val no = index + 1
-        val dataState = it.toDataState(uiState.isFavorite, no)
-        val isFav = favorites.any { fav -> fav.idProject == it.idProject.toInt() }
-
-        ProjectCard(
-            project = dataState,
-            onClick = { homeNavigation.toDetail(dataState.idProject.toString()) },
-            isFavorite = isFav,
-            onToggleFavorite = { favEntity ->
-                homeVm.toggleFavorite(favEntity)
-            },
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-    }
-}*/
-/*  pagingItems.apply {
-      when {
-          loadState.refresh is LoadState.Loading -> {
-          //    item { LoadingItem() }
-          }
-
-          loadState.append is LoadState.Loading -> {
-              //  item { LoadingItem() }
-          }
-
-          loadState.refresh is LoadState.Error -> {
-              val e = (loadState.refresh as LoadState.Error).error
-              if (e !is TokenExpiredException) {
-                  coroutineScope.launch {
-                      snackBarHostState.showSnack bar(
-                          e.message ?: "Gagal memuat data!"
-                      )
-                  }
-              }
-          }
-
-          loadState.append is LoadState.Error -> {
-              val e = (loadState.append as LoadState.Error).error
-              if (e !is TokenExpiredException) {
-                  item {
-                      PagingErrorItem("Tidak ada data berikutnya!")
-                  }
-              }
-          }
-      }
-  }*/
-
 
 
 
