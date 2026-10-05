@@ -1,13 +1,12 @@
 package com.example.data.repositoryImpl
 
-import android.util.Log
 import com.example.data.network.api.ApiHelper
 import com.example.data.utils.toDomain
 import com.example.data.utils.toResult
-import com.example.domain.model.CityModel
-import com.example.domain.model.Province
+import com.example.domain.model.location.CityModel
+import com.example.domain.model.location.Province
 import com.example.domain.repository.LocationRepository
-import com.example.domain.response.CityRequest
+import com.example.domain.response.location.CityRequest
 import javax.inject.Inject
 
 class LocationRepositoryImpl @Inject constructor(

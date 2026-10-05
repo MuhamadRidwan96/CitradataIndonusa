@@ -1,6 +1,6 @@
 package com.example.features.presentation.favorite.utils
 
-import com.example.domain.model.FavoriteProject
+import com.example.domain.model.favorite.FavoriteProject
 import com.example.features.presentation.favorite.state.FavoriteProjectUiState
 
 fun FavoriteProject.toUiItem() = FavoriteProjectUiState(

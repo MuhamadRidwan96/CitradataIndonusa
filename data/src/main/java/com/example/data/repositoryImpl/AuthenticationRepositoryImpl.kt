@@ -4,12 +4,12 @@ package com.example.data.repositoryImpl
 import com.example.data.network.api.ApiHelper
 import com.example.data.network.google.GoogleAuthManager
 import com.example.data.utils.toResult
-import com.example.domain.model.LoginModel
-import com.example.domain.model.RegisterModel
+import com.example.domain.model.authentication.LoginModel
+import com.example.domain.model.authentication.RegisterModel
 import com.example.domain.repository.AuthRepository
-import com.example.domain.response.AuthResponse
-import com.example.domain.response.LoginResponse
-import com.example.domain.response.RegisterResponse
+import com.example.domain.response.authentication.AuthResponse
+import com.example.domain.response.authentication.LoginResponse
+import com.example.domain.response.authentication.RegisterResponse
 import kotlinx.coroutines.flow.Flow
 import okio.IOException
 import timber.log.Timber

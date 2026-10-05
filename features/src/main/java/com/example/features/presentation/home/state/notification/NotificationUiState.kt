@@ -2,7 +2,7 @@ package com.example.features.presentation.home.state.notification
 
 import androidx.compose.runtime.Immutable
 import com.example.core_ui.architecture.base.BaseUiState
-import com.example.domain.model.NotificationModel
+import com.example.domain.model.notification.NotificationModel
 
 @Immutable
 data class NotificationUiState(

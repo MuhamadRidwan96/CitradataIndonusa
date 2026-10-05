@@ -2,7 +2,7 @@ package com.example.domain.usecase.data
 
 import com.example.domain.di.IoDispatcher
 import com.example.domain.repository.DetailDataRepository
-import com.example.domain.response.ProjectDetailResponse
+import com.example.domain.response.data.ProjectDetailResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

@@ -1,6 +1,6 @@
 package com.example.domain.preferences
 
-import com.example.domain.model.UserModel
+import com.example.domain.model.user.UserModel
 import kotlinx.coroutines.flow.Flow
 
 

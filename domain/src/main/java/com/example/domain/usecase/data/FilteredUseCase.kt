@@ -2,8 +2,8 @@ package com.example.domain.usecase.data
 
 import androidx.paging.PagingData
 import com.example.domain.di.IoDispatcher
-import com.example.domain.model.FilterDataModel
-import com.example.domain.model.Project
+import com.example.domain.model.filter.FilterDataModel
+import com.example.domain.model.project.Project
 import com.example.domain.repository.FilterDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow

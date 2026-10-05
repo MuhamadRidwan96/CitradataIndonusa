@@ -1,7 +1,7 @@
 package com.example.features.presentation.search.utils
 
-import com.example.domain.model.CityModel
-import com.example.domain.model.Province
+import com.example.domain.model.location.CityModel
+import com.example.domain.model.location.Province
 import com.example.features.presentation.search.state.ProjectFilterState
 
 fun ProjectFilterState.hasFilter() : Boolean {

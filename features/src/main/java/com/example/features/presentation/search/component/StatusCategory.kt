@@ -25,7 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.domain.model.ProjectStatusCategoryModel
+import com.example.domain.model.project.ProjectStatusCategoryModel
 import com.example.feature_login.R
 
 @Composable

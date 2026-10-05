@@ -2,10 +2,10 @@ package com.example.features.presentation.home.state.dashboard
 
 import androidx.compose.runtime.Immutable
 import com.example.core_ui.architecture.base.BaseUiState
-import com.example.domain.model.DonutData
-import com.example.domain.model.StatisticProvince
-import com.example.domain.model.TrendProject
-import com.example.domain.model.UserProfile
+import com.example.domain.model.statistic.DonutData
+import com.example.domain.model.location.StatisticProvince
+import com.example.domain.model.statistic.TrendProject
+import com.example.domain.model.user.UserProfile
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf

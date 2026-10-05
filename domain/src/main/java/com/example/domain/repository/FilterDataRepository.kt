@@ -1,8 +1,8 @@
 package com.example.domain.repository
 
 import androidx.paging.PagingData
-import com.example.domain.model.FilterDataModel
-import com.example.domain.model.Project
+import com.example.domain.model.filter.FilterDataModel
+import com.example.domain.model.project.Project
 import kotlinx.coroutines.flow.Flow
 
 interface FilterDataRepository {

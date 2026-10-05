@@ -6,6 +6,7 @@ import com.example.data.local.dao.AppDatabase
 import com.example.data.local.dao.FavoriteDAO
 import com.example.data.local.dao.NotificationDao
 import com.example.data.local.dao.ProfileDAO
+import com.example.data.network.ApiCallHandler
 import com.example.data.network.api.ApiHelper
 import com.example.data.network.api.ApiHelperImpl
 import com.example.data.network.api.ApiService
@@ -66,15 +67,16 @@ object DataModule {
     @Provides
     @Singleton
     fun provideFilterDataRepository(
-        apiHelper: ApiHelper
+        apiHelper: ApiHelper,
+        apiCallHandler: ApiCallHandler
     ): FilterDataRepository {
-        return FilterDataRepositoryImpl(apiHelper)
+        return FilterDataRepositoryImpl(apiHelper, apiCallHandler)
     }
 
     @Provides
     @Singleton
-    fun provideDataRepository(apiHelper: ApiHelper): DataRepository {
-        return DataRepositoryImpl(apiHelper)
+    fun provideDataRepository(apiHelper: ApiHelper, apiCallHandler: ApiCallHandler): DataRepository {
+        return DataRepositoryImpl(apiHelper, apiCallHandler)
     }
 
     @Singleton
@@ -133,8 +135,8 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideStatisticRepository(apiHelper: ApiHelper) : StatisticRepository{
-        return StatisticRepositoryImpl(apiHelper)
+    fun provideStatisticRepository(apiHelper: ApiHelper, apiCallHandler: ApiCallHandler) : StatisticRepository{
+        return StatisticRepositoryImpl(apiHelper, apiCallHandler)
     }
 
     @Provides

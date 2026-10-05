@@ -1,6 +1,6 @@
 package com.example.domain.repository
 
-import com.example.domain.model.FavoriteProject
+import com.example.domain.model.favorite.FavoriteProject
 import kotlinx.coroutines.flow.Flow
 
 interface FavoriteRepository {

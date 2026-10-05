@@ -39,6 +39,16 @@ fun formatToFullDate(dateString: String, locale: Locale = Locale("id", "ID")): S
     }
 }
 
+fun formatDuration(duration: Int, unit: String): String {
+    val unitText = when (unit.uppercase()) {
+        "MONTH" -> if (duration == 1) "Bulan" else "Bulan"
+        "YEAR" -> "Tahun"
+        "DAY" -> "Hari"
+        else -> unit.lowercase().replaceFirstChar { it.uppercase() }
+    }
+    return "$duration $unitText"
+}
+
 fun String.cleanInfo(): String {
     return this
         .replace("\r\n", " ")

@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.domain.response.AuthResponse
+import com.example.domain.response.authentication.AuthResponse
 import com.example.features.presentation.authentication.screen.component.LoginContent
 import com.example.features.presentation.authentication.state.login.LoginUiEvent
 import kotlinx.coroutines.flow.collectLatest

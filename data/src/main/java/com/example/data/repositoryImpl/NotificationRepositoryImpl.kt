@@ -5,7 +5,7 @@ import com.example.data.local.entity.NotificationEntity
 import com.example.data.local.toDomainNotification
 import com.example.data.local.toEntityNotification
 import com.example.data.network.api.ApiHelper
-import com.example.domain.model.NotificationModel
+import com.example.domain.model.notification.NotificationModel
 import com.example.domain.repository.NotificationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

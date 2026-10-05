@@ -5,11 +5,11 @@ import com.example.data.local.entity.FavoriteProjectEntity
 import com.example.data.local.entity.NotificationEntity
 import com.example.data.local.entity.ProfileEntity
 import com.example.data.utils.randomComposeColor
-import com.example.domain.model.DonutData
-import com.example.domain.model.FavoriteProject
-import com.example.domain.model.NotificationModel
-import com.example.domain.model.UserProfile
-import com.example.domain.response.UserData
+import com.example.domain.model.statistic.DonutData
+import com.example.domain.model.favorite.FavoriteProject
+import com.example.domain.model.notification.NotificationModel
+import com.example.domain.model.user.UserProfile
+import com.example.domain.response.profile.UserData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 

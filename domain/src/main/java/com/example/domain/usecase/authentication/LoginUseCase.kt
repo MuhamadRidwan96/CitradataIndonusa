@@ -1,11 +1,11 @@
 package com.example.domain.usecase.authentication
 
 import com.example.domain.di.IoDispatcher
-import com.example.domain.model.LoginModel
-import com.example.domain.model.UserModel
+import com.example.domain.model.authentication.LoginModel
+import com.example.domain.model.user.UserModel
 import com.example.domain.preferences.UserPreferences
 import com.example.domain.repository.AuthRepository
-import com.example.domain.response.LoginResponse
+import com.example.domain.response.authentication.LoginResponse
 import com.example.domain.utils.decodeJWTPayload
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

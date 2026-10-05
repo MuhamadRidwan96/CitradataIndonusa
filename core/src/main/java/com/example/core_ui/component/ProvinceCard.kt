@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.AppTheme
-import com.example.domain.model.StatisticProvince
+import com.example.domain.model.location.StatisticProvince
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable

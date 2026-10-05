@@ -2,7 +2,7 @@ package com.example.domain.usecase.statistic
 
 import com.example.domain.di.IoDispatcher
 import com.example.domain.repository.StatisticRepository
-import com.example.domain.response.StatisticsResponse
+import com.example.domain.response.statistic.StatisticsResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

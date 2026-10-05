@@ -14,4 +14,6 @@ interface SearchUiEvent : BaseUiEvent {
 
     data class NavigateToDetail(val idProject : String) : SearchUiEvent
 
+    data object DataNotFound : SearchUiEvent
+
 }

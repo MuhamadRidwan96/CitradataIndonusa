@@ -1,7 +1,7 @@
 package com.example.domain.utils
 
-import com.example.domain.model.Project
-import com.example.domain.response.RecordData
+import com.example.domain.model.project.Project
+import com.example.domain.response.data.RecordData
 
 fun RecordData.toDomain(): Project{
     return Project(

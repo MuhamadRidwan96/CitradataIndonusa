@@ -1,9 +1,9 @@
 package com.example.domain.usecase.authentication
 
 import com.example.domain.di.IoDispatcher
-import com.example.domain.model.RegisterModel
+import com.example.domain.model.authentication.RegisterModel
 import com.example.domain.repository.AuthRepository
-import com.example.domain.response.RegisterResponse
+import com.example.domain.response.authentication.RegisterResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

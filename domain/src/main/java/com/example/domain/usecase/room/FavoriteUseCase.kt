@@ -1,6 +1,6 @@
 package com.example.domain.usecase.room
 
-import com.example.domain.model.FavoriteProject
+import com.example.domain.model.favorite.FavoriteProject
 import com.example.domain.repository.FavoriteRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

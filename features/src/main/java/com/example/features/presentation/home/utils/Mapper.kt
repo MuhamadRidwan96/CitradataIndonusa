@@ -1,8 +1,8 @@
 package com.example.features.presentation.home.utils
 
 import com.example.data.local.entity.FavoriteProjectEntity
-import com.example.domain.model.FilterDataModel
-import com.example.domain.model.Project
+import com.example.domain.model.filter.FilterDataModel
+import com.example.domain.model.project.Project
 import com.example.features.presentation.favorite.state.FavoriteProjectUiState
 import com.example.features.presentation.search.state.ProjectFilterState
 import com.example.features.presentation.search.state.search.ProjectUiItem

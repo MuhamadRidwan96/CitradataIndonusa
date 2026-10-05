@@ -31,8 +31,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
-import com.example.domain.model.Feature
-import com.example.domain.model.SubscriptionPlan
+import com.example.domain.model.subscription.Feature
+import com.example.domain.model.subscription.SubscriptionPlan
 
 @Composable
 fun SubscriptionCard(

@@ -1,11 +1,11 @@
 package com.example.data.utils
 
-import com.example.domain.model.CityModel
-import com.example.domain.model.Province
-import com.example.domain.response.DataProvince
-import com.example.domain.response.DataRegencies
-import com.example.domain.response.ProvinceResponse
-import com.example.domain.response.RegenciesResponse
+import com.example.domain.model.location.CityModel
+import com.example.domain.model.location.Province
+import com.example.domain.response.location.DataProvince
+import com.example.domain.response.location.DataRegencies
+import com.example.domain.response.location.ProvinceResponse
+import com.example.domain.response.location.RegenciesResponse
 
 fun DataProvince.toDomain(): Province {
     return Province(

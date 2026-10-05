@@ -1,9 +1,9 @@
 package com.example.domain.repository
 
 import androidx.paging.PagingData
-import com.example.domain.model.Project
-import com.example.domain.response.DataResponse
-import com.example.domain.response.RecordData
+import com.example.domain.model.project.Project
+import com.example.domain.response.data.DataResponse
+import com.example.domain.response.data.RecordData
 import kotlinx.coroutines.flow.Flow
 
 interface DataRepository {

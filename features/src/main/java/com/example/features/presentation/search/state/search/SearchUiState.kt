@@ -1,7 +1,7 @@
 package com.example.features.presentation.search.state.search
 
 import com.example.core_ui.architecture.base.BaseUiState
-import com.example.domain.model.FavoriteProject
+import com.example.domain.model.favorite.FavoriteProject
 import com.example.features.presentation.search.state.ProjectFilterState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf

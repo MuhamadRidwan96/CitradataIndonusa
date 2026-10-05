@@ -2,8 +2,7 @@ package com.example.data.pagingSource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.data.utils.TokenExpiredException
-import com.example.domain.model.Project
+import com.example.domain.model.project.Project
 import com.example.domain.repository.DataRepository
 import com.example.domain.utils.toDomain
 import javax.inject.Inject
@@ -12,7 +11,6 @@ class DataPagingSource @Inject constructor(
     private val dataRepository: DataRepository,
     private val filters: Map<String, String> = emptyMap(),
     private val limit: Int = 10,
-    private val onTokenExpired: () -> Unit
 ) : PagingSource<Int, Project>() {
     override fun getRefreshKey(state: PagingState<Int, Project>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -43,17 +41,10 @@ class DataPagingSource @Inject constructor(
                     )
 
                 },
-                onFailure = { exception ->
-                    if (exception is TokenExpiredException) {
-                        onTokenExpired()
-                    }
-                    LoadResult.Error(exception)
+                onFailure = { e ->
+                    LoadResult.Error(e)
                 })
         } catch (e: Exception) {
-
-            if (e is TokenExpiredException) {
-                onTokenExpired()
-            }
 
             LoadResult.Error(e)
         }

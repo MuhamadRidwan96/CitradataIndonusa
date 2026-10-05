@@ -2,7 +2,7 @@ package com.example.domain.usecase.data
 
 import androidx.paging.PagingData
 import com.example.domain.di.IoDispatcher
-import com.example.domain.model.Project
+import com.example.domain.model.project.Project
 import com.example.domain.repository.DataRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow

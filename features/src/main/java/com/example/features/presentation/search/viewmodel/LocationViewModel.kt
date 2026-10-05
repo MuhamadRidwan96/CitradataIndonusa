@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.core_ui.architecture.action.ActionHandler
 import com.example.core_ui.architecture.base.BaseViewModel
 import com.example.data.utils.Constant
-import com.example.domain.model.Province
+import com.example.domain.model.location.Province
 import com.example.domain.usecase.location.CityUseCase
 import com.example.domain.usecase.location.ProvinceUseCase
 import com.example.features.presentation.search.state.location.LocationUiAction

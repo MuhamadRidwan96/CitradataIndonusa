@@ -2,13 +2,13 @@ package com.example.features.presentation.detail.state
 
 import androidx.compose.runtime.Immutable
 import com.example.core_ui.architecture.base.BaseUiState
-import com.example.domain.response.Consultant
-import com.example.domain.response.Contractor
-import com.example.domain.response.Developer
-import com.example.domain.response.ProjectDetailResponse
-import com.example.domain.response.ProjectPpr
-import com.example.domain.response.ProjectSpecification
-import com.example.domain.response.ProjectUpdateStatus
+import com.example.domain.response.data.Consultant
+import com.example.domain.response.data.Contractor
+import com.example.domain.response.data.Developer
+import com.example.domain.response.data.ProjectDetailResponse
+import com.example.domain.response.data.ProjectPpr
+import com.example.domain.response.data.ProjectSpecification
+import com.example.domain.response.data.ProjectUpdateStatus
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

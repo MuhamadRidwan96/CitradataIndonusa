@@ -26,7 +26,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,8 +47,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.core_ui.R
-import com.example.data.utils.DataNotFoundException
-import com.example.features.presentation.home.component.ErrorBottomSheet
 import com.example.features.presentation.home.component.ProjectCard
 import com.example.features.presentation.home.utils.toProjectUiItem
 import com.example.features.presentation.search.component.ChipsRow
@@ -80,7 +77,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SearchScreen(
     onNavigateToDetail: (String) -> Unit,
-    onNavigateToLogOut : () -> Unit,
+    onNavigateToLogOut: () -> Unit,
 
     modifier: Modifier = Modifier,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -101,23 +98,14 @@ fun SearchScreen(
     // Controls visibility of filter bottom sheet
     var showFilterSheet by remember { mutableStateOf(false) }
 
-    // Controls visibility of session expired bottom sheet
-    var errorShowSheet by remember { mutableStateOf(false) }
 
     // State for controlling modal bottom sheet behavior
     val filterSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
-    val sessionSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     // Local UI state for search query input
-    val showDataNotFound by remember {
-        derivedStateOf {
-            val hasError = lazyPagingItems.loadState.refresh is LoadState.Error
-            val errorIsNotFound =
-                (lazyPagingItems.loadState.refresh as? LoadState.Error)?.error is DataNotFoundException
-
-            hasError && errorIsNotFound
-        }
-    }
+    val showDataNotFound =
+        lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
+                lazyPagingItems.itemCount == 0
 
 
     // ========== Side Effects ==========
@@ -130,8 +118,6 @@ fun SearchScreen(
                         filterSheetState.hide()
                         showFilterSheet = false
                     }
-
-                    errorShowSheet = true
                 }
 
                 is SearchUiEvent.ShowSnackBar -> {
@@ -141,7 +127,7 @@ fun SearchScreen(
                 }
 
                 is SearchUiEvent.Logout -> {
-                   onNavigateToLogOut
+                    onNavigateToLogOut
                 }
 
                 is SearchUiEvent.NavigateToDetail -> {
@@ -166,25 +152,6 @@ fun SearchScreen(
             )
         }
     }
-
-
-    if (errorShowSheet) {
-        ErrorBottomSheet(
-            message = stringResource(R.string.end_session),
-            onDismiss = {
-                coroutineScope.launch {
-                    sessionSheetState.hide()
-                    errorShowSheet = false
-
-                    viewModel.action(
-                        SearchUiAction.LogoutClicked
-                    )
-                }
-            },
-            sheetState = sessionSheetState
-        )
-    }
-
 
     /* -------------------- UI -------------------- */
 
@@ -340,7 +307,6 @@ fun SearchScreen(
                                     title = stringResource(R.string.data_not_found)
                                 )
                             }
-
                         }
 
 
@@ -367,7 +333,8 @@ fun SearchScreen(
                                                 index + 1,
                                                 state.appliedFilter.isFavorite
                                             )
-                                        val isFavorite = state.favorites.any { fav -> fav.idProject == project.idProject.toInt() }
+                                        val isFavorite =
+                                            state.favorites.any { fav -> fav.idProject == project.idProject.toInt() }
 
                                         ProjectCard(
                                             project = projectUi,

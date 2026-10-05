@@ -3,25 +3,30 @@ package com.example.data.repositoryImpl
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.example.data.network.ApiCallHandler
 import com.example.data.network.api.ApiHelper
 import com.example.data.pagingSource.DataPagingSource
 import com.example.data.utils.toResult
-import com.example.domain.model.Project
+import com.example.domain.model.project.Project
 import com.example.domain.repository.DataRepository
-import com.example.domain.response.DataResponse
-import com.example.domain.response.RecordData
+import com.example.domain.response.data.DataResponse
+import com.example.domain.response.data.RecordData
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class DataRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) :
+class DataRepositoryImpl @Inject constructor(
+    private val apiHelper: ApiHelper,
+    private val apiCallHandler: ApiCallHandler
+) :
     DataRepository {
 
-    lateinit var onTokenExpiredCallBack: () -> Unit
     override suspend fun getData(
         page: Int,
         limit: Int
     ): Result<DataResponse<RecordData>> {
-        return apiHelper.getData(page,limit).toResult()
+        return apiCallHandler.execute {
+            apiHelper.getData(page, limit).toResult()
+        }
     }
 
 
@@ -30,7 +35,7 @@ class DataRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) :
         limit: Int,
         filters: Map<String, String>
     ): Result<DataResponse<RecordData>> {
-        return apiHelper.searchData(page, limit, filters).toResult()
+        return apiCallHandler.execute { apiHelper.searchData(page, limit, filters).toResult() }
     }
 
 
@@ -48,7 +53,6 @@ class DataRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) :
                 DataPagingSource(
                     dataRepository = this,
                     limit = limit,
-                    onTokenExpired = { onTokenExpiredCallBack.invoke() },
                     filters = filters
                 )
             }

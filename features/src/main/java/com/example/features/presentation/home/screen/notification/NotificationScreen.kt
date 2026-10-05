@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core_ui.component.LoadingOverlay
-import com.example.domain.model.NotificationModel
+import com.example.domain.model.notification.NotificationModel
 import com.example.features.presentation.authentication.screen.signup.component.MyTopAppBar
 import com.example.features.presentation.home.screen.NotificationViewModel
 import com.example.features.presentation.home.state.notification.NotificationUiAction

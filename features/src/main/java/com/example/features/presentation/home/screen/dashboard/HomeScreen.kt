@@ -20,13 +20,11 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -36,15 +34,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.core_ui.R
 import com.example.core_ui.component.TopProvinceCard
 import com.example.features.presentation.home.component.DashboardShimmer
 import com.example.features.presentation.home.component.DonutChartScreen
-import com.example.features.presentation.home.component.ErrorBottomSheet
 import com.example.features.presentation.home.component.LazyRowCardStatistic
 import com.example.features.presentation.home.component.LineChart
 import com.example.features.presentation.home.component.NotificationWithBadge
@@ -55,7 +50,6 @@ import com.example.features.presentation.home.state.dashboard.DashboardUiAction
 import com.example.features.presentation.home.state.dashboard.DashboardUiEvent
 import com.example.features.presentation.home.utils.HomeCallbacks
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 
@@ -76,14 +70,11 @@ fun HomeScreen(
     val unread by viewmodel.unread.collectAsStateWithLifecycle()
 
     val snackBarHostState = remember { SnackbarHostState() }
-    val sheetState = rememberModalBottomSheetState()
 
-    val coroutineScope = rememberCoroutineScope()
     var errorMessage by rememberSaveable {
         mutableStateOf<String?>(null)
     }
 
-    var showErrorSheet by remember { mutableStateOf(false) }
     var scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
 
@@ -108,7 +99,7 @@ fun HomeScreen(
             when (event) {
                 is DashboardUiEvent.Error -> {
                     errorMessage = event.message
-                    showErrorSheet = true
+
                 }
 
                 is DashboardUiEvent.SnackBar -> {
@@ -157,16 +148,10 @@ fun HomeScreen(
         }
     }
 
-    if (showErrorSheet) {
-        ErrorBottomSheet(
-            message = stringResource(R.string.end_session),
-            sheetState = sheetState,
-            onDismiss = {
-                coroutineScope.launch {
-                    sheetState.hide()
-                    showErrorSheet = false
-                }
-            }
+
+    LaunchedEffect(Unit) {
+        viewmodel.action(
+            DashboardUiAction.OnRefresh
         )
     }
 

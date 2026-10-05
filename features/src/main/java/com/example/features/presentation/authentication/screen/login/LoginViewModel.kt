@@ -6,7 +6,7 @@ import com.example.core_ui.architecture.action.ActionHandler
 import com.example.core_ui.architecture.base.BaseViewModel
 import com.example.domain.di.IoDispatcher
 import com.example.domain.preferences.UserPreferences
-import com.example.domain.response.AuthResponse
+import com.example.domain.response.authentication.AuthResponse
 import com.example.domain.usecase.authentication.CheckLoginUseCase
 import com.example.domain.usecase.authentication.GoogleSignInUseCase
 import com.example.domain.usecase.authentication.LoginUseCase

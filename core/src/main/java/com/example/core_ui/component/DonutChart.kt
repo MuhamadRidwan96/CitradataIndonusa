@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.domain.model.DonutData
+import com.example.domain.model.statistic.DonutData
 import kotlinx.collections.immutable.ImmutableList
 
 

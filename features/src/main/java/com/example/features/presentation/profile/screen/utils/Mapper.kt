@@ -1,6 +1,6 @@
 package com.example.features.presentation.profile.screen.utils
 
-import com.example.domain.model.UserProfile
+import com.example.domain.model.user.UserProfile
 import com.example.features.presentation.profile.screen.state.ProfileUiState
 
 fun UserProfile.toProfileState() = ProfileUiState(

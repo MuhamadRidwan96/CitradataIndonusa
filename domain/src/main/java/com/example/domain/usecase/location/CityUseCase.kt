@@ -1,7 +1,7 @@
 package com.example.domain.usecase.location
 
 import com.example.domain.di.IoDispatcher
-import com.example.domain.model.CityModel
+import com.example.domain.model.location.CityModel
 import com.example.domain.repository.LocationRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext

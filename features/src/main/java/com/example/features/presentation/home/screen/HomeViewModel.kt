@@ -7,7 +7,7 @@ import com.example.core_ui.architecture.action.ActionHandler
 import com.example.core_ui.architecture.base.BaseViewModel
 import com.example.data.local.mapToDonut
 import com.example.data.repositoryImpl.FilterDataRepositoryImpl
-import com.example.domain.model.StatisticProvince
+import com.example.domain.model.location.StatisticProvince
 import com.example.domain.repository.FilterDataRepository
 import com.example.domain.usecase.authentication.LogoutUseCase
 import com.example.domain.usecase.authentication.ProfileUseCase
@@ -47,9 +47,7 @@ class HomeViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = 0
     )
-    init {
-        action(DashboardUiAction.OnRefresh)
-    }
+
 
     override fun action(action: DashboardUiAction) {
         when (action) {
@@ -161,14 +159,17 @@ class HomeViewModel @Inject constructor(
 
     //Masih bug,perlu perbaikan
     private fun fetchStatistic(force: Boolean = false) {
+
         viewModelScope.launch {
 
             // Jangan request ulang jika data sudah tersedia,
             // kecuali memang sedang melakukan refresh.
             if (!force && (uiState.value.isLoading || uiState.value.isLoaded)) {
+
                 return@launch
             }
             reduce {
+
                 copy(
                     isLoading = true, error = null
                 )
@@ -253,77 +254,3 @@ class HomeViewModel @Inject constructor(
     }
 
 }
-
-/*
-
-    fun applyProjectName(names: Map<String, String>) {
-        _searchQuery.value = if (names.isEmpty()) emptyMap() else names
-    }
-*/
-
-
-/*private val getAllFavoriteUseCase: GetAllFavoriteUseCase,
-    private val insertFavorite: InsertFavoriteUseCase,
-    filteredUseCase: FilteredUseCase,
-    private val deleteFavorite: DeleteFavoriteUseCase,*/
-
-/* private val _favoriteProjects = MutableStateFlow<List<FavoriteProject>>(emptyList())
-    val favoriteProjects = _favoriteProjects.asStateFlow()*/
-//private val _searchCategory = MutableStateFlow<Map<String, String>>(emptyMap())
-
-/*val currentPagingData: Flow<PagingData<RecordData>> =
-       combine(
-           _searchQuery.debounce(300).distinctUntilChanged(),
-           _searchCategory.debounce(50).distinctUntilChanged()
-       ) { query, category ->
-           query to category
-       }
-           .flatMapLatest { (query, category) ->
-               val merge = query + category
-               filteredUseCase(filterData = merge.toFilterDataModel())
-           }.catch { e ->
-               handleError(e)
-           }.cachedIn(viewModelScope)
-
-
-   private fun handleError(e: Throwable) {
-       viewModelScope.launch {
-           when (e) {
-               is TokenExpiredException -> _tokenExpired.emit(Unit)
-               else -> _dataEvent.send(
-                   DataEvent.ShowSnackBar(e.message ?: Constant.UNKNOWN_ERROR)
-               )
-           }
-       }
-   }
-*/
-
-/* private fun observeFavorites() {
-         viewModelScope.launch(dispatcher) {
-             getAllFavoriteUseCase().collect { fav ->
-                 _favoriteProjects.value = fav
-             }
-         }
-     }
-
-     //Bug!! Send few request on Snack bar
-     fun toggleFavorite(project: FavoriteProjectEntity) {
-         viewModelScope.launch {
-             try {
-                 val favorite = _favoriteProjects.value.any { it.idProject == project.idProject }
-                 if (favorite) {
-                     deleteFavorite(project.idProject)
-                     _dataEvent.send(DataEvent.ShowSnackBar("Favorit berhasil dihapus  "))
-
-                 } else {
-                     insertFavorite(project.toDomain())
-                     _dataEvent.send(DataEvent.ShowSnackBar("Ditambahkan ke favorit"))
-                 }
-             } catch (e: Exception) {
-                 _dataEvent.send(
-                     DataEvent.ShowSnackBar(e.message ?: Constant.UNKNOWN_ERROR)
-                 )
-
-             }
-         }
-     }*/

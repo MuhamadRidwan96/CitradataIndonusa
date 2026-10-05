@@ -9,7 +9,7 @@ import com.example.data.local.toDomain
 import com.example.data.utils.Constant
 import com.example.data.utils.DataNotFoundException
 import com.example.data.utils.TokenExpiredException
-import com.example.domain.model.Project
+import com.example.domain.model.project.Project
 import com.example.domain.usecase.authentication.LogoutUseCase
 import com.example.domain.usecase.data.FilteredUseCase
 import com.example.domain.usecase.room.DeleteFavoriteUseCase

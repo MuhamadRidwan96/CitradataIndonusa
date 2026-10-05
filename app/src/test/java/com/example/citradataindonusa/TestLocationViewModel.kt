@@ -1,25 +1,5 @@
 package com.example.citradataindonusa
 
-import com.example.domain.response.RegenciesResponse
-import com.example.domain.usecase.location.CityUseCase
-import com.example.domain.usecase.location.ProvinceUseCase
-import com.example.features.presentation.search.viewmodel.LocationViewModel
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-
 /*
 @OptIn(ExperimentalCoroutinesApi::class)
 class TestLocationViewModel {
