@@ -5,11 +5,11 @@ import com.example.data.local.entity.FavoriteProjectEntity
 import com.example.data.local.entity.NotificationEntity
 import com.example.data.local.entity.ProfileEntity
 import com.example.data.utils.randomComposeColor
-import com.example.domain.model.DonutData
-import com.example.domain.model.FavoriteProject
-import com.example.domain.model.NotificationModel
-import com.example.domain.model.UserProfile
-import com.example.domain.response.UserData
+import com.example.domain.model.statistic.DonutData
+import com.example.domain.model.favorite.FavoriteProject
+import com.example.domain.model.notification.NotificationModel
+import com.example.domain.model.user.UserProfile
+import com.example.domain.response.profile.UserData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -37,20 +37,26 @@ fun FavoriteProject.toEntity() = FavoriteProjectEntity(
     province
 )
 
-fun NotificationEntity.toDomain() = NotificationModel(
-    id,
-    title,
-    body,
-    isRead,
-    timestamp
+fun NotificationEntity.toDomainNotification() = NotificationModel(
+    id = id,
+    userId = userId,
+    title = title,
+    body = body,
+    projectId = projectId,
+    projectName = projectName,
+    isRead = isRead,
+    createdAt = createdAt
 )
 
-fun NotificationModel.toEntity() = NotificationEntity(
-    id ,
-    title,
-    body,
-    isRead,
-    timestamp
+fun NotificationModel.toEntityNotification() = NotificationEntity(
+    id = id,
+    userId = userId,
+    title = title,
+    body = body,
+    projectId = projectId,
+    projectName = projectName,
+    isRead = isRead,
+    createdAt = createdAt
 )
 
 fun ProfileEntity.toDomain() = UserProfile(
@@ -121,15 +127,16 @@ fun UserData.toEntity() = ProfileEntity(
     roleName = name
 )
 
-    fun mapToDonut(
-        data: Map<String, Int>,
-        colorMap: Map<String, Color>
-    ): ImmutableList<DonutData> {
-        return data.map { (label, value) ->
-            DonutData(
-                label = label,
-                value = value.toFloat(),
-                color = colorMap[label] ?: randomComposeColor()
-            )
-        }.toImmutableList()
-    }
+fun mapToDonut(
+    data: Map<String, Int>,
+    colorMap: Map<String, Color>
+): ImmutableList<DonutData> {
+    return data.map { (label, value) ->
+        DonutData(
+            label = label,
+            value = value.toFloat(),
+            color = colorMap[label] ?: randomComposeColor()
+        )
+    }.toImmutableList()
+}
+

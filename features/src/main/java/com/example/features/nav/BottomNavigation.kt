@@ -1,11 +1,6 @@
 package com.example.features.nav
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,10 +38,14 @@ fun MainBottomNavigation(
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        NavigationBar{
+        NavigationBar(
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp
+        ){
             bottomItems.forEach { navigate ->
                 val selected = currentDestination == navigate.destination
                 NavigationBarItem(
+
                     selected = selected,
                     icon = {
                         Icon(
@@ -59,21 +58,17 @@ fun MainBottomNavigation(
                         )
                     },
                  label = {
-                     AnimatedVisibility(
-                         visible = selected,
-                         enter = fadeIn() + expandHorizontally(),
-                         exit = fadeOut() + shrinkHorizontally()
-                     ) {
                          Text(
                              navigate.title,
                              color = if (selected) MaterialTheme.colorScheme.primary
-                             else MaterialTheme.colorScheme.primary,
+                             else MaterialTheme.colorScheme.onSurface,
                              style = MaterialTheme.typography.labelSmall,
                              fontSize = 12.sp
                          )
-                     }
+
 
                     },
+
                     onClick = {
                         if(!selected){
                             onDestinationSelect(navigate.destination)

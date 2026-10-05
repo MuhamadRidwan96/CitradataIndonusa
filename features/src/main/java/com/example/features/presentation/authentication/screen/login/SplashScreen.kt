@@ -26,7 +26,7 @@ fun SplashScreen(
     viewModel: LoginViewModel = hiltViewModel()
 
 ) {
-    val state by viewModel.processState.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.checkLogin()

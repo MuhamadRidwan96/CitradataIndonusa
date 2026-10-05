@@ -22,12 +22,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.feature_login.R
-import com.example.features.presentation.authentication.state.SignUpFormState
+import com.example.features.presentation.authentication.state.signup.SignUpUiState
 
 @Composable
 fun SignUpFormSection(
     modifier: Modifier = Modifier,
-    state: SignUpFormState,
+    state: SignUpUiState,
     onUsernameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit

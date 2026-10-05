@@ -25,14 +25,14 @@ import com.example.core_ui.AppTheme
 import com.example.core_ui.R
 import com.example.core_ui.component.IconText
 import com.example.data.local.entity.FavoriteProjectEntity
-import com.example.features.presentation.home.state.DataState
+import com.example.features.presentation.search.state.search.ProjectUiItem
 import com.example.features.presentation.home.utils.formatToFullDate
 import com.example.features.presentation.home.utils.toFavoriteProjectEntity
 
 
 @Composable
 fun ProjectCard(
-    project: DataState,
+    project: ProjectUiItem,
     onClick: () -> Unit,
     isFavorite: Boolean,
     onToggleFavorite: (FavoriteProjectEntity) -> Unit,
@@ -72,7 +72,7 @@ fun ProjectCard(
 
 @Composable
 private fun ProjectCardContent(
-    project: DataState,
+    project: ProjectUiItem,
     onClick: () -> Unit,
     isFavorite: Boolean,
     onToggleFavorite: (FavoriteProjectEntity) -> Unit,
@@ -156,7 +156,7 @@ private fun PreviewProjectCardNormal() {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Sample project data
-                val sampleProject = DataState(
+                val sampleProject = ProjectUiItem(
                     checkbox = "",
                     no = 1,
                     lastUpdate = "2024-03-15T10:30:00Z",

@@ -1,6 +1,5 @@
 package com.example.features.presentation.search.component
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,14 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.common.Result
-import com.example.features.presentation.search.state.LocationState
+import com.example.features.presentation.search.state.location.LocationUiState
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,24 +36,39 @@ fun CityBottomSheet(
     selectedCityName: String,
     onCitySelect: (String, String?, String) -> Unit,
     onGetCity: (String?) -> Unit,
-    state: LocationState
+    state: LocationUiState
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
-    val currentGetCity by rememberUpdatedState(onGetCity)
+    val cities = remember(
+        idProvince,
+        state.citiesByProvince
+    ) {
+        state.citiesByProvince[idProvince].orEmpty()
+    }
 
-    LaunchedEffect(expanded, idProvince) {
+    val isCityLoading =
+        state.loadingCityProvinceId == idProvince
+
+    LaunchedEffect(expanded, idProvince,onGetCity) {
         if (!expanded) return@LaunchedEffect
-        idProvince
+
+        val provinceId = idProvince
             ?.takeIf { it.isNotBlank() }
-            ?.let {
-                currentGetCity(it)
-            }
+            ?: return@LaunchedEffect
+
+        // Hanya request kalau belum ada cache
+        if (!state.citiesByProvince.containsKey(provinceId)) {
+            onGetCity(provinceId)
+        }
     }
 
     Surface(
         shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.5f)),
+        border = BorderStroke(
+            1.dp,
+            Color.Gray.copy(alpha = 0.5f)
+        ),
         tonalElevation = 0.dp,
         modifier = modifier
             .fillMaxWidth()
@@ -63,9 +77,12 @@ fun CityBottomSheet(
 
         ExposedDropdownMenuBox(
             expanded = expanded,
-            onExpandedChange = { expanded = !expanded },
-            modifier = Modifier
-                .fillMaxWidth()
+            onExpandedChange = {
+                if (idProvince?.isNotBlank() == true) {
+                    expanded = !expanded
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
         ) {
 
             TextField(
@@ -73,60 +90,94 @@ fun CityBottomSheet(
                 value = selectedCityName,
                 onValueChange = {},
                 textStyle = MaterialTheme.typography.bodySmall,
-                placeholder = { Text("Pilih Kota", style = MaterialTheme.typography.bodySmall) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                placeholder = {
+                    Text(
+                        "Pilih Kota",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = expanded
+                    )
+                },
                 modifier = Modifier
-                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable)
+                    .menuAnchor(
+                        ExposedDropdownMenuAnchorType.PrimaryEditable
+                    )
                     .fillMaxWidth()
                     .height(45.dp),
-                  colors = TextFieldDefaults.colors(
-                      focusedIndicatorColor = Color.Transparent,
-                      unfocusedIndicatorColor = Color.Transparent,
-                      disabledIndicatorColor = Color.Transparent,
-                      errorIndicatorColor = Color.Transparent,
-                      focusedContainerColor = Color.Transparent,
-                      unfocusedContainerColor = Color.Transparent,
-                      disabledContainerColor = Color.Transparent,
-                      errorContainerColor = Color.Transparent
-                  ),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    errorContainerColor = Color.Transparent
+                ),
                 enabled = idProvince?.isNotBlank() == true
-
             )
 
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = {
+                    expanded = false
+                }
             ) {
-                when (val city = state.cities) {
-                    is Result.Loading -> DropdownMenuItem(
-                        enabled = false,
-                        text = { Text("Memuat...") },
-                        onClick = {}
-                    )
 
-                    is Result.Error -> DropdownMenuItem(
-                        text = { Text("Tidak ada kota tersedia") },
-                        onClick = { expanded = false }
-                    )
+                when {
+                    isCityLoading -> {
+                        DropdownMenuItem(
+                            enabled = false,
+                            text = {
+                                Text("Memuat...")
+                            },
+                            onClick = {}
+                        )
+                    }
 
-                    is Result.Success -> city.data.data.forEach { city ->
+                    cities.isEmpty() -> {
                         DropdownMenuItem(
                             text = {
-                                Text(
-                                    city.cityName,
-                                    style = MaterialTheme.typography.bodySmall
-                                )
+                                Text("Tidak ada kota tersedia")
                             },
                             onClick = {
-                                onCitySelect(city.idCity, city.idProvince, city.cityName)
                                 expanded = false
                             }
                         )
+                    }
+
+                    else -> {
+                        cities.forEach { city ->
+
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = city.cityName,
+                                        style = MaterialTheme
+                                            .typography
+                                            .bodySmall
+                                    )
+                                },
+                                onClick = {
+                                    onCitySelect(
+                                        city.idCity,
+                                        idProvince.orEmpty(),
+                                        city.cityName
+                                    )
+
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+
 
 

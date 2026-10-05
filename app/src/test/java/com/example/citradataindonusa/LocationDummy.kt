@@ -1,8 +1,8 @@
 package com.example.citradataindonusa
 
-import com.example.domain.response.DataRegencies
-import com.example.domain.response.ProvinceResponse
-import com.example.domain.response.RegenciesResponse
+import com.example.domain.response.location.DataRegencies
+import com.example.domain.response.location.ProvinceResponse
+import com.example.domain.response.location.RegenciesResponse
 
 object LocationDummy {
 

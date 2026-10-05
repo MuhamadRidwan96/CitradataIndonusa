@@ -29,7 +29,7 @@ fun ProfileHeaders(
 
 ) {
 
-    val profile by homeVm.userName.collectAsStateWithLifecycle()
+    val profile by homeVm.uiState.collectAsStateWithLifecycle()
 
     val updateStyle = MaterialTheme.typography.titleLarge
         .copy(color = MaterialTheme.colorScheme.onSurface)
@@ -45,7 +45,7 @@ fun ProfileHeaders(
         )
         {
             Text(text = stringResource(com.example.feature_login.R.string.hello), style = updateStyle)
-            Text(text = profile?.name ?: "", style = updateStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(text = profile.user?.name ?: "", style = updateStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Image(
                 painter = painterResource(R.drawable.waving_hand),
                 contentDescription = null,

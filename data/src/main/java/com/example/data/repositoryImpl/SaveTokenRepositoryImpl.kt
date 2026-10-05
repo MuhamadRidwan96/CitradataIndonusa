@@ -1,20 +1,29 @@
 package com.example.data.repositoryImpl
 
-import com.example.common.Result
-import com.example.data.remote.api.ApiHelper
-import com.example.data.utils.toResult
+import com.example.data.network.api.ApiHelper
 import com.example.domain.repository.SaveTokenRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import okhttp3.ResponseBody
+import timber.log.Timber
 import javax.inject.Inject
 
-class SaveTokenRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper): SaveTokenRepository {
-    override fun saveToken(
-        userId: String,
-        token: String
-    ): Flow<Result<ResponseBody>> =  flow {
-        val response = apiHelper.saveToken(userId,token)
-        emit(response.toResult())
+class SaveTokenRepositoryImpl @Inject constructor(
+    private val apiHelper: ApiHelper
+) : SaveTokenRepository {
+
+    override suspend fun saveToken(userId: String, token: String) {
+
+        try {
+            val response = apiHelper.saveToken(userId, token)
+
+            if (!response.isSuccessful) {
+                Timber.e(response.errorBody()?.toString())
+                return
+            }
+
+            Timber.d("Save token success")
+
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+
     }
 }

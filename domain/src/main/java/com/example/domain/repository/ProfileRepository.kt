@@ -1,7 +1,7 @@
 package com.example.domain.repository
 
 
-import com.example.domain.model.UserProfile
+import com.example.domain.model.user.UserProfile
 import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {

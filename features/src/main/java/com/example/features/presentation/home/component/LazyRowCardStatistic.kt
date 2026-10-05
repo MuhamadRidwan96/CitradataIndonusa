@@ -13,14 +13,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.TextTitle
-import com.example.features.presentation.home.state.StatisticsDataState
+import kotlinx.collections.immutable.ImmutableMap
 
 @Composable
-fun LazyRowCardStatistic(modifier: Modifier = Modifier, statistic: StatisticsDataState) {
+fun LazyRowCardStatistic(
+    modifier: Modifier = Modifier,
+    byCategory: ImmutableMap<String, Int>,
+    categoryTrend: ImmutableMap<String, Int>
+) {
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         TextTitle(
             title = stringResource(R.string.statistic),
@@ -33,11 +37,11 @@ fun LazyRowCardStatistic(modifier: Modifier = Modifier, statistic: StatisticsDat
             contentPadding = PaddingValues(horizontal = 2.dp)
         ) {
             items(
-                items = statistic.byCategory.entries.toList(),
+                items = byCategory.entries.toList(),
                 key = { it.key }
             ) { (category, count) ->
 
-                val trend = statistic.categoryTrend[category] ?: 0
+                val trend = categoryTrend[category] ?: 0
 
                 val categoryIcons = remember {
                     mapOf(

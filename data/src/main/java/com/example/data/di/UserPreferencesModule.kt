@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.data.remote.google.GoogleAuthManager
+import com.example.data.network.google.GoogleAuthManager
 import com.example.data.preferencesImpl.UserPreferencesImpl
 import com.example.domain.preferences.UserPreferences
 import dagger.Module

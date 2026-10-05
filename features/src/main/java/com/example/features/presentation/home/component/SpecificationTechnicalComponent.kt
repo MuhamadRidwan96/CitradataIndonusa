@@ -16,12 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
-import com.example.features.presentation.home.state.DetailState
+import com.example.features.presentation.detail.state.DetailUiState
 
 @Composable
 fun SpecificationTechnicalComponent(
     modifier: Modifier = Modifier,
-    status: DetailState
+    status: DetailUiState
 ) {
     val specStatus = status.specification
     Column(modifier = modifier.padding(12.dp)) {

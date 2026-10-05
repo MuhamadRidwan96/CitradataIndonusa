@@ -1,9 +1,8 @@
 package com.example.domain.repository
 
-import com.example.common.Result
-import com.example.domain.response.ProjectDetailResponse
-import kotlinx.coroutines.flow.Flow
+
+import com.example.domain.response.data.ProjectDetailResponse
 
 interface DetailDataRepository {
-    fun getDetailData(projectId:String): Flow<Result<ProjectDetailResponse>>
+    suspend fun getDetailData(projectId:String): Result<ProjectDetailResponse>
 }

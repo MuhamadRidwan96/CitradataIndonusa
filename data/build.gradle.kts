@@ -41,7 +41,6 @@ android {
 
 dependencies {
     implementation(project(":domain"))// Bergantung pada modul domain
-    implementation(project(":common"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -92,5 +91,7 @@ dependencies {
     implementation(libs.androidx.paging.compose)
 
     implementation(libs.kotlinx.collections.immutable)
+
+    implementation(libs.timber)
 
 }

@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.domain.model.TrendProject
+import com.example.domain.model.statistic.TrendProject
 import com.example.features.presentation.home.utils.formatMonthLabel
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
@@ -125,17 +125,12 @@ fun LineChart(
 
     Card(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(20.dp),
-     /*   modifier = modifier.border(
-            width = 0.5.dp,
-            color = Color.Gray,
-            shape = RoundedCornerShape(20.dp)
-        )
-*/
+        shape = RoundedCornerShape(20.dp)
+
     ) {
         Column(
-            modifier = modifier
-                .padding(10.dp)
+            modifier = Modifier
+                .padding(18.dp)
                 .fillMaxWidth()
         ) {
             Text(

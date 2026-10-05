@@ -3,31 +3,19 @@ package com.example.citradataindonusa
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.util.Log
-import com.google.firebase.FirebaseApp
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @HiltAndroidApp
 class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
+       if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())   // <- WAJIB ada baris ini
+        }
         checkNotificationChannel()
 
-        CoroutineScope(Dispatchers.Default).launch {
-            FirebaseApp.initializeApp(this@MyApplication)
-        }
-
-    /*    startKoin {
-            androidContext(this@MyApplication)
-
-            // Add kotzilla analytics
-            analytics()
-        }*/
 
     }
 
@@ -37,7 +25,7 @@ class MyApplication : Application() {
         val channel = notificationManager.getNotificationChannel(channelId)
 
         if (channel != null) {
-            Log.d("Channel exists","${channel.id} - ${channel.name}")
+            Timber.tag("Channel exists").d("${channel.id} - ${channel.name}")
         } else {
             // Force create channel jika tidak ditemukan
             createNotificationChannel()

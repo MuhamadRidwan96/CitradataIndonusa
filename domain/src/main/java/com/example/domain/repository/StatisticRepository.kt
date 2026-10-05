@@ -1,9 +1,7 @@
 package com.example.domain.repository
 
-import com.example.common.Result
-import com.example.domain.response.StatisticsResponse
-import kotlinx.coroutines.flow.Flow
+import com.example.domain.response.statistic.StatisticsResponse
 
 interface StatisticRepository {
-    suspend fun getStatistic(): Flow<Result<StatisticsResponse>>
+    suspend fun getStatistic(): Result<StatisticsResponse>
 }

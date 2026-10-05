@@ -1,6 +1,6 @@
 package com.example.domain.usecase.authentication
 
-import com.example.domain.model.UserProfile
+import com.example.domain.model.user.UserProfile
 import com.example.domain.preferences.UserPreferences
 import com.example.domain.utils.decodeJWTPayload
 import kotlinx.coroutines.ExperimentalCoroutinesApi

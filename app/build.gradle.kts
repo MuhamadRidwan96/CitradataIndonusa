@@ -49,7 +49,7 @@ android {
     buildFeatures{
         compose = true
         aidl = false
-        buildConfig = false
+        buildConfig = true
         renderScript = false
         shaders = false
     }
@@ -59,11 +59,11 @@ android {
 dependencies {
 
     implementation (project(":domain"))  // Bergantung pada modul domain
-    implementation (project(":data")) // Bergantung pada modul data
-    implementation(project(":core-ui"))//Bergantung pada modul core-ui
+    implementation (project(":data"))
+    implementation(project(":core"))
+    // Bergantung pada modul data
+    //Bergantung pada modul core-ui
     implementation(project(":features"))
-    implementation(project(":common"))
-    testImplementation(project(":common"))
 
 
     implementation(libs.androidx.core.ktx)
@@ -80,7 +80,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.litert.support.api)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
-    implementation(libs.firebase.messaging.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -100,9 +99,11 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     // Firebase Auth
-    implementation(libs.firebase.auth.ktx)
     implementation(platform(libs.firebase.bom))
+
+    implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
 
 
     //Credential Manager
@@ -111,14 +112,15 @@ dependencies {
     implementation(libs.androidx.credentials.v120alpha03)
     implementation(libs.androidx.credentials.play.services.auth.v120alpha03)
 
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.messaging)
+
 
     //test
     testImplementation (libs.kotlinx.coroutines.test)
     testImplementation (libs.turbine)
     testImplementation (libs.mockk)
     testImplementation(kotlin("test"))
+
+    implementation(libs.timber)
 
 
 }

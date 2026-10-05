@@ -7,25 +7,43 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
-class HttpsRequestInterceptor @Inject constructor(private val userPreferenceImpl: UserPreferencesImpl) : Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response {
+class HttpsRequestInterceptor @Inject constructor(
+    private val userPreferences: UserPreferencesImpl
+) : Interceptor {
+
+    override fun intercept(
+        chain: Interceptor.Chain
+    ): Response {
+
         val token = runBlocking {
-           userPreferenceImpl.getSession().firstOrNull()?.token
-        } ?:throw IllegalArgumentException("Token is not available. Please login first.")
-        val request = chain.request().newBuilder()
-            .addHeader("Auth-Token", token)
-            .addHeader("Content-Type", "application/json")
-            .addHeader("Accept", "application/json")
-            .build()
-        return chain.proceed(request)
-
-        val response = chain.proceed(request)
-
-        // ✅ Deteksi jika token expired dari kode status (misalnya 401 Unauthorized)
-        if (response.code ==401){
-            response.close()
-            throw TokenExpiredException("Token Expired, Silahkan login kembali!")
+            userPreferences
+                .getSession()
+                .firstOrNull()
+                ?.token
         }
-        return response
+
+        val request = chain
+            .request()
+            .newBuilder()
+            .addHeader(
+                "Content-Type",
+                "application/json"
+            )
+            .addHeader(
+                "Accept",
+                "application/json"
+            )
+            .apply {
+
+                if (!token.isNullOrBlank()) {
+                    addHeader(
+                        "Auth-Token",
+                        token
+                    )
+                }
+            }
+            .build()
+
+        return chain.proceed(request)
     }
 }

@@ -56,25 +56,6 @@ fun ErrorBottomSheet(
 }
 
 @Composable
-fun FullScreenError(
-    modifier: Modifier = Modifier,
-    error: String,
-    onRetry: () -> Unit
-) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = error, color = MaterialTheme.colorScheme.error)
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onRetry) {
-            Text("Retry")
-        }
-    }
-}
-
-@Composable
 fun FullScreenLoading(
     modifier: Modifier = Modifier,
 ) {

@@ -26,8 +26,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,18 +47,15 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.core_ui.R
-import com.example.data.utils.DataNotFoundException
-import com.example.data.utils.TokenExpiredException
-import com.example.features.presentation.home.component.ErrorBottomSheet
 import com.example.features.presentation.home.component.ProjectCard
-import com.example.features.presentation.home.state.toDataState
+import com.example.features.presentation.home.utils.toProjectUiItem
 import com.example.features.presentation.search.component.ChipsRow
 import com.example.features.presentation.search.component.LabelBackground
 import com.example.features.presentation.search.component.SearchBottomSheet
 import com.example.features.presentation.search.component.SearchScreenMain
-import com.example.features.presentation.search.state.SearchBottomSheetAction
-import com.example.features.presentation.search.state.hasFilter
-import com.example.features.presentation.search.viewmodel.DataEvent
+import com.example.features.presentation.search.state.search.SearchUiAction
+import com.example.features.presentation.search.state.search.SearchUiEvent
+import com.example.features.presentation.search.utils.hasFilter
 import com.example.features.presentation.search.viewmodel.SearchViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -76,11 +71,13 @@ import kotlinx.coroutines.launch
  * @param viewModel ViewModel for search operations and state management
  */
 
+
 @Suppress("EffectKeys")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     onNavigateToDetail: (String) -> Unit,
+    onNavigateToLogOut: () -> Unit,
 
     modifier: Modifier = Modifier,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -90,20 +87,7 @@ fun SearchScreen(
     ) {
     // ========== State Management ==========
 
-    // Collect the applied search filters state from ViewModel
-    val searchState by viewModel.appliedState.collectAsState()
-
-    //Collect the draft search filter state
-    val draftState by viewModel.draftState.collectAsState()
-
-    // Collect list of favorite projects from ViewModel
-    val favorites by viewModel.favorite.collectAsState()
-
-    // Track whether user has performed a search
-    val hasSearch by viewModel.hasSearched.collectAsState()
-
-    // Track whether initial data loading is complete
-    val isInitialized by viewModel.isInitialized.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Collect paginated project data as LazyPagingItems for efficient list rendering
     val lazyPagingItems = viewModel.dataPaging.collectAsLazyPagingItems()
@@ -114,91 +98,63 @@ fun SearchScreen(
     // Controls visibility of filter bottom sheet
     var showFilterSheet by remember { mutableStateOf(false) }
 
-    // Controls visibility of session expired bottom sheet
-    var errorShowSheet by remember { mutableStateOf(false) }
 
     // State for controlling modal bottom sheet behavior
     val filterSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
-    val sessionSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     // Local UI state for search query input
-    var query by remember { mutableStateOf("") }
+    val showDataNotFound =
+        lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
+                lazyPagingItems.itemCount == 0
 
-    val showDataNotFound by remember {
-        derivedStateOf {
-            val hasError = lazyPagingItems.loadState.refresh is LoadState.Error
-            val errorIsNotFound =
-                (lazyPagingItems.loadState.refresh as? LoadState.Error)?.error is DataNotFoundException
 
-            hasError && errorIsNotFound
+    // ========== Side Effects ==========
+    LaunchedEffect(Unit, onNavigateToDetail, onNavigateToLogOut) {
+        viewModel.uiEvent.collectLatest { event ->
+            when (event) {
+
+                SearchUiEvent.TokenExpired -> {
+                    if (filterSheetState.isVisible) {
+                        filterSheetState.hide()
+                        showFilterSheet = false
+                    }
+                }
+
+                is SearchUiEvent.ShowSnackBar -> {
+                    snackBarHostState.showSnackbar(
+                        event.message
+                    )
+                }
+
+                is SearchUiEvent.Logout -> {
+                    onNavigateToLogOut
+                }
+
+                is SearchUiEvent.NavigateToDetail -> {
+                    onNavigateToDetail(state.idProject.toString())
+                }
+            }
         }
     }
 
-    // ========== Side Effects ==========
-
     /* -------------------- Paging Error Handling -------------------- */
-    // Monitor load state changes and handle errors
 
+    // Monitor load state changes and handle errors
 
     val loadState = lazyPagingItems.loadState
     LaunchedEffect(loadState) {
         // Find the first error from refresh, append, or prepend load states
-        val error = lazyPagingItems.firstError()
-
-        // Handle different error types
-        if (error != null) {
-            handlingPagingErrors(
-                error = error,
-                onTokenExpire = {
-                    coroutineScope.launch {
-                        if (filterSheetState.isVisible) {
-                            filterSheetState.hide()
-                            showFilterSheet = false
-                        }
-                        errorShowSheet = true
-                    }
-
-                },
-                onDataNotFound = {
-                },
-                onGeneralError = { message ->
-                    coroutineScope.launch {
-                        snackBarHostState.showSnackbar(message)
-                    }
-
-                }
+        lazyPagingItems.firstError()?.let { error ->
+            viewModel.action(
+                SearchUiAction.PagingError(
+                    error.error
+                )
             )
         }
     }
 
-    if (errorShowSheet) {
-        ErrorBottomSheet(
-            message = stringResource(R.string.end_session),
-            onDismiss = {
-                coroutineScope.launch {
-                    sessionSheetState.hide()
-                    errorShowSheet = false
-
-                    viewModel.onLogoutClicked()
-                }
-
-            },
-            sheetState = sessionSheetState
-        )
-    }
-
-
-    LaunchedEffect(Unit) {
-        viewModel.dataEvent.collectLatest { event ->
-            when (event) {
-                is DataEvent.Success -> {}
-                is DataEvent.ShowSnackBar -> snackBarHostState.showSnackbar(event.message)
-            }
-
-        }
-    }
-
     /* -------------------- UI -------------------- */
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -236,7 +192,7 @@ fun SearchScreen(
                 CustomSnackBarHost(snackBarHostState = snackBarHostState)
             },
         ) { paddingValues ->
-            if (!isInitialized) {
+            if (!state.isInitialized) {
                 LoadingScreen()
             } else {
 
@@ -244,10 +200,10 @@ fun SearchScreen(
                     val focusManager = LocalFocusManager.current
                     val keyboardController = LocalSoftwareKeyboardController.current
 
-                    val onBottomSheetAction: (SearchBottomSheetAction) -> Unit = { action ->
+                    val onBottomSheetAction: (SearchUiAction) -> Unit = { action ->
                         when (action) {
 
-                            is SearchBottomSheetAction.Apply -> {
+                            is SearchUiAction.ApplyFilter -> {
                                 // Clear focus and hide keyboard BEFORE closing sheet
                                 focusManager.clearFocus()
                                 keyboardController?.hide()
@@ -256,10 +212,10 @@ fun SearchScreen(
                                     filterSheetState.hide()
                                     showFilterSheet = false
                                 }
-                                viewModel.onAction(action)
+                                viewModel.action(action)
                             }
 
-                            else -> viewModel.onAction(action)
+                            else -> viewModel.action(action)
                         }
                     }
                     SearchBottomSheet(
@@ -275,7 +231,7 @@ fun SearchScreen(
                             }
 
                         },
-                        searchState = draftState
+                        searchState = state.draftFilter
                     )
                 }
 
@@ -288,31 +244,58 @@ fun SearchScreen(
 
                 ) {
                     SearchScreenMain(
-                        query = query,
+                        query = state.queryChange,
                         onQueryChange = { projectName ->
-                            query = projectName
-                            viewModel.updateDraft { it.copy(projectName = projectName) }
-                            viewModel.applyFilters()
+                            viewModel.action(
+                                SearchUiAction.QueryChanged(projectName)
+                            )
                         },
                         onBottomSheet = { showFilterSheet = true },
                     )
 
                     ChipsRow(
-                        searchState = searchState,
-                        clearPpr = viewModel::clearPpr,
-                        clearDateRange = viewModel::clearDateRange,
-                        clearStatus = viewModel::clearStatus,
-                        clearBuilding = viewModel::clearBuilding,
+                        searchState = state.appliedFilter,
+                        clearPpr = {
+                            viewModel.action(
+                                SearchUiAction.ClearPpr
+                            )
+                        },
+                        clearDateRange = {
+                            viewModel.action(
+                                SearchUiAction.ClearDateRange
+                            )
+                        },
+                        clearStatus = {
+                            viewModel.action(
+                                SearchUiAction.ClearStatus
+                            )
+                        },
+                        clearBuilding = {
+
+                            viewModel.action(
+                                SearchUiAction.ClearBuilding
+                            )
+
+                        },
                         clearProvince = {
-                            viewModel.clearProvince()
+                            viewModel.action(
+                                SearchUiAction.ClearProvince
+                            )
                         },
                         clearCity = {
-                            viewModel.clearCity()
+                            viewModel.action(
+                                SearchUiAction.ClearCity
+                            )
                         },
-                        clearCategory = viewModel::clearCategory
+                        clearCategory = {
+                            viewModel.action(
+                                SearchUiAction.ClearCategory
+                            )
+                        }
                     )
 
-                    val filterApplied = searchState.hasFilter()
+                    val filterApplied = state.appliedFilter.hasFilter()
+
                     when {
                         showDataNotFound -> {
                             Box(
@@ -326,7 +309,8 @@ fun SearchScreen(
                             }
                         }
 
-                        filterApplied && hasSearch -> {
+
+                        filterApplied && state.hasSearched -> {
                             // ✅ Ada data -> show LazyColumn
                             LazyColumn(
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -335,25 +319,31 @@ fun SearchScreen(
                                     top = 14.dp
                                 )
                             ) {
+
                                 items(
                                     count = lazyPagingItems.itemCount,
                                     key = lazyPagingItems.itemKey {
                                         it.idProject
                                     }
                                 ) { index ->
-                                    val recordData = lazyPagingItems[index]
-                                    recordData?.let {
-                                        val no = index + 1
-                                        val state = it.toDataState(searchState.isFavorite, no)
-                                        val fav =
-                                            favorites.any { fav -> fav.idProject == it.idProject.toInt() }
+                                    val record = lazyPagingItems[index]
+                                    record?.let { project ->
+                                        val projectUi =
+                                            project.toProjectUiItem(
+                                                index + 1,
+                                                state.appliedFilter.isFavorite
+                                            )
+                                        val isFavorite =
+                                            state.favorites.any { fav -> fav.idProject == project.idProject.toInt() }
 
                                         ProjectCard(
-                                            project = state,
-                                            onClick = { onNavigateToDetail(state.idProject.toString()) },
-                                            isFavorite = fav,
-                                            onToggleFavorite = { favEntity ->
-                                                viewModel.toggleFavorite(favEntity)
+                                            project = projectUi,
+                                            onClick = { onNavigateToDetail(projectUi.idProject.toString()) },
+                                            isFavorite = isFavorite,
+                                            onToggleFavorite = { favorite ->
+                                                viewModel.action(
+                                                    SearchUiAction.ToggleFavorite(favorite)
+                                                )
                                             }
                                         )
                                     }
@@ -403,11 +393,14 @@ fun SearchScreen(
             }
         }
     }
+
 }
+
 
 /**
  * Get first LoadState.Error from refresh/append/prepend
  */
+
 private fun LazyPagingItems<*>.firstError(): LoadState.Error? {
     return listOf(
         loadState.refresh,
@@ -417,34 +410,11 @@ private fun LazyPagingItems<*>.firstError(): LoadState.Error? {
 }
 
 /**
- * Handles paging error states and updates UI accordingly
- *
- * @param error Callback load state error
- * @param onTokenExpire Callback when authentication token expires
- * @param onDataNotFound Callback to update data not found state
- * @param onGeneralError Callback when an error occurs with error message
- */
-
-private fun handlingPagingErrors(
-    error: LoadState.Error,
-    onTokenExpire: () -> Unit,
-    onDataNotFound: () -> Unit,
-    onGeneralError: (String) -> Unit
-
-) {
-    when (error.error) {
-        is TokenExpiredException -> onTokenExpire()
-        is DataNotFoundException -> onDataNotFound()
-        else -> onGeneralError(error.error.message ?: "Unexpected Error")
-
-    }
-}
-
-/**
  * Custom styled snackbar host with rounded corners and themed colors
  *
  * @param snackBarHostState State holder for snackbar
  */
+
 @Composable
 private fun CustomSnackBarHost(snackBarHostState: SnackbarHostState) {
     SnackbarHost(
@@ -465,6 +435,7 @@ private fun CustomSnackBarHost(snackBarHostState: SnackbarHostState) {
 /**
  * Loading screen displayed during initialization
  */
+
 @Composable
 private fun LoadingScreen() {
     Box(
@@ -474,8 +445,6 @@ private fun LoadingScreen() {
         CircularProgressIndicator() // Material loading spinner
     }
 }
-
-
 
 
 

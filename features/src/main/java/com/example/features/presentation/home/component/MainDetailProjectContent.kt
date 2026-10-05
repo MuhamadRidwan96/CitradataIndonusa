@@ -26,7 +26,7 @@ import com.example.core_ui.R
 import com.example.core_ui.component.IconText
 import com.example.core_ui.component.ProjectCodeText
 import com.example.core_ui.component.StatusChip
-import com.example.features.presentation.home.state.DetailState
+import com.example.features.presentation.detail.state.DetailUiState
 import com.example.features.presentation.home.utils.BulletList
 import com.example.features.presentation.home.utils.formatToFullDate
 import com.example.features.presentation.home.utils.toCleanBulletList
@@ -34,7 +34,7 @@ import com.example.features.presentation.home.utils.toCleanBulletList
 @Composable
 fun MainDetailProjectContent(
     modifier: Modifier = Modifier,
-    status: DetailState
+    status: DetailUiState
 
 ) {
     val dataStatus = status.project

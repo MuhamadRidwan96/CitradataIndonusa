@@ -1,18 +1,18 @@
 package com.example.data.repositoryImpl
 
-import com.example.common.Result
-import com.example.data.remote.api.ApiHelper
+import com.example.data.network.ApiCallHandler
+import com.example.data.network.api.ApiHelper
 import com.example.data.utils.toResult
 import com.example.domain.repository.StatisticRepository
-import com.example.domain.response.StatisticsResponse
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import com.example.domain.response.statistic.StatisticsResponse
 import javax.inject.Inject
 
-class StatisticRepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) :
+class StatisticRepositoryImpl @Inject constructor(
+    private val apiHelper: ApiHelper,
+    private val apiCallHandler: ApiCallHandler
+) :
     StatisticRepository {
-    override suspend fun getStatistic(): Flow<Result<StatisticsResponse>> = flow {
-        val response = apiHelper.getStatistic()
-        emit(response.toResult())
+    override suspend fun getStatistic(): Result<StatisticsResponse> {
+        return apiCallHandler.execute { apiHelper.getStatistic().toResult() }
     }
 }

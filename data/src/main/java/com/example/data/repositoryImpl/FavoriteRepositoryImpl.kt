@@ -3,7 +3,7 @@ package com.example.data.repositoryImpl
 import com.example.data.local.dao.FavoriteDAO
 import com.example.data.local.toDomain
 import com.example.data.local.toEntity
-import com.example.domain.model.FavoriteProject
+import com.example.domain.model.favorite.FavoriteProject
 import com.example.domain.repository.FavoriteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

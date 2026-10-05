@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.core_ui.R
 import com.example.core_ui.component.IconText
-import com.example.domain.response.TeamMember
+import com.example.domain.response.data.TeamMember
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable

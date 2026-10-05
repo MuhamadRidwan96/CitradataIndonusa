@@ -1,7 +1,7 @@
 package com.example.domain.usecase.authentication
 
 import com.example.domain.repository.AuthRepository
-import com.example.domain.response.AuthResponse
+import com.example.domain.response.authentication.AuthResponse
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

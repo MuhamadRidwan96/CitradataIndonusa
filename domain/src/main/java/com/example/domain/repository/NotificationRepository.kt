@@ -1,12 +1,17 @@
 package com.example.domain.repository
 
-import com.example.domain.model.NotificationModel
+import com.example.domain.model.notification.NotificationModel
 import kotlinx.coroutines.flow.Flow
 
 interface NotificationRepository {
-    fun getAllNotifications(): Flow<List<NotificationModel>>
-    fun getUnreadCount(): Int
-    suspend fun insert(notification: NotificationModel)
-    suspend fun markAllAsRead(id:Int)
-    suspend fun delete(id: Int)
+
+    fun observeNotifications(): Flow<List<NotificationModel>>
+
+    fun observeUnreadCount(): Flow<Int>
+
+    suspend fun sync(userId: String): Result<Unit>
+
+    suspend fun markAsRead(id: Int, userId: String): Result<Unit>
+
+    suspend fun delete(id: Int, userId: String): Result<Unit>
 }

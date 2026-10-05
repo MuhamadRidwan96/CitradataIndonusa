@@ -26,8 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.common.Result
-import com.example.features.presentation.search.state.LocationState
+import com.example.features.presentation.search.state.location.LocationUiState
 
 
 @Suppress("EffectKeys")
@@ -38,14 +37,14 @@ fun ProvinceBottomSheet(
     selectedProvince: String?,
     onGetProvince: () -> Unit,
     onProvinceSelect: (String, String) -> Unit,
-    state: LocationState,
+    state: LocationUiState,
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     val currentGetProvince by rememberUpdatedState(onGetProvince)
 
     LaunchedEffect(expanded) {
-        if (expanded){
+        if (expanded) {
             currentGetProvince()
         }
     }
@@ -93,30 +92,33 @@ fun ProvinceBottomSheet(
                 )
             )
 
+            val province = state.provinces
+            val isProvinceLoading = state.isProvinceLoading
 
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                when (val provinceState = state.province) {
-                    is Result.Loading -> DropdownMenuItem(
+
+                when {
+                    isProvinceLoading -> DropdownMenuItem(
                         enabled = false,
                         text = { Text("Memuat...") },
                         onClick = {}
                     )
 
-                    is Result.Error -> DropdownMenuItem(
+                    province.isEmpty() -> DropdownMenuItem(
                         enabled = false,
                         text = { Text("Gagal memuat") },
                         onClick = {}
                     )
 
-                    is Result.Success ->
-                        provinceState.data.data.forEach { province ->
+                    else -> {
+                        province.forEach { province ->
                             DropdownMenuItem(
                                 text = {
                                     Text(
-                                        province.province,
+                                        text = province.province,
                                         style = MaterialTheme.typography.bodySmall
                                     )
                                 },
@@ -126,10 +128,12 @@ fun ProvinceBottomSheet(
                                 }
                             )
                         }
+                    }
                 }
             }
         }
     }
 }
+
 
 
